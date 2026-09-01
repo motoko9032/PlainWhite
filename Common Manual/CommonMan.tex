@@ -1,0 +1,80 @@
+\documentclass[fontset=fandol]{ctexrep}
+\usepackage[ paper=a4 ]{geometry}
+
+\title{\bfseries 纯白通用工作手册}
+\author{\kaishu 素子-白色封皮纯白运营小组}
+\date{2026年9月1日 第一版}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{编制说明}
+
+纯白通用工作手册，是一本旨在以完整的、持续更新的技术内容，对项目内技术人员的操作进行指导与规范化的指导类文件。
+
+本手册的所有内容均只属于技术建议，无强制性，除明确以{\heiti 黑体}标注的内容外，一般都可以适当变通。
+
+\section{目录与提交}
+
+\subsection{目录的结构}
+
+目录在代码提交后，{\heiti 必须按如下结构进行整理：}
+
+\begin{itemize}
+	\item{\verb|main|}
+	\begin{itemize}
+		\item{\verb|index.html|}
+		\item{\verb|CommonMan.pdf|}
+		\item{\verb|files|}
+		\begin{itemize}
+			\item{\verb|README.md|}
+			\item{\verb|[Documents]|}
+		\end{itemize}
+		\item{\verb|style|}
+		\begin{itemize}
+			\item{\verb|README.md|}
+			\item{\verb|style.css|}
+		\end{itemize}
+		\item{\verb|script|}
+		\begin{itemize}
+			\item{\verb|README.md|}
+			\item{\verb|script.js|}
+		\end{itemize}
+		\item{\verb|Common Manual|}
+		\begin{itemize}
+			\item{\verb|README.md|}
+			\item{\verb|CommonMan.tex|}
+			\item{\verb|CommonMan.zip|\footnote{此处为本手册文件的整个\latex 项目目录压缩包}}
+		\end{itemize}
+	\end{itemize}
+\end{itemize}
+
+{\kaishu 上述结构在纸面上大概如此，实际上只需要文件内的目录结构符合此列表的描述，顺序本身并不影响是否符合本手册的要求。}
+
+\subsection{目录的含义}
+
+以下是目录内各个文件夹的含义，上传文件、提交代码的时候{\heiti 必须}严格参考各个文件夹的语义：
+
+{\kaishu \begin{itemize}
+	\item{files – 网站文件（指用户需要下载的内容）}
+	\item{style – 样式表文件夹（存储css样式表）}
+	\item{script - JavaScript脚本文件夹（存储JavaScript脚本）}
+	\item{Common Manual – 通用手册文件夹（存储本手册的\LaTeX 项目文件）}
+\end{itemize}}
+
+\subsection{提交方法}
+
+以下是提交代码的推荐方法——你最习惯的方法，只要代码本身能够被本项目的相关人员审阅，即使使用打印纸提交代码，也是可以被理解的。
+
+\section{本文档的更新}
+
+本文档允许技术人员任意在不影响上述内容的情况下，在本文档的\LaTeX 源码中任意添加自己认为需要告知其他技术人员的内容，本项目的负责人将会在周末或其他适当的时候对内容进行整理。
+
+\end{document}
