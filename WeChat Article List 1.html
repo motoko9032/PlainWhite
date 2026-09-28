@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="东郊 — 一份不定期发布的综合文学交流成果。诗歌、小说、散文、文学评论及杂文。">
+    <title>纯白 — 一份属于白色封皮的综合文学交流成果</title>
+    <link rel="stylesheet" href="./style/style.css">
+    <script src="./script/script.js" defer></script>
+</head>
+<body>
+    <!-- 页眉 -->
+    <header class="header" id="header">
+        <div class="header-inner">
+            <a href="./" class="logo">纯白</a>
+            <nav class="nav" id="nav" aria-label="主导航">
+                <a href="./#about" class="nav-link">关于</a>
+                <a href="./#columns" class="nav-link">阅读</a>
+                <a href="./#support" class="nav-link">支持</a>
+                <a href="./#contact" class="nav-link">联系</a>
+            </nav>
+            <button class="menu-toggle" id="menuToggle" aria-label="切换导航" aria-expanded="false" aria-controls="nav">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- 英雄区 -->
+        <section class="hero" id="hero">
+            <div class="hero-inner">
+                <h1 class="hero-title">微信公众号</h1>
+                <p class="hero-subtitle">白色封皮</p>
+                <p class="hero-meta">每期发布最新内容与深度分享</p>
+                <blockquote class="hero-quote">
+                    <p>关注获取文学交流的第一时间资讯。</p>
+                </blockquote>
+            </div>
+        </section>
+
+        <!-- 文章列表区 -->
+        <section class="wechat-articles" id="wechat-articles">
+            <div class="container">
+                <h2 class="section-title">最新文章</h2>
+                <div class="articles-list">
+                    <article class="article-item">
+                        <h3 class="article-title">文章标题</h3>
+                        <p class="article-meta">发布日期待定</p>
+                        <p class="article-excerpt">文章摘要区域</p>
+                        <a href="#" class="article-link" target="_blank">阅读全文</a>
+                    </article>
+                    <article class="article-item">
+                        <h3 class="article-title">文章标题</h3>
+                        <p class="article-meta">发布日期待定</p>
+                        <p class="article-excerpt">文章摘要区域</p>
+                        <a href="#" class="article-link" target="_blank">阅读全文</a>
+                    </article>
+                    <article class="article-item">
+                        <h3 class="article-title">文章标题</h3>
+                        <p class="article-meta">发布日期待定</p>
+                        <p class="article-excerpt">文章摘要区域</p>
+                        <a href="#" class="article-link" target="_blank">阅读全文</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- 返回主页 -->
+        <section class="back-to-home" id="back-to-home">
+            <div class="container">
+                <a href="./" class="back-link">← 返回主页</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-main">
+                <p class="footer-copyright">《纯白》 · 2026</p>
+                <nav class="footer-nav" aria-label="页脚导航">
+                    <a href="./#about" class="footer-link">关于我们</a>
+                    <a href="./#downloads" class="footer-link">作品展示</a>
+                    <a href="./#contact" class="footer-link">合作联系</a>
+                </nav>
+            </div>
+            <p class="footer-note">开放知识 · 免费交流</p>
+            <p class="footer-license">线上内容采用知识共享协议（CC BY-NC）发布</p>
+        </div>
+    </footer>
+
+    <!-- 捐款弹窗 -->
+    <div class="modal-overlay" id="modalOverlay" aria-hidden="true">
+        <div class="modal" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
+            <button class="modal-close" id="modalClose" type="button" aria-label="关闭弹窗">&times;</button>
+            <h3 class="modal-title" id="modalTitle">支持纯白</h3>
+            <div class="modal-body">
+                <p>感谢您的关注。目前捐款渠道正在筹备中，相关信息将在此页面更新。</p>
+                <p class="modal-note">所有捐款将用于刊物运营成本，收支明细定期公开。</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
