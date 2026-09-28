@@ -18,27 +18,28 @@
 }
 /* ---- CSS 变量 ---- */
 :root {
-    /* 灰白背景体系 */
-    --paper: #f4f3f1;
-    --paper-soft: #faf9f7;
-    --ink: #2a2a2c;
-    --ink-light: #555558;
-    --ink-muted: #8c8c90;
+    /* 灰白背景体系 - 降低饱和度 */
+    --paper: #f9f8f6;
+    --paper-soft: #fdfcfb;
+    --ink: #3a3a3c;
+    --ink-light: #626264;
+    --ink-muted: #9a9a9e;
 
-    /* 樱花色主题 */
+    /* 樱花色主题 - 维持点缀色 */
     --sakura: #e8a0b0;
     --sakura-deep: #d48496;
     --sakura-soft: #f5d0d8;
     --sakura-pale: rgba(232, 160, 176, 0.12);
     --sakura-glow: rgba(232, 160, 176, 0.28);
 
-    --border: rgba(42, 42, 44, 0.08);
-    --border-soft: rgba(42, 42, 44, 0.05);
+    --border: rgba(58, 58, 60, 0.06);
+    --border-soft: rgba(58, 58, 60, 0.04);
 
-    --glass-bg: rgba(250, 249, 247, 0.72);
-    --glass-bg-scrolled: rgba(244, 243, 241, 0.88);
-    --glass-border: rgba(255, 255, 255, 0.65);
-    --glass-blur: 22px;
+    /* 加强Header玻璃效果 */
+    --glass-bg: rgba(253, 252, 251, 0.78);
+    --glass-bg-scrolled: rgba(249, 248, 246, 0.92);
+    --glass-border: rgba(255, 255, 255, 0.75);
+    --glass-blur: 32px;
 
     --max-width: 900px;
     --font-serif: "EB Garamond", Georgia, "Noto Serif SC", "Noto Serif CJK SC", "Songti SC", "SimSun", "STSong", serif;
@@ -73,9 +74,9 @@ body {
     line-height: 1.8;
     text-align: justify;
     background-image:
-        radial-gradient(ellipse at 15% 20%, rgba(232, 160, 176, 0.06) 0%, transparent 50%),
-        radial-gradient(ellipse at 85% 75%, rgba(200, 190, 185, 0.05) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+        radial-gradient(ellipse at 15% 20%, rgba(232, 160, 176, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 75%, rgba(180, 175, 170, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
 }
 
 img, svg {
@@ -94,7 +95,7 @@ a {
     padding: 0 1.5rem;
 }
 
-/* ---- 页眉（毛玻璃导航） ---- */
+/* ---- 页眉（毛玻璃导航 - 加强） ---- */
 .header {
     position: fixed;
     top: 0;
@@ -102,21 +103,23 @@ a {
     right: 0;
     z-index: 100;
     background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%) brightness(1.05);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%) brightness(1.05);
     border-bottom: 1px solid var(--glass-border);
     box-shadow:
-        0 4px 24px rgba(42, 42, 44, 0.04),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        0 6px 32px rgba(58, 58, 60, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        inset 0 -1px 0 rgba(232, 160, 176, 0.08);
     transition: background 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out), border-color 0.3s ease;
 }
 
 .header.scrolled {
     background: var(--glass-bg-scrolled);
-    border-bottom-color: rgba(42, 42, 44, 0.1);
+    border-bottom-color: rgba(58, 58, 60, 0.12);
     box-shadow:
-        0 8px 28px rgba(42, 42, 44, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        0 10px 40px rgba(58, 58, 60, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -1px 0 rgba(232, 160, 176, 0.1);
 }
 
 .header-inner {
@@ -389,7 +392,7 @@ a {
 }
 
 .column-card:hover {
-    box-shadow: 0 12px 36px rgba(42, 42, 44, 0.06), 0 0 0 1px var(--sakura-glow);
+    box-shadow: 0 12px 36px rgba(58, 58, 60, 0.06), 0 0 0 1px var(--sakura-glow);
     transform: translateY(-4px);
     border-color: rgba(232, 160, 176, 0.35);
 }
@@ -419,6 +422,7 @@ a {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .download-card {
@@ -433,7 +437,7 @@ a {
 }
 
 .download-card:hover {
-    box-shadow: 0 12px 36px rgba(42, 42, 44, 0.06), 0 0 0 1px var(--sakura-glow);
+    box-shadow: 0 12px 36px rgba(58, 58, 60, 0.06), 0 0 0 1px var(--sakura-glow);
     transform: translateY(-3px);
     border-color: rgba(232, 160, 176, 0.3);
 }
@@ -477,6 +481,57 @@ a {
     color: var(--sakura);
     border-bottom-style: solid;
     border-bottom-color: var(--sakura);
+}
+
+/* ---- 微信公众号卡片 ---- */
+.wechat-card-wrapper {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+.wechat-card {
+    background: linear-gradient(135deg, rgba(253, 252, 251, 0.8), rgba(245, 208, 216, 0.08));
+    border: 1px solid rgba(232, 160, 176, 0.25);
+    border-radius: 10px;
+    padding: 2rem 1.75rem;
+    text-align: center;
+    transition:
+        box-shadow 0.3s var(--ease-out),
+        transform 0.3s var(--ease-out),
+        border-color 0.25s ease,
+        background 0.3s var(--ease-out);
+}
+
+.wechat-card:hover {
+    box-shadow: 0 12px 36px rgba(232, 160, 176, 0.08), 0 0 0 1px var(--sakura-glow);
+    transform: translateY(-3px);
+    border-color: rgba(232, 160, 176, 0.4);
+    background: linear-gradient(135deg, rgba(253, 252, 251, 0.95), rgba(245, 208, 216, 0.15));
+}
+
+.wechat-card-title {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--sakura-deep);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.03em;
+}
+
+.wechat-card-desc {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    color: var(--ink-light);
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.wechat-card-note {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--ink-muted);
+    line-height: 1.6;
 }
 
 /* ---- 分发方式 ---- */
@@ -673,9 +728,9 @@ a {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(42, 42, 44, 0.38);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: rgba(58, 58, 60, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -699,7 +754,7 @@ a {
     max-width: 420px;
     width: 100%;
     position: relative;
-    box-shadow: 0 24px 64px rgba(42, 42, 44, 0.12), 0 0 0 1px var(--sakura-pale);
+    box-shadow: 0 24px 64px rgba(58, 58, 60, 0.12), 0 0 0 1px var(--sakura-pale);
     transform: scale(0.96) translateY(12px);
     transition: transform 0.32s var(--ease-out);
 }
@@ -799,14 +854,14 @@ a {
         top: var(--header-height);
         left: 0;
         right: 0;
-        background: rgba(250, 249, 247, 0.96);
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
+        background: rgba(253, 252, 251, 0.96);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         flex-direction: column;
         padding: 1.5rem;
         gap: 1.25rem;
         border-bottom: 1px solid var(--border);
-        box-shadow: 0 12px 32px rgba(42, 42, 44, 0.06);
+        box-shadow: 0 12px 32px rgba(58, 58, 60, 0.06);
         transform: translateY(-8px);
         opacity: 0;
         visibility: hidden;
@@ -858,7 +913,8 @@ a {
     }
 
     .column-card,
-    .download-card {
+    .download-card,
+    .wechat-card {
         padding: 1.5rem 1.25rem;
     }
 }
