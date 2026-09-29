@@ -200,6 +200,11 @@
                 const res = await fetch(ANNOUNCEMENT_MD_BASE + num + '.md');
                 if (!res.ok) break;
                 const source = await res.text();
+                // 静态托管（如 Cloudflare Pages）对不存在的路径会回退返回
+                // 首页 HTML 且状态码仍为 200。因此必须以 front-matter 校验：
+                // 内容不以 --- 开头即视为「公告已到尽头」，停止探测，
+                // 避免把整个首页源码当作公告渲染成裸文本。
+                if (!/^\s*---\s*\n/.test(source)) break;
                 items.push(parseAnnouncementMarkdown(source));
             } catch (err) {
                 break; // file:// 等环境下 fetch 不可用，停止探测
