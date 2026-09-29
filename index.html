@@ -6,6 +6,7 @@
     <meta name="description" content="东郊 — 一份不定期发布的综合文学交流成果。诗歌、小说、散文、文学评论及杂文。">
     <title>纯白 — 一份属于白色封皮的综合文学交流成果</title>
     <link rel="stylesheet" href="./style/style.css">
+    <script src="./announcements/data.js" defer></script>
     <script src="./script/script.js" defer></script>
 </head>
 <body>
@@ -14,6 +15,7 @@
         <div class="header-inner">
             <a href="#" class="logo">纯白</a>
             <nav class="nav" id="nav" aria-label="主导航">
+                <a href="#announcements" class="nav-link">公告</a>
                 <a href="#about" class="nav-link">关于</a>
                 <a href="#columns" class="nav-link">阅读</a>
                 <a href="#support" class="nav-link">支持</a>
@@ -37,6 +39,19 @@
                 <blockquote class="hero-quote">
                     <p>这是纸的另一种形态。长期存在。</p>
                 </blockquote>
+            </div>
+        </section>
+
+        <!-- 公告区 -->
+        <section class="announcements" id="announcements">
+            <div class="container">
+                <h2 class="section-title">公告</h2>
+                <div class="announcement-list" id="announcementList">
+                    <!-- 公告条目由 script/script.js 读取 announcements/data.js 动态渲染 -->
+                </div>
+                <noscript>
+                    <p class="announcement-text">启用 JavaScript 后即可在此查看公告。</p>
+                </noscript>
             </div>
         </section>
 
