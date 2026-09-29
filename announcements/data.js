@@ -19,7 +19,7 @@ window.ANNOUNCEMENTS = [
         date: "2026.09",
         datetime: "2026-09",
         title: "第二期「邦多利特刊」发布",
-        badge: "最新",
+        badge: "",
         text: "第二期特刊现已上线，可在下载区获取 PDF 与 EPUB 版本，公众号原文同步更新。"
     }
 ];
