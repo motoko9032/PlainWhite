@@ -46,9 +46,9 @@
     --border-soft: rgba(58, 58, 60, 0.04);
 
     /* 加强Header玻璃效果 */
-    --glass-bg: rgba(253, 252, 251, 0.68);
-    --glass-bg-scrolled: rgba(249, 248, 246, 0.88);
-    --glass-border: rgba(255, 255, 255, 0.9);
+    --glass-bg: rgba(253, 252, 251, 0.82);
+    --glass-bg-scrolled: rgba(249, 248, 246, 0.94);
+    --glass-border: rgba(58, 58, 60, 0.1);
     --glass-blur: 40px;
 
     --max-width: 900px;
@@ -83,10 +83,11 @@ body {
     background-color: var(--paper);
     line-height: 1.8;
     text-align: justify;
+    font-feature-settings: "hwid" 1;
     background-image:
-        radial-gradient(ellipse at 15% 20%, rgba(232, 160, 176, 0.04) 0%, transparent 50%),
-        radial-gradient(ellipse at 85% 75%, rgba(180, 175, 170, 0.03) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        radial-gradient(ellipse at 15% 20%, rgba(232, 160, 176, 0.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 75%, rgba(180, 175, 170, 0.05) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.22) 0%, transparent 70%);
 }
 
 img, svg {
@@ -130,6 +131,17 @@ a {
         0 10px 40px rgba(58, 58, 60, 0.08),
         inset 0 1px 0 rgba(255, 255, 255, 0.95),
         inset 0 -1px 0 rgba(232, 160, 176, 0.1);
+}
+
+/* 不支持毛玻璃滤镜时降级为近不透明背景，避免内容透出 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .header {
+        background: var(--paper-soft);
+    }
+
+    .header.scrolled {
+        background: var(--paper);
+    }
 }
 
 .header-inner {
@@ -248,6 +260,7 @@ a {
     justify-content: center;
     text-align: center;
     padding: 6rem 1.5rem 4rem;
+    background: radial-gradient(ellipse at 50% 32%, rgba(232, 160, 176, 0.06) 0%, transparent 65%);
 }
 
 .hero-inner {
@@ -333,6 +346,112 @@ a {
     margin-bottom: 2rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--border);
+}
+
+/* ---- 公告区 ---- */
+.announcements {
+    padding: 5rem 0;
+    background: linear-gradient(to bottom, transparent, var(--sakura-pale), transparent);
+}
+
+.announcement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.announcement-item {
+    display: flex;
+    gap: 1.75rem;
+    background: var(--paper-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem 1.75rem;
+    transition:
+        box-shadow 0.3s var(--ease-out),
+        transform 0.3s var(--ease-out),
+        border-color 0.25s ease;
+}
+
+.announcement-item:hover {
+    box-shadow: 0 12px 36px rgba(58, 58, 60, 0.06), 0 0 0 1px var(--sakura-glow);
+    transform: translateY(-3px);
+    border-color: rgba(232, 160, 176, 0.3);
+}
+
+.announcement-date {
+    flex-shrink: 0;
+    min-width: 4.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    letter-spacing: 0.08em;
+    padding-top: 0.35rem;
+}
+
+.announcement-content {
+    min-width: 0;
+}
+
+.announcement-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-family: var(--font-serif);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.03em;
+    margin-bottom: 0.4rem;
+}
+
+.announcement-badge {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--sakura-deep);
+    background: var(--sakura-pale);
+    border-radius: 999px;
+    padding: 0.15rem 0.65rem;
+}
+
+.announcement-text {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--ink-light);
+}
+
+.announcement-text + .announcement-text {
+    margin-top: 0.5rem;
+}
+
+.announcement-text strong {
+    color: var(--ink);
+}
+
+.announcement-text code {
+    font-family: var(--font-sans);
+    font-size: 0.875em;
+    background: var(--sakura-pale);
+    border-radius: 4px;
+    padding: 0.05rem 0.35rem;
+}
+
+.announcement-text a {
+    color: var(--sakura-deep);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(212, 132, 150, 0.45);
+    transition: color 0.2s ease, border-color 0.2s ease, border-style 0.2s ease;
+}
+
+.announcement-text a:hover,
+.announcement-text a:focus-visible {
+    color: var(--sakura);
+    border-bottom-style: solid;
+    border-bottom-color: var(--sakura);
 }
 
 /* ---- 简介区 ---- */
@@ -920,6 +1039,7 @@ a {
     }
 
     .about,
+    .announcements,
     .columns,
     .downloads,
     .distribution,
@@ -942,6 +1062,16 @@ a {
     .download-card,
     .wechat-card {
         padding: 1.5rem 1.25rem;
+    }
+
+    .announcement-item {
+        flex-direction: column;
+        gap: 0.35rem;
+        padding: 1.25rem 1.25rem;
+    }
+
+    .announcement-date {
+        padding-top: 0;
     }
 
     .article-list-section {
