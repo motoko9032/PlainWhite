@@ -9,7 +9,7 @@ A monthly comprehensive literary journal featuring poetry, fiction, essays, and 
 **PlainWhite** is a literary exchange project centered on poetry, short stories, essays, and fan fiction. We do not chase traffic – we only present words and images that deserve to be seen.
 
 - **Editorial team**: distributed nationwide, globally, and perhaps across the universe
-- **Publication status**: inaugural issue officially released
+- **Publication status**: inaugural issue (Re0) and Issue 2 (Bandori special) released
 
 ## Columns
 
@@ -25,12 +25,30 @@ A monthly comprehensive literary journal featuring poetry, fiction, essays, and 
 ## Downloads
 
 ### PDF Version
-- Suitable for reading and printing
+Suitable for reading and printing.
+
 - [PlainWhite Re0 (PDF)](./files/纯白-Re0.pdf)
+- [PlainWhite Issue 2 – Bandori Special (PDF)](./files/纯白-第二期-邦多利特刊_副本.pdf)
 
 ### EPUB Version
-- Suitable for e-book readers
+Suitable for e-book readers.
+
 - [PlainWhite Re0 (EPUB)](./files/纯白-Re0.epub)
+- [PlainWhite Issue 2 – Bandori Special (EPUB)](./files/纯白-第二期-邦多利特刊_副本.epub)
+
+### WeChat Originals
+Per-issue links to the original WeChat article lists.
+
+- [Issue 1 WeChat articles](./sub/WeChatArticleList1.html)
+- [Issue 2 WeChat articles](./sub/WeChatArticleList2.html)
+
+## Announcements
+
+The homepage announcement section is maintained independently in the [`announcements/`](./announcements/) directory.
+
+To publish a new announcement, add a Markdown file named `announcement-NN.md` (continuous numbering, e.g. `announcement-03.md`) with a front matter block (`date`, `title`, `badge`) followed by the body text. The site picks it up automatically and appends it after the previous announcement — no HTML, CSS, or JS changes required.
+
+See [announcements/README.md](./announcements/README.md) for detailed instructions.
 
 ## Distribution
 
@@ -49,6 +67,19 @@ Thanks to everyone who has contributed time and effort.
 ## Contact
 
 For collaboration and submissions, please reach out via the **White Cover** channels or follow the **White Cover** official WeChat account for the latest updates.
+
+## Site Structure
+
+| Path | Purpose |
+| ---- | ------- |
+| `index.html` | Homepage |
+| `style/style.css` | All styles for the site |
+| `script/script.js` | Interactions and announcement rendering |
+| `announcements/` | Announcement Markdown files, auto-rendered on the homepage |
+| `files/` | Issue files (PDF / EPUB) |
+| `sub/` | WeChat article list pages |
+| `fonts/` | Local webfonts |
+| `Common Manual/` | Common editorial manual (LaTeX source) |
 
 ## License
 
