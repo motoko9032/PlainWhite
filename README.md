@@ -46,7 +46,9 @@ Per-issue links to the original WeChat article lists.
 
 The homepage announcement section is maintained independently in the [`announcements/`](./announcements/) directory.
 
-To publish a new announcement, add a Markdown file named `announcement-NN.md` (continuous numbering, e.g. `announcement-03.md`) with a front matter block (`date`, `title`, `badge`) followed by the body text. The site picks it up automatically and appends it after the previous announcement — no HTML, CSS, or JS changes required.
+To publish a new announcement, add a Markdown file named `announcement-NN.md` (continuous numbering, e.g. `announcement-04.md`) with a front matter block (`date`, `title`, `badge`) followed by the body text. The site picks it up automatically and appends it after the previous announcement — no HTML, CSS, or JS changes required.
+
+The homepage shows only the latest **3** announcements. When more than 3 accumulate, the older ones are automatically moved to the separate [historical announcements page](./announcements/history/) (`announcements/history/` directory) and a "view all historical announcements" link appears at the bottom of the homepage announcement section. No file relocation is needed.
 
 See [announcements/README.md](./announcements/README.md) for detailed instructions.
 
@@ -76,6 +78,7 @@ For collaboration and submissions, please reach out via the **White Cover** chan
 | `style/style.css` | All styles for the site |
 | `script/script.js` | Interactions and announcement rendering |
 | `announcements/` | Announcement Markdown files, auto-rendered on the homepage |
+| `announcements/history/` | Historical announcements page (auto-archived announcements older than the latest 3) |
 | `files/` | Issue files (PDF / EPUB) |
 | `sub/` | WeChat article list pages |
 | `fonts/` | Local webfonts |

@@ -7,6 +7,7 @@
     <title>纯白 — 一份属于白色封皮的综合文学交流成果</title>
     <link rel="stylesheet" href="./style/style.css">
     <script src="./announcements/data.js" defer></script>
+    <script src="./script/announcements.js" defer></script>
     <script src="./script/script.js" defer></script>
 </head>
 <body>
@@ -16,6 +17,7 @@
             <a href="#" class="logo">纯白</a>
             <nav class="nav" id="nav" aria-label="主导航">
                 <a href="#announcements" class="nav-link">公告</a>
+                <a href="./announcements/history/" class="nav-link">历史公告</a>
                 <a href="#about" class="nav-link">关于</a>
                 <a href="#columns" class="nav-link">阅读</a>
                 <a href="#support" class="nav-link">支持</a>
@@ -47,7 +49,8 @@
             <div class="container">
                 <h2 class="section-title">公告</h2>
                 <div class="announcement-list" id="announcementList">
-                    <!-- 公告条目由 script/script.js 读取 announcements/data.js 动态渲染 -->
+                    <!-- 公告条目由 script/announcements.js 与 script/script.js 动态渲染：
+                         仅展示最新三条，更早的公告自动归档到历史公告页 -->
                 </div>
                 <noscript>
                     <p class="announcement-text">启用 JavaScript 后即可在此查看公告。</p>
@@ -229,6 +232,7 @@
                 <nav class="footer-nav" aria-label="页脚导航">
                     <a href="#about" class="footer-link">关于我们</a>
                     <a href="#downloads" class="footer-link">作品展示</a>
+                    <a href="./announcements/history/" class="footer-link">历史公告</a>
                     <a href="#contact" class="footer-link">合作联系</a>
                 </nav>
             </div>

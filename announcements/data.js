@@ -6,6 +6,10 @@
    无法读取 Markdown 时才使用本文件。
    新增公告请优先添加 .md 文件；若修改了 .md，请同步更新
    这里的内容，保持两者一致。
+
+   首页公告区最多展示最新 3 条；公告累计超过 3 条时，
+   更早的公告会自动归档到 announcements/history/ 历史公告页
+   （由 script/announcements.js 自动处理，无需移动文件）。
    ============================================ */
 window.ANNOUNCEMENTS = [
     {
@@ -21,5 +25,12 @@ window.ANNOUNCEMENTS = [
         title: "第二期「邦多利特刊」发布",
         badge: "",
         text: "第二期特刊现已上线，可在下载区获取 PDF 与 EPUB 版本，公众号原文同步更新。"
+    },
+    {
+        date: "2026.10",
+        datetime: "2026-10",
+        title: "纯白第三期规划中",
+        badge: "最新",
+        text: "第三期正在积极规划中，期号「Re：1」，本期将不分发 epub 版本。"
     }
 ];

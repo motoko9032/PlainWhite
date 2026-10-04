@@ -206,6 +206,15 @@ a {
     width: 100%;
 }
 
+/* 当前页面导航高亮 */
+.nav-link[aria-current="page"] {
+    color: var(--sakura-deep);
+}
+
+.nav-link[aria-current="page"]::after {
+    width: 100%;
+}
+
 /* 汉堡菜单 */
 .menu-toggle {
     display: none;
@@ -452,6 +461,55 @@ a {
     color: var(--sakura);
     border-bottom-style: solid;
     border-bottom-color: var(--sakura);
+}
+
+/* ---- 历史公告入口（首页公告区底部，超三条时自动出现） ---- */
+.announcement-history-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: var(--paper-soft);
+    border: 1px dashed rgba(212, 132, 150, 0.5);
+    border-radius: 10px;
+    padding: 1rem 1.75rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    color: var(--sakura-deep);
+    text-decoration: none;
+    transition:
+        border-color 0.25s ease,
+        border-style 0.25s ease,
+        box-shadow 0.3s var(--ease-out),
+        transform 0.3s var(--ease-out);
+}
+
+.announcement-history-link:hover,
+.announcement-history-link:focus-visible {
+    border-style: solid;
+    border-color: var(--sakura);
+    box-shadow: 0 12px 36px rgba(58, 58, 60, 0.06), 0 0 0 1px var(--sakura-glow);
+    transform: translateY(-2px);
+}
+
+.announcement-history-arrow {
+    transition: transform 0.25s ease;
+}
+
+.announcement-history-link:hover .announcement-history-arrow,
+.announcement-history-link:focus-visible .announcement-history-arrow {
+    transform: translateX(4px);
+}
+
+/* ---- 历史公告页 ---- */
+.history-empty {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--ink-muted);
+    text-align: center;
+    padding: 2.5rem 1rem;
 }
 
 /* ---- 简介区 ---- */

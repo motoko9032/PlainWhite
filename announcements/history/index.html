@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="纯白 — 历史公告归档。首页公告超过三条时，更早的公告自动归档于此。">
+    <title>历史公告 — 纯白</title>
+    <link rel="stylesheet" href="../../style/style.css">
+    <script src="../data.js" defer></script>
+    <script src="../../script/announcements.js" defer></script>
+    <script src="../../script/script.js" defer></script>
+</head>
+<body>
+    <!-- 页眉 -->
+    <header class="header" id="header">
+        <div class="header-inner">
+            <a href="../../index.html" class="logo">纯白</a>
+            <nav class="nav" id="nav" aria-label="主导航">
+                <a href="../../index.html#announcements" class="nav-link">公告</a>
+                <a href="./" class="nav-link" aria-current="page">历史公告</a>
+                <a href="../../index.html#about" class="nav-link">关于</a>
+                <a href="../../index.html#columns" class="nav-link">阅读</a>
+                <a href="../../index.html#support" class="nav-link">支持</a>
+                <a href="../../index.html#contact" class="nav-link">联系</a>
+            </nav>
+            <button class="menu-toggle" id="menuToggle" aria-label="切换导航" aria-expanded="false" aria-controls="nav">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- 历史公告区 -->
+        <section class="announcements" id="history">
+            <div class="container">
+                <h2 class="section-title">历史公告</h2>
+                <p class="article-list-note">
+                    首页公告区仅展示最新三条公告。当公告累计超过三条时，更早的公告会自动归档到这里，按时间顺序排列。
+                </p>
+                <div class="announcement-list" id="historyList">
+                    <!-- 历史公告条目由 script/announcements.js 与 script/script.js 动态渲染 -->
+                </div>
+                <p class="history-empty" id="historyEmpty" hidden>
+                    暂无历史公告 —— 当首页公告超过三条时，更早的公告会自动归档到这里。
+                </p>
+                <noscript>
+                    <p class="announcement-text">启用 JavaScript 后即可在此查看历史公告。</p>
+                </noscript>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-main">
+                <p class="footer-copyright">《纯白》 · 2026</p>
+                <nav class="footer-nav" aria-label="页脚导航">
+                    <a href="../../index.html" class="footer-link">返回首页</a>
+                    <a href="../../index.html#announcements" class="footer-link">最新公告</a>
+                    <a href="../../index.html#contact" class="footer-link">合作联系</a>
+                </nav>
+            </div>
+            <p class="footer-note">开放知识 · 免费交流</p>
+            <p class="footer-license">线上内容采用知识共享协议（CC BY-NC）发布</p>
+        </div>
+    </footer>
+</body>
+</html>
