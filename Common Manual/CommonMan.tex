@@ -1,9 +1,9 @@
 \documentclass[fontset=fandol]{ctexrep}
-\usepackage[ paper=a4 ]{geometry}
+\usepackage[a4paper]{geometry}
 
 \title{\bfseries 纯白通用工作手册}
 \author{\kaishu 素子-白色封皮纯白运营小组}
-\date{2026年9月1日 第一版}
+\date{2026年10月5日 第二版}
 
 \begin{document}
 
@@ -31,27 +31,50 @@
 	\item{\verb|main|}
 	\begin{itemize}
 		\item{\verb|index.html|}
+		\item{\verb|README.md|}
 		\item{\verb|CommonMan.pdf|}
-		\item{\verb|files|}
+		\item{\verb|announcements|}
 		\begin{itemize}
 			\item{\verb|README.md|}
+			\item{\verb|announcement-01.md（等公告Markdown文件，编号连续）|}
+			\item{\verb|data.js|}
+			\item{\verb|history|}
+			\begin{itemize}
+				\item{\verb|index.html|}
+			\end{itemize}
+		\end{itemize}
+		\item{\verb|files|}
+		\begin{itemize}
+			\item{\verb|readme|}
 			\item{\verb|[Documents]|}
+		\end{itemize}
+		\item{\verb|fonts|}
+		\begin{itemize}
+			\item{\verb|README.md|}
+			\item{\verb|[Fonts]|}
 		\end{itemize}
 		\item{\verb|style|}
 		\begin{itemize}
-			\item{\verb|README.md|}
 			\item{\verb|style.css|}
 		\end{itemize}
 		\item{\verb|script|}
 		\begin{itemize}
-			\item{\verb|README.md|}
+			\item{\verb|announcements.js|}
 			\item{\verb|script.js|}
+			\item{\verb|wechat-articles.js|}
+		\end{itemize}
+		\item{\verb|sub|}
+		\begin{itemize}
+			\item{\verb|README.md|}
+			\item{\verb|WeChatArticleList1.html（等各期公众号原文列表页）|}
+			\item{\verb|data.js|}
+			\item{\verb|wechat-article-01.md（等文章Markdown文件，编号连续）|}
 		\end{itemize}
 		\item{\verb|Common Manual|}
 		\begin{itemize}
 			\item{\verb|README.md|}
 			\item{\verb|CommonMan.tex|}
-			\item{\verb|CommonMan.zip|\footnote{此处为本手册文件的整个\latex 项目目录压缩包}}
+			\item{\verb|CommonMan.zip|\footnote{此处为本手册文件的整个\LaTeX{}项目目录压缩包}}
 		\end{itemize}
 	\end{itemize}
 \end{itemize}
@@ -66,6 +89,9 @@
 	\item{files – 网站文件（指用户需要下载的内容）}
 	\item{style – 样式表文件夹（存储css样式表）}
 	\item{script - JavaScript脚本文件夹（存储JavaScript脚本）}
+	\item{announcements – 公告文件夹（存储首页公告的Markdown文件与回退数据，由\verb|script/announcements.js|动态渲染）}
+	\item{sub – 公众号原文列表页文件夹（存储各期列表页、文章Markdown文件与回退数据）}
+	\item{fonts – 字体文件夹（存储网站本地字体文件）}
 	\item{Common Manual – 通用手册文件夹（存储本手册的\LaTeX 项目文件）}
 \end{itemize}}
 
