@@ -6,6 +6,8 @@
     <meta name="description" content="纯白 — 第2期公众号原文文章列表。">
     <title>纯白 · 第2期公众号原文</title>
     <link rel="stylesheet" href="../style/style.css">
+    <script src="./data.js" defer></script>
+    <script src="../script/wechat-articles.js" defer></script>
     <script src="../script/script.js" defer></script>
 </head>
 <body>
@@ -38,13 +40,13 @@
                 <article class="download-card">
                     <h3 class="download-name">纯白 邦多利特刊 · 公众号文章</h3>
                     <p class="download-desc">以下为公众号文章链接：</p>
-                    <ul class="download-list">
-                        <li><a href="https://mp.weixin.qq.com/s/VMHw8WXkmoVUa9VmcgJCSg">长崎素世与清醒梦</a></li>
-                        <li><a href="https://mp.weixin.qq.com/s/skn8VuNQxJfvHVG988H5LA">昨日恐惧症</a></li>
-                        <li><a href="https://mp.weixin.qq.com/s/ikDSjm5grDaRYZXcrfv-YA">丰川逃避行</a></li>
-                        <li><a href="https://mp.weixin.qq.com/s/VwjpUXe55RC3Ed4yrb7Ljg">幽冥的心</a></li>
-                        <li>《草莓抹茶》是纯白的邦多利特刊独占篇目。</li>
+                    <ul class="download-list" id="wechatArticleList2" data-wechat-issue="2">
+                        <!-- 文章链接由 sub/wechat-article-NN.md 动态渲染
+                             （script/wechat-articles.js；回退数据 sub/data.js） -->
                     </ul>
+                    <noscript>
+                        <p class="download-desc">启用 JavaScript 后即可在此查看公众号文章链接。</p>
+                    </noscript>
                 </article>
             </div>
         </section>
@@ -58,6 +60,7 @@
                 <nav class="footer-nav" aria-label="页脚导航">
                     <a href="../index.html" class="footer-link">返回首页</a>
                     <a href="./WeChatArticleList1.html" class="footer-link">第1期公众号原文</a>
+                    <a href="./WeChatArticleList3.html" class="footer-link">第3期公众号原文</a>
                 </nav>
             </div>
             <p class="footer-note">开放知识 · 免费交流</p>

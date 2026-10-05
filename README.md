@@ -41,6 +41,9 @@ Per-issue links to the original WeChat article lists.
 
 - [Issue 1 WeChat articles](./sub/WeChatArticleList1.html)
 - [Issue 2 WeChat articles](./sub/WeChatArticleList2.html)
+- [Issue 3 WeChat articles](./sub/WeChatArticleList3.html)
+
+The article lists are maintained as Markdown files in [`sub/`](./sub/) (`wechat-article-NN.md`, one file per article) and rendered dynamically by JavaScript, with a JavaScript fallback in `sub/data.js`. No HTML, CSS, or JS changes are needed to add articles — see [sub/README.md](./sub/README.md) for step-by-step instructions.
 
 ## Announcements
 
@@ -80,7 +83,7 @@ For collaboration and submissions, please reach out via the **White Cover** chan
 | `announcements/` | Announcement Markdown files, auto-rendered on the homepage |
 | `announcements/history/` | Historical announcements page (auto-archived announcements older than the latest 3) |
 | `files/` | Issue files (PDF / EPUB) |
-| `sub/` | WeChat article list pages |
+| `sub/` | WeChat article list pages; lists are maintained via Markdown files (`wechat-article-NN.md`) with a `data.js` fallback |
 | `fonts/` | Local webfonts |
 | `Common Manual/` | Common editorial manual (LaTeX source) |
 
