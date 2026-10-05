@@ -84,6 +84,7 @@ body {
     line-height: 1.8;
     text-align: justify;
     font-feature-settings: "hwid" 1;
+    text-autospace: normal;
     background-image:
         radial-gradient(ellipse at 15% 20%, rgba(232, 160, 176, 0.07) 0%, transparent 55%),
         radial-gradient(ellipse at 85% 75%, rgba(180, 175, 170, 0.05) 0%, transparent 55%),
