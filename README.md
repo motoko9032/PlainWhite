@@ -42,8 +42,19 @@ Per-issue links to the original WeChat article lists.
 - [Issue 1 WeChat articles](./sub/WeChatArticleList1.html)
 - [Issue 2 WeChat articles](./sub/WeChatArticleList2.html)
 - [Issue 3 WeChat articles](./sub/WeChatArticleList3.html)
+- [Issue 4 WeChat articles](./sub/WeChatArticleList4.html)
 
 The article lists are maintained as Markdown files in [`sub/`](./sub/) (`wechat-article-NN.md`, one file per article) and rendered dynamically by JavaScript, with a JavaScript fallback in `sub/data.js`. No HTML, CSS, or JS changes are needed to add articles — see [sub/README.md](./sub/README.md) for step-by-step instructions.
+
+### LOFTER Originals
+Per-issue pages linking directly to the original LOFTER articles.
+
+- [Issue 1 LOFTER articles](./sub/LofterArticleList1.html)
+- [Issue 2 LOFTER articles](./sub/LofterArticleList2.html)
+- [Issue 3 LOFTER articles](./sub/LofterArticleList3.html)
+- [Issue 4 LOFTER articles](./sub/LofterArticleList4.html)
+
+The LOFTER lists work exactly like the WeChat lists: one Markdown file per article (`lofter-article-NN.md`) in [`sub/`](./sub/), rendered dynamically with a JavaScript fallback in `sub/data.js`. No HTML, CSS, or JS changes are needed to add articles — see [sub/README.md](./sub/README.md) for step-by-step instructions.
 
 ## Announcements
 
@@ -80,10 +91,12 @@ For collaboration and submissions, please reach out via the **White Cover** chan
 | `index.html` | Homepage |
 | `style/style.css` | All styles for the site |
 | `script/script.js` | Interactions and announcement rendering |
+| `script/wechat-articles.js` | Dynamic rendering of per-issue WeChat article lists |
+| `script/lofter-articles.js` | Dynamic rendering of per-issue LOFTER article lists |
 | `announcements/` | Announcement Markdown files, auto-rendered on the homepage |
 | `announcements/history/` | Historical announcements page (auto-archived announcements older than the latest 3) |
 | `files/` | Issue files (PDF / EPUB) |
-| `sub/` | WeChat article list pages; lists are maintained via Markdown files (`wechat-article-NN.md`) with a `data.js` fallback |
+| `sub/` | WeChat and LOFTER article list pages; lists are maintained via Markdown files (`wechat-article-NN.md` / `lofter-article-NN.md`) with a `data.js` fallback |
 | `fonts/` | Local webfonts |
 | `Common Manual/` | Common editorial manual (LaTeX source) |
 

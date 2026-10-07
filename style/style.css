@@ -702,6 +702,11 @@ a {
     border-top: 1px solid var(--border);
 }
 
+/* ---- LOFTER 原文卡片 ---- */
+.lofter-card-wrapper {
+    margin-top: 2rem;
+}
+
 .wechat-card {
     background: linear-gradient(135deg, rgba(253, 252, 251, 0.8), rgba(245, 208, 216, 0.08));
     border: 1px solid rgba(232, 160, 176, 0.25);
