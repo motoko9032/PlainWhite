@@ -82,7 +82,7 @@ Thanks to everyone who has contributed time and effort.
 
 ## Contact
 
-For collaboration and submissions, please reach out via the **White Cover** channels or follow the **White Cover** official WeChat account for the latest updates.
+For collaboration and submissions, please contact us via the submission mailboxes (**投稿邮箱（一）** `motoko9032@outlook.com` / **投稿邮箱（二）** `3087946949@qq.com`), reach out via the **White Cover** channels, or follow the **White Cover** official WeChat account for the latest updates.
 
 ## Site Structure
 

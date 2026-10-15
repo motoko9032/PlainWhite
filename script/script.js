@@ -13,6 +13,67 @@
     const header = document.getElementById('header');
     const navLinks = document.querySelectorAll('.nav-link');
 
+    // ---- 平台与字体特性检测 ----
+    // 为 font-feature-settings 的跨平台适配在 <html> 上设置 data-os / data-hw：
+    //   macOS / Windows / Linux / Android 使用 halt（半角替代），iOS 单独使用 hwid；
+    //   当 halt 在所用字体中不可用时，自动回退为 hwid。
+    function detectPlatformAndFontFeature() {
+        const root = document.documentElement;
+        const ua = navigator.userAgent || '';
+
+        const isIOS = /iPad|iPhone|iPod/.test(ua) ||
+            (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1);
+        const isAndroid = /Android/i.test(ua);
+
+        root.setAttribute('data-os', isIOS ? 'ios' : (isAndroid ? 'android' : 'desktop'));
+
+        if (isIOS) {
+            // iOS 单独使用 hwid，无需检测回退
+            root.setAttribute('data-hw', 'hwid');
+            return;
+        }
+
+        // 检测字体是否真正应用半角特性：比较 CJK 文本宽度是否明显收窄
+        function featureHalvesWidth(feature) {
+            const text = '中文测试';
+            const font = '"EB Garamond", Georgia, "Noto Serif SC", "Noto Serif CJK SC", "Songti SC", "SimSun", serif';
+
+            function measure(withFeature) {
+                const span = document.createElement('span');
+                span.textContent = text;
+                span.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;' +
+                    'white-space:nowrap;font-family:' + font + ';font-size:32px;' +
+                    (withFeature ? 'font-feature-settings:"' + feature + '" 1;' : '');
+                document.body.appendChild(span);
+                const width = span.getBoundingClientRect().width;
+                document.body.removeChild(span);
+                return width;
+            }
+
+            const full = measure(false);
+            const half = measure(true);
+            return full > 0 && half / full < 0.75;
+        }
+
+        function applyFeature() {
+            root.setAttribute('data-hw', featureHalvesWidth('halt') ? 'halt' :
+                (featureHalvesWidth('hwid') ? 'hwid' : 'halt'));
+        }
+
+        // 等待页面字体加载完成后再检测，避免因字体未就绪而误判
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(applyFeature);
+        } else {
+            applyFeature();
+        }
+    }
+
+    if (document.body) {
+        detectPlatformAndFontFeature();
+    } else {
+        document.addEventListener('DOMContentLoaded', detectPlatformAndFontFeature);
+    }
+
     // ---- 汉堡菜单切换 ----
     function toggleMenu() {
         if (!menuToggle || !nav) return;

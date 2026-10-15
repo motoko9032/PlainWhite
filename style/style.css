@@ -91,12 +91,24 @@ body {
     background-color: var(--paper);
     line-height: 1.8;
     text-align: justify;
-    font-feature-settings: "hwid" 1;
+    font-feature-settings: "halt" 1;
     text-autospace: normal;
     background-image:
         radial-gradient(ellipse at 15% 20%, rgba(232, 160, 176, 0.07) 0%, transparent 55%),
         radial-gradient(ellipse at 85% 75%, rgba(180, 175, 170, 0.05) 0%, transparent 55%),
         radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.22) 0%, transparent 70%);
+}
+
+/* 半角字形特性平台适配（由 script/script.js 在 <html> 上设置 data-os / data-hw）：
+   macOS / Windows / Linux / Android 使用 halt（半角替代），
+   iOS 单独使用 hwid（半角表意文字）；
+   当 halt 在所用字体中不可用时，自动回退为 hwid。 */
+html[data-os="ios"] body {
+    font-feature-settings: "hwid" 1;
+}
+
+html[data-hw="hwid"]:not([data-os="ios"]) body {
+    font-feature-settings: "hwid" 1;
 }
 
 img, svg {
@@ -875,6 +887,57 @@ a {
     line-height: 1.9;
     color: var(--ink-light);
     max-width: 680px;
+}
+
+/* 联系区投稿邮箱按钮 */
+.contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+    margin-top: 1.75rem;
+}
+
+.contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.8rem 1.75rem;
+    background: var(--paper-soft);
+    color: var(--sakura-deep);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    border: 1px solid var(--sakura);
+    border-radius: 999px;
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease,
+        transform 0.2s var(--ease-out),
+        box-shadow 0.25s ease;
+}
+
+.contact-btn:hover {
+    background: var(--sakura);
+    color: #fff;
+    border-color: var(--sakura-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--sakura-glow);
+}
+
+.contact-btn:active {
+    transform: translateY(0);
+}
+
+.contact-btn:focus-visible {
+    outline: 2px solid var(--sakura-deep);
+    outline-offset: 3px;
+}
+
+.contact-btn:hover .btn-arrow {
+    transform: translateX(5px);
 }
 
 /* ---- 页脚 ---- */
