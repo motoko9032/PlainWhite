@@ -1,0 +1,7 @@
+/* ============================================
+   纯白 — Google Fonts 字体回退样式
+   当页面完全加载耗时超过阈值时，由 script/script.js 动态引入。
+   字体族名称与 style/fonts-local.css 中的本地 @font-face 保持一致；
+   使用远程字体时不会再加载本地字体文件。
+   ============================================ */
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+SC:wght@200..900&display=swap");

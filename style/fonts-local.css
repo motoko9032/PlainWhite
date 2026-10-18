@@ -1,0 +1,40 @@
+/* ============================================
+   纯白 — 本地字体声明
+   由 script/font-loader.js 在默认模式下引入；
+   检测到完全加载过慢后，后续页面改为引入 style/fonts-google.css。
+   ============================================ */
+@font-face {
+    font-family: "EB Garamond";
+    src: url("../fonts/EBGaramond-VariableFont_wght.ttf") format("truetype-variations"),
+         url("../fonts/EBGaramond-VariableFont_wght.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "EB Garamond";
+    src: url("../fonts/EBGaramond-Italic-VariableFont_wght.ttf") format("truetype-variations"),
+         url("../fonts/EBGaramond-Italic-VariableFont_wght.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Noto Serif SC";
+    src: url("../fonts/NotoSerifSC-VariableFont_wght.ttf") format("truetype-variations"),
+         url("../fonts/NotoSerifSC-VariableFont_wght.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Noto Sans SC";
+    src: url("../fonts/NotoSansSC-VariableFont_wght.ttf") format("truetype-variations"),
+         url("../fonts/NotoSansSC-VariableFont_wght.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}

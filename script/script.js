@@ -5,6 +5,9 @@
 (function () {
     'use strict';
 
+    // 供字体加载方式切换定位 style/ 目录（各页面引用本脚本的相对路径不同）
+    const scriptElement = document.currentScript;
+
     const menuToggle = document.getElementById('menuToggle');
     const nav = document.getElementById('nav');
     const supportBtn = document.getElementById('supportBtn');
@@ -73,6 +76,152 @@
     } else {
         document.addEventListener('DOMContentLoaded', detectPlatformAndFontFeature);
     }
+
+    // ---- 字体加载方式自适应 ----
+    // fonts/ 下的中文字体体积较大（合计约 40MB），慢速网络下会显著拖慢完全加载时间。
+    // 页面完全加载（含字体）耗时超过阈值时，改用 Google Fonts 的 @import 远程字体，
+    // 并把选择写入 sessionStorage，让本次会话内的后续页面直接使用远程字体。
+    const FONT_MODE_KEY = 'plainwhite:font-mode';
+    const FONT_FALLBACK_KEY = 'plainwhite:font-fallback';
+    const FONT_MODE_GOOGLE = 'google';
+    const SLOW_LOAD_THRESHOLD_MS = 3000;
+    const FONT_CHECK_TIMEOUT_MS = 15000;
+
+    function getStoredFontMode() {
+        try {
+            return window.sessionStorage.getItem(FONT_MODE_KEY);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function getStoredFontFallback() {
+        try {
+            return window.sessionStorage.getItem(FONT_FALLBACK_KEY);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function storeFontMode(mode) {
+        try {
+            window.sessionStorage.setItem(FONT_MODE_KEY, mode);
+        } catch (e) {
+            // 隐私模式等禁用 sessionStorage 时忽略，仅当前页面生效
+        }
+    }
+
+    function storeFontFallback() {
+        try {
+            window.sessionStorage.setItem(FONT_FALLBACK_KEY, '1');
+        } catch (e) {
+            // 同上
+        }
+    }
+
+    function resolveSiteAsset(path) {
+        if (scriptElement && scriptElement.src) {
+            return new URL(path, scriptElement.src).href;
+        }
+        return path;
+    }
+
+    function enableGoogleFonts() {
+        if (document.getElementById('googleFontsStylesheet')) return;
+
+        document.documentElement.classList.add('font-mode-google');
+
+        [
+            ['googleFontsPreconnectApi', 'https://fonts.googleapis.com'],
+            ['googleFontsPreconnectStatic', 'https://fonts.gstatic.com']
+        ].forEach(function (item) {
+            if (document.getElementById(item[0])) return;
+            const preconnect = document.createElement('link');
+            preconnect.id = item[0];
+            preconnect.rel = 'preconnect';
+            preconnect.href = item[1];
+            preconnect.crossOrigin = 'anonymous';
+            document.head.appendChild(preconnect);
+        });
+
+        const stylesheet = document.createElement('link');
+        stylesheet.id = 'googleFontsStylesheet';
+        stylesheet.rel = 'stylesheet';
+        // 先用非阻塞的 print 媒体加载，避免 Google Fonts 不可达时拖住页面加载
+        stylesheet.media = 'print';
+        stylesheet.href = resolveSiteAsset('../style/fonts-google.css');
+
+        let loadTimer = 0;
+
+        function giveUpOnGoogleFonts() {
+            window.clearTimeout(loadTimer);
+            // 远程样式不可用时保留本地字体，避免白屏或无字体回退
+            document.documentElement.classList.remove('font-mode-google');
+            stylesheet.remove();
+            storeFontMode('local');
+            storeFontFallback();
+        }
+
+        stylesheet.addEventListener('load', function () {
+            window.clearTimeout(loadTimer);
+            stylesheet.media = 'all';
+        });
+        stylesheet.addEventListener('error', giveUpOnGoogleFonts);
+
+        document.head.appendChild(stylesheet);
+
+        loadTimer = window.setTimeout(function () {
+            if (stylesheet.media !== 'all') {
+                giveUpOnGoogleFonts();
+            }
+        }, 10000);
+    }
+
+    // 等待 load 事件与网页字体全部就绪，再统计从导航开始到完全加载的耗时
+    function whenPageFullyLoaded() {
+        return new Promise(function (resolve) {
+            function afterLoad() {
+                const fontsReady = (document.fonts && document.fonts.ready)
+                    ? document.fonts.ready
+                    : Promise.resolve();
+                const timeout = new Promise(function (done) {
+                    window.setTimeout(done, FONT_CHECK_TIMEOUT_MS);
+                });
+
+                Promise.race([fontsReady, timeout]).then(function () {
+                    window.setTimeout(function () {
+                        resolve(performance.now());
+                    }, 0);
+                });
+            }
+
+            if (document.readyState === 'complete') {
+                afterLoad();
+            } else {
+                window.addEventListener('load', afterLoad, { once: true });
+            }
+        });
+    }
+
+    function detectFontLoadingStrategy() {
+        if (getStoredFontMode() === FONT_MODE_GOOGLE) {
+            if (getStoredFontFallback() === '1') return;
+            enableGoogleFonts();
+            return;
+        }
+
+        if (navigator.onLine === false) return;
+        if (getStoredFontFallback() === '1') return;
+
+        whenPageFullyLoaded().then(function (duration) {
+            if (duration > SLOW_LOAD_THRESHOLD_MS) {
+                storeFontMode(FONT_MODE_GOOGLE);
+                enableGoogleFonts();
+            }
+        });
+    }
+
+    detectFontLoadingStrategy();
 
     // ---- 汉堡菜单切换 ----
     function toggleMenu() {

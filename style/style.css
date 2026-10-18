@@ -2,38 +2,9 @@
    纯白 — 文学刊物宣传页面样式表
    灰白背景 · 樱花色主题（无暗色模式）
    ============================================ */
-@font-face {
-  font-family: "EB Garamond";
-  src: url("../fonts/EBGaramond-VariableFont_wght.ttf") format("truetype-variations"),
-       url("../fonts/EBGaramond-VariableFont_wght.ttf") format("truetype");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "EB Garamond";
-  src: url("../fonts/EBGaramond-Italic-VariableFont_wght.ttf") format("truetype-variations"),
-       url("../fonts/EBGaramond-Italic-VariableFont_wght.ttf") format("truetype");
-  font-weight: 100 900;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Noto Serif SC";
-  src: url("../fonts/NotoSerifSC-VariableFont_wght.ttf") format("truetype-variations"),
-       url("../fonts/NotoSerifSC-VariableFont_wght.ttf") format("truetype");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-    font-family: "Noto Sans SC";
-    src: url("../fonts/NotoSansSC-VariableFont_wght.ttf") format("truetype-variations"),
-        url("../fonts/NotoSansSC-VariableFont_wght.ttf") format("truetype");
-    font-weight: 100 900;
-    font-style: normal;
-    font-display: swap;
-}
+/* 字体声明由 style/fonts-local.css 或 style/fonts-google.css 提供，
+   具体使用哪一种由 script/font-loader.js 根据加载耗时决定。 */
+
 /* ---- CSS 变量 ---- */
 :root {
     /* 灰白背景体系 - 降低饱和度 */
@@ -940,6 +911,102 @@ a {
     transform: translateX(5px);
 }
 
+/* 联系区「来看看公众号」强调按钮 */
+.contact-btn--accent {
+    background: var(--sakura);
+    color: #fff;
+    border-color: var(--sakura-deep);
+}
+
+.contact-btn--accent:hover {
+    background: var(--sakura-deep);
+    color: #fff;
+    border-color: var(--sakura-deep);
+}
+
+/* ---- 公众号联系子页面 ---- */
+.contact-page {
+    min-height: calc(100vh - 6rem);
+}
+
+.contact-media-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 480px);
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.contact-media-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: var(--paper-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem 1.75rem;
+    transition:
+        box-shadow 0.3s var(--ease-out),
+        transform 0.3s var(--ease-out),
+        border-color 0.25s ease;
+}
+
+.contact-media-card:hover {
+    box-shadow: 0 12px 36px rgba(58, 58, 60, 0.06), 0 0 0 1px var(--sakura-glow);
+    transform: translateY(-3px);
+    border-color: rgba(232, 160, 176, 0.3);
+}
+
+.contact-media-card .download-desc {
+    margin-bottom: 1.5rem;
+}
+
+.qr-frame {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto 1.25rem;
+    padding: 0.75rem;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.qr-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.contact-media-card .contact-btn {
+    margin-top: auto;
+}
+
+.contact-media-note {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    color: var(--ink-muted);
+    margin-top: 1rem;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    color: var(--ink-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+    color: var(--sakura-deep);
+}
+
 /* ---- 页脚 ---- */
 .footer {
     padding: 3rem 0 2.25rem;
@@ -1122,6 +1189,10 @@ a {
         grid-template-columns: 1fr;
     }
 
+    .contact-media-grid {
+        grid-template-columns: 1fr;
+    }
+
     .footer-main {
         flex-direction: column;
         text-align: center;
@@ -1195,7 +1266,8 @@ a {
 
     .column-card,
     .download-card,
-    .wechat-card {
+    .wechat-card,
+    .contact-media-card {
         padding: 1.5rem 1.25rem;
     }
 

@@ -84,18 +84,32 @@ Thanks to everyone who has contributed time and effort.
 
 For collaboration and submissions, please contact us via the submission mailboxes (**投稿邮箱（一）** `motoko9032@outlook.com` / **投稿邮箱（二）** `3087946949@qq.com`), reach out via the **White Cover** channels, or follow the **White Cover** official WeChat account for the latest updates.
 
+The **来看看公众号** button in the contact section opens [`sub/WeChatContact.html`](./sub/WeChatContact.html), which shows the official account QR code and card. The navigation bar intentionally only links to the contact section on the homepage, not directly to this subpage.
+
+The official account QR code is `files/白色封皮公众号.JPG`; the *下载公众号二维码* button links to that image. Replace the image file (or update the `<img src>` and the download `href`) to change the QR code.
+
+## Fonts
+
+Local variable fonts live in [`fonts/`](./fonts/) (the Chinese fonts are large, roughly 40 MB in total) and are declared in [`style/fonts-local.css`](./style/fonts-local.css). [`script/script.js`](./script/script.js) measures the full page load time — including `document.fonts.ready` — and when it exceeds **3000 ms**, it switches to the Google Fonts `@import` stylesheet in [`style/fonts-google.css`](./style/fonts-google.css) instead of the local font files. The choice is stored in `sessionStorage` so the rest of the session uses the same font source.
+
+[`script/font-loader.js`](./script/font-loader.js) runs in each page's `<head>` and loads only the chosen font stylesheet, so once Google Fonts mode is active, the large local font files are no longer requested. If the remote stylesheet cannot be loaded within 10 seconds, the loader falls back to the local fonts.
+
 ## Site Structure
 
 | Path | Purpose |
 | ---- | ------- |
 | `index.html` | Homepage |
 | `style/style.css` | All styles for the site |
-| `script/script.js` | Interactions and announcement rendering |
+| `style/fonts-local.css` | Local `@font-face` declarations (default font source) |
+| `style/fonts-google.css` | Google Fonts `@import` fallback, loaded when page load is slow |
+| `script/font-loader.js` | Loads the chosen font stylesheet early in `<head>` |
+| `script/script.js` | Interactions, announcement rendering, and font-loading strategy |
 | `script/wechat-articles.js` | Dynamic rendering of per-issue WeChat article lists |
 | `script/lofter-articles.js` | Dynamic rendering of per-issue LOFTER article lists |
 | `announcements/` | Announcement Markdown files, auto-rendered on the homepage |
 | `announcements/history/` | Historical announcements page (auto-archived announcements older than the latest 3) |
-| `files/` | Issue files (PDF / EPUB) |
+| `files/` | Issue files (PDF / EPUB) and the official account QR code |
+| `sub/WeChatContact.html` | Official account QR code and card, reached from the contact section |
 | `sub/` | WeChat and LOFTER article list pages; lists are maintained via Markdown files (`wechat-article-NN.md` / `lofter-article-NN.md`) with a `data.js` fallback |
 | `fonts/` | Local webfonts |
 | `Common Manual/` | Common editorial manual (LaTeX source) |
