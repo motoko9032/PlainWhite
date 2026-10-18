@@ -1,16 +1,21 @@
-# 公众号原文与 LOFTER 原文目录（sub/）
+# 公众号原文与 LOFTER 原文目录（sub/WeChat/ 与 sub/LOFTER/）
 
-本目录存放各期「公众号原文」与「LOFTER 原文」列表页及其数据。两类列表页都会自动读取本目录下的 Markdown 文章文件并渲染成文章列表，**新增文章完全不需要改 HTML、CSS 或 JavaScript**，列表的样式和风格保持不变。
+`sub/` 下按平台分为两个自包含的子目录：
 
-此外，`WeChatContact.html` 是公众号联系页面，展示公众号二维码与公众号名片，从首页「联系」栏目的「来看看公众号」按钮进入。更新内容时只需替换 `files/白色封皮公众号.JPG` 或修改该页面中的二维码图片路径。
+- `sub/WeChat/` — 公众号原文列表页、公众号联系页、公众号文章 Markdown 与回退数据
+- `sub/LOFTER/` — LOFTER 原文列表页、LOFTER 文章 Markdown 与回退数据
+
+两类列表页都会自动读取各自目录下的 Markdown 文章文件并渲染成文章列表，**新增文章完全不需要改 HTML、CSS 或 JavaScript**，列表的样式和风格保持不变。
+
+此外，`sub/WeChat/WeChatContact.html` 是公众号联系页面，展示公众号二维码与公众号名片，从首页「联系」栏目的「来看看公众号」按钮进入。更新内容时只需替换 `files/白色封皮公众号.JPG` 或修改该页面中的二维码图片路径。
 
 ## 公众号原文
 
-- `WeChatArticleList1.html` — 第 1 期公众号原文列表页（显示 `issue: 1` 的文章）
-- `WeChatArticleList2.html` — 第 2 期公众号原文列表页（显示 `issue: 2` 的文章）
-- `WeChatArticleList3.html` — 第 3 期公众号原文列表页（显示 `issue: 3` 的文章）
-- `wechat-article-01.md`、`wechat-article-02.md`…… — **每篇文章一个 Markdown 文件**，页面按编号顺序读取
-- `data.js` — 冗余回退数据源（仅在无法读取 Markdown 时使用）
+- `sub/WeChat/WeChatArticleList1.html` — 第 1 期公众号原文列表页（显示 `issue: 1` 的文章）
+- `sub/WeChat/WeChatArticleList2.html` — 第 2 期公众号原文列表页（显示 `issue: 2` 的文章）
+- `sub/WeChat/WeChatArticleList3.html` — 第 3 期公众号原文列表页（显示 `issue: 3` 的文章）
+- `sub/WeChat/wechat-article-01.md`、`wechat-article-02.md`…… — **每篇文章一个 Markdown 文件**，页面按编号顺序读取
+- `sub/WeChat/data.js` — 冗余回退数据源（仅在无法读取 Markdown 时使用）
 
 ### 新增一篇文章（推荐方式，适合非专业编辑）
 
@@ -48,7 +53,7 @@ url: https://mp.weixin.qq.com/s/文章链接
 网站部署或使用本地服务器访问时，页面优先读取 Markdown 文件。如果**直接双击打开页面**（`file://` 协议），浏览器禁止读取文件，此时页面会自动回退到 `data.js` 中的数据。两种方式内容应保持一致：
 
 - 正常维护时**只改 Markdown 文件即可**；
-- 如需同步回退数据，打开 `data.js`，在 `window.WECHAT_ARTICLES` 数组末尾照着已有格式添加一条：
+- 如需同步回退数据，打开 `sub/WeChat/data.js`，在 `window.WECHAT_ARTICLES` 数组末尾照着已有格式添加一条：
 
 ```javascript
 { issue: "2", title: "新文章标题", url: "https://mp.weixin.qq.com/s/文章链接" }
@@ -61,7 +66,7 @@ url: https://mp.weixin.qq.com/s/文章链接
 
 需要新一期时：
 
-1. 复制 `WeChatArticleList3.html`，改名为 `WeChatArticleList4.html`；
+1. 复制 `sub/WeChat/WeChatArticleList3.html`，在同一目录下改名为 `WeChatArticleList4.html`；
 2. 修改页面标题、期号说明等文字；
 3. 把列表标签 `<ul ... data-wechat-issue="3">` 改成 `data-wechat-issue="4"`；
 4. 新文章文件的 `issue` 字段填 `4`，保存后就会自动出现在该页面。
@@ -70,12 +75,11 @@ url: https://mp.weixin.qq.com/s/文章链接
 
 以下结构与公众号原文完全一致，仅文件前缀、页面名与链接平台不同。
 
-- `LofterArticleList1.html` — 第 1 期 LOFTER 原文列表页（显示 `issue: 1` 的文章）
-- `LofterArticleList2.html` — 第 2 期 LOFTER 原文列表页（显示 `issue: 2` 的文章）
-- `LofterArticleList3.html` — 第 3 期 LOFTER 原文列表页（显示 `issue: 3` 的文章）
-- `LofterArticleList4.html` — 第 4 期 LOFTER 原文列表页（显示 `issue: 4` 的文章）
-- `lofter-article-01.md`、`lofter-article-02.md`…… — **每篇文章一个 Markdown 文件**，页面按编号顺序读取
-- `data.js` — 冗余回退数据源（`window.LOFTER_ARTICLES`，仅在无法读取 Markdown 时使用）
+- `sub/LOFTER/LofterArticleList1.html` — 第 1 期 LOFTER 原文列表页（显示 `issue: 1` 的文章）
+- `sub/LOFTER/LofterArticleList2.html` — 第 2 期 LOFTER 原文列表页（显示 `issue: 2` 的文章）
+- `sub/LOFTER/LofterArticleList3.html` — 第 3 期 LOFTER 原文列表页（显示 `issue: 3` 的文章）
+- `sub/LOFTER/lofter-article-01.md`、`lofter-article-02.md`…… — **每篇文章一个 Markdown 文件**，页面按编号顺序读取
+- `sub/LOFTER/data.js` — 冗余回退数据源（`window.LOFTER_ARTICLES`，仅在无法读取 Markdown 时使用）
 
 ### 新增一篇文章（推荐方式，适合非专业编辑）
 
@@ -113,7 +117,7 @@ url: https://xxxx.lofter.com/post/文章标识
 网站部署或使用本地服务器访问时，页面优先读取 Markdown 文件。如果**直接双击打开页面**（`file://` 协议），浏览器禁止读取文件，此时页面会自动回退到 `data.js` 中的 `window.LOFTER_ARTICLES`。两种方式内容应保持一致：
 
 - 正常维护时**只改 Markdown 文件即可**；
-- 如需同步回退数据，打开 `data.js`，在 `window.LOFTER_ARTICLES` 数组末尾照着已有格式添加一条：
+- 如需同步回退数据，打开 `sub/LOFTER/data.js`，在 `window.LOFTER_ARTICLES` 数组末尾照着已有格式添加一条：
 
 ```javascript
 { issue: "1", title: "新文章标题", url: "https://xxxx.lofter.com/post/文章标识" }
@@ -126,7 +130,7 @@ url: https://xxxx.lofter.com/post/文章标识
 
 需要新一期时：
 
-1. 复制 `LofterArticleList4.html`，改名为 `LofterArticleList5.html`；
+1. 复制 `sub/LOFTER/LofterArticleList3.html`，在同一目录下改名为 `LofterArticleList4.html`；
 2. 修改页面标题、期号说明等文字；
-3. 把列表标签 `<ul ... data-lofter-issue="4">` 改成 `data-lofter-issue="5"`；
-4. 新文章文件的 `issue` 字段填 `5`，保存后就会自动出现在该页面。
+3. 把列表标签 `<ul ... data-lofter-issue="3">` 改成 `data-lofter-issue="4"`；
+4. 新文章文件的 `issue` 字段填 `4`，保存后就会自动出现在该页面。

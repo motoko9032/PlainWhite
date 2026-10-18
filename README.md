@@ -39,22 +39,21 @@ Suitable for e-book readers.
 ### WeChat Originals
 Per-issue links to the original WeChat article lists.
 
-- [Issue 1 WeChat articles](./sub/WeChatArticleList1.html)
-- [Issue 2 WeChat articles](./sub/WeChatArticleList2.html)
-- [Issue 3 WeChat articles](./sub/WeChatArticleList3.html)
-- [Issue 4 WeChat articles](./sub/WeChatArticleList4.html)
+- [Issue 1 WeChat articles](./sub/WeChat/WeChatArticleList1.html)
+- [Issue 2 WeChat articles](./sub/WeChat/WeChatArticleList2.html)
+- [Issue 3 WeChat articles](./sub/WeChat/WeChatArticleList3.html)
+- [Issue 4 WeChat articles](./sub/WeChat/WeChatArticleList4.html)
 
-The article lists are maintained as Markdown files in [`sub/`](./sub/) (`wechat-article-NN.md`, one file per article) and rendered dynamically by JavaScript, with a JavaScript fallback in `sub/data.js`. No HTML, CSS, or JS changes are needed to add articles — see [sub/README.md](./sub/README.md) for step-by-step instructions.
+The article lists are maintained as Markdown files in [`sub/WeChat/`](./sub/WeChat/) (`wechat-article-NN.md`, one file per article) and rendered dynamically by JavaScript, with a JavaScript fallback in `sub/WeChat/data.js`. No HTML, CSS, or JS changes are needed to add articles — see [sub/README.md](./sub/README.md) for step-by-step instructions.
 
 ### LOFTER Originals
 Per-issue pages linking directly to the original LOFTER articles.
 
-- [Issue 1 LOFTER articles](./sub/LofterArticleList1.html)
-- [Issue 2 LOFTER articles](./sub/LofterArticleList2.html)
-- [Issue 3 LOFTER articles](./sub/LofterArticleList3.html)
-- [Issue 4 LOFTER articles](./sub/LofterArticleList4.html)
+- [Issue 1 LOFTER articles](./sub/LOFTER/LofterArticleList1.html)
+- [Issue 2 LOFTER articles](./sub/LOFTER/LofterArticleList2.html)
+- [Issue 3 LOFTER articles](./sub/LOFTER/LofterArticleList3.html)
 
-The LOFTER lists work exactly like the WeChat lists: one Markdown file per article (`lofter-article-NN.md`) in [`sub/`](./sub/), rendered dynamically with a JavaScript fallback in `sub/data.js`. No HTML, CSS, or JS changes are needed to add articles — see [sub/README.md](./sub/README.md) for step-by-step instructions.
+The LOFTER lists work exactly like the WeChat lists: one Markdown file per article (`lofter-article-NN.md`) in [`sub/LOFTER/`](./sub/LOFTER/), rendered dynamically with a JavaScript fallback in `sub/LOFTER/data.js`. No HTML, CSS, or JS changes are needed to add articles — see [sub/README.md](./sub/README.md) for step-by-step instructions.
 
 ## Announcements
 
@@ -84,7 +83,7 @@ Thanks to everyone who has contributed time and effort.
 
 For collaboration and submissions, please contact us via the submission mailboxes (**投稿邮箱（一）** `motoko9032@outlook.com` / **投稿邮箱（二）** `3087946949@qq.com`), reach out via the **White Cover** channels, or follow the **White Cover** official WeChat account for the latest updates.
 
-The **来看看公众号** button in the contact section opens [`sub/WeChatContact.html`](./sub/WeChatContact.html), which shows the official account QR code and card. The navigation bar intentionally only links to the contact section on the homepage, not directly to this subpage.
+The **来看看公众号** button in the contact section opens [`sub/WeChat/WeChatContact.html`](./sub/WeChat/WeChatContact.html), which shows the official account QR code and card. The navigation bar intentionally only links to the contact section on the homepage, not directly to this subpage.
 
 The official account QR code is `files/白色封皮公众号.JPG`; the *下载公众号二维码* button links to that image. Replace the image file (or update the `<img src>` and the download `href`) to change the QR code.
 
@@ -109,8 +108,9 @@ Local variable fonts live in [`fonts/`](./fonts/) (the Chinese fonts are large, 
 | `announcements/` | Announcement Markdown files, auto-rendered on the homepage |
 | `announcements/history/` | Historical announcements page (auto-archived announcements older than the latest 3) |
 | `files/` | Issue files (PDF / EPUB) and the official account QR code |
-| `sub/WeChatContact.html` | Official account QR code and card, reached from the contact section |
-| `sub/` | WeChat and LOFTER article list pages; lists are maintained via Markdown files (`wechat-article-NN.md` / `lofter-article-NN.md`) with a `data.js` fallback |
+| `sub/WeChat/` | WeChat article list pages, the official account contact page, Markdown article files, and `data.js` fallback |
+| `sub/LOFTER/` | LOFTER article list pages, Markdown article files, and `data.js` fallback |
+| `sub/README.md` | Shared maintenance instructions for both platforms |
 | `fonts/` | Local webfonts |
 | `Common Manual/` | Common editorial manual (LaTeX source) |
 
