@@ -55,6 +55,15 @@ Per-issue pages linking directly to the original LOFTER articles.
 
 The LOFTER lists work exactly like the WeChat lists: one Markdown file per article (`lofter-article-NN.md`) in [`sub/LOFTER/`](./sub/LOFTER/), rendered dynamically with a JavaScript fallback in `sub/LOFTER/data.js`. No HTML, CSS, or JS changes are needed to add articles — see [sub/README.md](./sub/README.md) for step-by-step instructions.
 
+### White Cover Special Articles (特别文章专栏)
+
+Standalone special articles published by the **White Cover** collective alongside the journal issues, with PDF downloads and WeChat originals only (no LOFTER, no EPUB).
+
+- [Special Articles – WeChat originals](./sub/special-sub/SpecialArticleList.html)
+- [秋风 (PDF)](./files/秋风-main_副本.pdf)
+
+The special article list works exactly like the WeChat lists: one Markdown file per article (`special-article-NN.md`) in [`sub/special-sub/`](./sub/special-sub/), rendered dynamically with a JavaScript fallback in `sub/special-sub/data.js`. No HTML, CSS, or JS changes are needed to add articles. Special article PDFs live in [`files/`](./files/) and are linked from the homepage "特别文章" section with plain `li` + `a href` entries — see [sub/README.md](./sub/README.md) for step-by-step instructions.
+
 ## Announcements
 
 The homepage announcement section is maintained independently in the [`announcements/`](./announcements/) directory.
@@ -105,12 +114,14 @@ Local variable fonts live in [`fonts/`](./fonts/) (the Chinese fonts are large, 
 | `script/script.js` | Interactions, announcement rendering, and font-loading strategy |
 | `script/wechat-articles.js` | Dynamic rendering of per-issue WeChat article lists |
 | `script/lofter-articles.js` | Dynamic rendering of per-issue LOFTER article lists |
+| `script/special-articles.js` | Dynamic rendering of the White Cover special articles list |
 | `announcements/` | Announcement Markdown files, auto-rendered on the homepage |
 | `announcements/history/` | Historical announcements page (auto-archived announcements older than the latest 3) |
 | `files/` | Issue files (PDF / EPUB) and the official account QR code |
 | `sub/WeChat/` | WeChat article list pages, the official account contact page, Markdown article files, and `data.js` fallback |
 | `sub/LOFTER/` | LOFTER article list pages, Markdown article files, and `data.js` fallback |
-| `sub/README.md` | Shared maintenance instructions for both platforms |
+| `sub/special-sub/` | White Cover special articles list page, Markdown article files, and `data.js` fallback |
+| `sub/README.md` | Shared maintenance instructions for all sub-directories |
 | `fonts/` | Local webfonts |
 | `Common Manual/` | Common editorial manual (LaTeX source) |
 
