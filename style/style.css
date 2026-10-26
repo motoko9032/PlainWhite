@@ -1747,6 +1747,13 @@ html[data-ios-app] main > section {
     scroll-margin-top: calc(var(--header-height) + env(safe-area-inset-top, 0px) + 1rem);
 }
 
+/* Every routed screen occupies at least the viewport below the sticky header.
+   Short pages must not shrink the app's document area and pull bottom chrome
+   upward in standalone Safari. */
+html[data-ios-app][data-ios-view] main > section {
+    min-height: calc(100svh - var(--ios-header-block-size));
+}
+
 html[data-ios-app] main > section:not(.hero) {
     padding: 1.5rem 0 2.5rem;
     background: none;
