@@ -364,7 +364,70 @@
                 ? new URL('../sw.js', scriptElement.src).href
                 : new URL('sw.js', location.href).href;
 
-            navigator.serviceWorker.register(swUrl).catch(function (error) {
+            // ---- 新版本提示横幅（DOM 由本脚本动态创建，无需改动各 HTML
+            // 页面；样式见 style/style.css 的 .sw-update-banner）。----
+            const banner = document.createElement('div');
+            banner.className = 'sw-update-banner';
+            banner.hidden = true;
+            const bannerText = document.createElement('span');
+            bannerText.textContent = '发现新版本';
+            const bannerBtn = document.createElement('button');
+            bannerBtn.type = 'button';
+            bannerBtn.className = 'sw-update-banner-btn';
+            bannerBtn.textContent = '立即刷新';
+            banner.appendChild(bannerText);
+            banner.appendChild(bannerBtn);
+            document.body.appendChild(banner);
+
+            // 仅当「旧 SW 正在控制页面」且「新 SW 已等待接管」时显示横幅；
+            // 首次安装时 navigator.serviceWorker.controller 为空，不会误弹。
+            function showUpdateBanner() {
+                if (navigator.serviceWorker.controller) {
+                    banner.hidden = false;
+                }
+            }
+
+            // 用户点击后告知 SW 立即接管；新 SW 在 activate 阶段
+            // clients.claim() 接管所有页面并触发 controllerchange，
+            // 下方监听器据此刷新页面，确保用户看到新版本内容。
+            let reloadOnControllerChange = false;
+            bannerBtn.addEventListener('click', function () {
+                reloadOnControllerChange = true;
+                navigator.serviceWorker.getRegistration().then(function (reg) {
+                    if (reg && reg.waiting) {
+                        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    }
+                });
+            });
+
+            navigator.serviceWorker.addEventListener('controllerchange', function () {
+                // 用 reloadOnControllerChange 作闸门：只在用户主动点击
+                // 「立即刷新」后触发重载，避免首次安装时的 controllerchange
+                // 造成一次无谓刷新。
+                if (reloadOnControllerChange) {
+                    window.location.reload();
+                }
+            });
+
+            navigator.serviceWorker.register(swUrl).then(function (reg) {
+                // 注册时若已有等待接管的新 SW（例如上次访问已下载好），直接提示。
+                if (reg.waiting && navigator.serviceWorker.controller) {
+                    showUpdateBanner();
+                }
+                reg.addEventListener('updatefound', function () {
+                    const newWorker = reg.installing;
+                    if (!newWorker) {
+                        return;
+                    }
+                    // 监听新 SW 状态：安装完成（installed）即处于 waiting，
+                    // 此时可提示用户刷新。
+                    newWorker.addEventListener('statechange', function () {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            showUpdateBanner();
+                        }
+                    });
+                });
+            }).catch(function (error) {
                 console.warn('[PWA] Service Worker 注册失败（不影响站点正常使用）：', error);
             });
         });

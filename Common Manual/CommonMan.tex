@@ -3,7 +3,7 @@
 
 \title{\bfseries 纯白通用工作手册}
 \author{\kaishu 素子-白色封皮纯白运营小组}
-\date{2026年10月26日 第四版}
+\date{2026年10月26日 第五版}
 
 \begin{document}
 
@@ -142,11 +142,21 @@
 	\item{每次发布静态资源变更（HTML、CSS、JavaScript、公告数据等）后，必须递增 \verb|sw.js| 顶部的 \verb|CACHE_VERSION| 版本号，否则用户会持续看到旧内容；}
 	\item{\verb|files/| 目录中的大文件（PDF、EPUB）不缓存：体积大，且 PDF 阅读器按 Range 分段读取，缓存整份响应会导致读取错乱；}
 	\item{新增 HTML 页面时，必须照抄现有同级页面 \verb|<head>| 中的 PWA 区块（manifest、图标、主题色等标签），并按页面所在目录层级调整相对路径前缀（根目录页面用 \verb|./|，二级目录页面用 \verb|../../|）；}
-	\item{更换品牌图标时，修改 \verb|pwa/icon.svg| 与 \verb|pwa/generate-icons.py| 中的颜色与比例，并运行 \verb|python3 pwa/generate-icons.py| 重新生成全部 PNG 图标。}
+	\item{更换品牌图标时，只修改 \verb|pwa/icon.svg|，并运行 \verb|python3 pwa/generate-icons.py| 重新生成全部 PNG 图标——脚本会解析 SVG 矢量并按要求加粗描边，无需手工编辑任何 PNG。当前正式图标为手写「纯白」字标（仅描边）。}
 \end{itemize}
 
 \section{本文档的更新}
 
 本文档允许技术人员任意在不影响上述内容的情况下，在本文档的\LaTeX 源码中任意添加自己认为需要告知其他技术人员的内容，本项目的负责人将会在周末或其他适当的时候对内容进行整理。
+
+\subsection{近期变更}
+
+\begin{itemize}
+	\item{2026-10-26：正式图标替换为手写「纯白」字标（\verb|pwa/icon.svg|），
+	      \verb|pwa/generate-icons.py| 重写为 SVG 栅格化脚本；\verb|icons/| 目录
+	      已移除，图标统一归档于 \verb|pwa/|，目录结构与本手册一致。}
+	\item{2026-10-26：新增 Service Worker 更新提示横幅（发现新版本时提示刷新），
+	      不再静默换新。}
+\end{itemize}
 
 \end{document}

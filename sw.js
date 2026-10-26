@@ -18,7 +18,7 @@
 /* CacheStorage 按 origin 共享，因此所有本站缓存统一使用专属前缀，
    activate 阶段只清理此前缀下的旧版本，不能清除同源其他应用的缓存。 */
 const CACHE_PREFIX = 'plainwhite-';
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 
 /* 预缓存清单：SW 安装时一次性写入的应用外壳（App Shell）。
@@ -32,14 +32,14 @@ const PRECACHE_URLS = [
     './offline.html',
     './style/style.css',
     './style/fonts-local.css',
-    './icons/PW-Icon-FinalVer.svg',
+    './pwa/icon.svg',
     './script/script.js',
     './script/font-loader.js',
     './script/announcements.js',
     './announcements/data.js'
 ];
 
-/* ---- install：写入预缓存，并立即接管（skipWaiting）---- */
+/* ---- install：写入预缓存 ---- */
 self.addEventListener('install', function (event) {
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -52,10 +52,24 @@ self.addEventListener('install', function (event) {
                     });
                 }));
             })
-            .then(function () {
-                return self.skipWaiting();
-            })
     );
+    /* 注意：此处刻意不调用 self.skipWaiting()。
+       新版本 SW 安装完成后会进入 waiting 状态，由页面 script.js 检测到
+       「已有旧 SW 控制页面 + 新 SW 等待接管」后展示「发现新版本」横幅；
+       用户点击刷新时，页面通过 postMessage 发送 SKIP_WAITING，本文件
+       下方 message 监听器收到后才调用 skipWaiting() 完成接管。
+       这样可避免读者在阅读中途被静默刷新打断。
+       首次安装（尚无任何旧 SW 控制页面）时，浏览器会在没有受控窗口的
+       情况下自动激活新 SW，因此不需要 skipWaiting 也能正常生效。 */
+});
+
+/* ---- message：接收页面发来的更新指令 ---- */
+self.addEventListener('message', function (event) {
+    const data = event.data || {};
+    if (data && data.type === 'SKIP_WAITING') {
+        /* 用户已在页面上确认「立即刷新」，此时才允许新 SW 接管。 */
+        self.skipWaiting();
+    }
 });
 
 /* ---- activate：清空本项目旧版本缓存，并立即控制已打开的页面 ---- */

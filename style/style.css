@@ -1082,6 +1082,51 @@ a {
     pointer-events: none;
 }
 
+/* ---- SW 更新提示横幅 ---- */
+/* 由 script/script.js 动态创建（检测到等待接管的新 Service Worker 时显示），
+   提示用户「发现新版本」。默认 hidden；注意 .sw-update-banner 的
+   display:flex 会覆盖浏览器对 [hidden] 的默认 display:none，因此这里
+   显式补上 [hidden] 规则，保证横幅初始不显示。 */
+.sw-update-banner {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    transform: translateX(-50%);
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.7rem 1.25rem;
+    background: var(--paper-soft);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    box-shadow: 0 12px 32px rgba(58, 58, 60, 0.14);
+}
+
+.sw-update-banner[hidden] {
+    display: none;
+}
+
+.sw-update-banner-btn {
+    font: inherit;
+    font-size: 0.8125rem;
+    color: #fff;
+    background: var(--ink);
+    border: none;
+    border-radius: 999px;
+    padding: 0.4rem 1.1rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.sw-update-banner-btn:hover,
+.sw-update-banner-btn:focus-visible {
+    opacity: 0.85;
+}
+
 /* ---- 弹窗 ---- */
 .modal-overlay {
     position: fixed;

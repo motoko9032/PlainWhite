@@ -17,12 +17,19 @@
 | `manifest.webmanifest` | Web App 清单：名称、主题色、图标、start_url、shortcuts | ✅ 已就绪 |
 | `sw.js` | Service Worker：预缓存外壳、离线回退、静态资源缓存 | ✅ 已就绪 |
 | `offline.html` | 离线兜底页（样式内联、零外部依赖） | ✅ 已就绪 |
-| `pwa/icon-192.png`、`pwa/icon-512.png` | manifest 图标（purpose: any） | ✅ 已生成（占位设计，待替换正式设计） |
-| `pwa/icon-maskable-512.png` | manifest 图标（purpose: maskable） | ✅ 已生成 |
-| `pwa/apple-touch-icon.png`（180×180）、`pwa/favicon-32.png` | iOS 主屏图标、浏览器标签页图标 | ✅ 已生成 |
-| `pwa/icon.svg`、`pwa/generate-icons.py` | 图标矢量源 + 纯标准库 Python 生成脚本 | ✅ 可复现 |
-| 全部 11 个 HTML 页面 | 已在 `<head>` 加入 PWA 区块（manifest、主题色、iOS 元数据、图标） | ✅ 已就绪 |
-| `script/script.js` | 已追加 Service Worker 注册逻辑（所有页面共用） | ✅ 已就绪 |
+| `pwa/icon-192.png`、`pwa/icon-512.png` | manifest 图标（purpose: any） | ✅ 由正式字标栅格化生成 |
+| `pwa/icon-maskable-512.png` | manifest 图标（purpose: maskable） | ✅ 由正式字标栅格化生成 |
+| `pwa/apple-touch-icon.png`（180×180）、`pwa/favicon-32.png` | iOS 主屏图标、浏览器标签页图标 | ✅ 由正式字标栅格化生成 |
+| `pwa/icon.svg` | 正式字标矢量源（手写「纯白」，仅描边） | ✅ 已替换占位设计 |
+| `pwa/generate-icons.py` | 纯 Python（标准库 + numpy）SVG 栅格化脚本 | ✅ 可复现 |
+| 全部 11 个 HTML 页面 | 已在 `<head>` 加入 PWA 区块（manifest、SVG/PNG favicon、iOS 元数据） | ✅ 已就绪 |
+| `script/script.js` | Service Worker 注册 + 新版本提示横幅（所有页面共用） | ✅ 已就绪 |
+
+图标体系说明：正式图标是手写「纯白」字标（`pwa/icon.svg`，仅描边）。它同时被用于
+四处：① `manifest.webmanifest` 的 SVG 图标条目（`sizes: "any"`，现代浏览器安装时
+直接使用矢量，清晰不糊）；② 各页面 `<head>` 的 SVG favicon（PNG 兜底）；③ 首页
+页脚右下角 1×1 像素的装饰水印；④ 作为位图图标的矢量源——`generate-icons.py`
+从同一矢量源栅格化出全部 PNG，二者同源，不会出现两套设计。
 
 ## 二、给未来接手者的硬性规则（务必遵守）
 
@@ -57,11 +64,18 @@
    清理缓存时必须检查 `plainwhite-` 前缀；查找/回放请求也只使用当前版本缓存，
    不要用无范围的 `caches.match()`，以免同源其他应用的缓存影响本站。
 
+8. **更换品牌图标时只改 `pwa/icon.svg`，然后运行 `python3 pwa/generate-icons.py`**
+   重新生成全部 PNG。脚本会解析 SVG 路径（仅支持本图标用到的 M/Z/c/l）并用
+   numpy 光栅化，按 `STROKE_SCALE` 加粗描边——字标原始 `stroke-width=5` 在
+   16800px 宽的 viewBox 里按比例缩到图标尺寸后不可见。不要手工编辑 PNG，也
+   无需改动 `manifest.webmanifest` 的图标条目（除非增减尺寸）。
+
 ## 三、未来待办（完整部署 PWA 还需做的事，按优先级排序）
 
-- [ ] **① 替换正式图标**：当前图标是「纸白底 + 墨色方 + 樱色内方」的占位设计。
-      正式设计定稿后，修改 `pwa/icon.svg` 与 `pwa/generate-icons.py` 中的颜色/比例
-      常量，运行 `python3 pwa/generate-icons.py` 重新生成全部 PNG。
+- [x] **① 替换正式图标**：已用正式设计（手写「纯白」字标）替换占位几何设计，
+      矢量源为 `pwa/icon.svg`；`pwa/generate-icons.py` 重写为纯 Python（标准库 +
+      numpy）SVG 栅格化器，运行后从字标生成全部 PNG。如需调整线条粗细或留白，
+      修改脚本顶部的 `STROKE_SCALE`、`MARGIN_ANY`、`INK_STROKE` 等常量后重跑即可。
 - [ ] **② 部署后验证可安装性**：站点托管在 GitHub Pages（仓库
       `motoko9032/PlainWhite`，站点根路径 `/PlainWhite/`，HTTPS 天然满足）。
       上线后用 Chrome DevTools → Application → Manifest 检查无报错，用
@@ -71,8 +85,9 @@
 - [ ] **④ 增强（可选，按需）**：
   - 离线阅读 PDF/EPUB 全文（当前有意不缓存，需要时改用
     `CacheStorage` 之外的手段，如 OPFS + Range 适配，或干脆保持在线）；
-  - SW 更新提示 UI（当前 `skipWaiting + clients.claim` 静默换新，
-    无「发现新版本」横幅）；
+  - SW 更新提示 UI ✅ 已完成：sw.js 不再静默 `skipWaiting`，改由页面横幅
+    「发现新版本 → 立即刷新」驱动（script.js 检测等待中的新 SW，用户点击后
+    发 `SKIP_WAITING`，接管后自动刷新；样式见 style.css 的 `.sw-update-banner`）；
   - 推送通知（刊物更新通知）——需要后端推送服务，超出静态站范围；
   - 迁移 Workbox（当前手写 ES5 SW，无构建依赖，功能已够用，无强制理由）；
   - 深色模式（`style/style.css` 顶部注释明确「无暗色模式」，manifest 的
@@ -97,15 +112,16 @@ python3 -m http.server 8000
 图标重新生成与校验：
 
 ```bash
-python3 pwa/generate-icons.py   # 仅用标准库，无第三方依赖
+python3 pwa/generate-icons.py   # 依赖：Python 3 + numpy（无其他第三方依赖）
 ```
 
 ## 五、新增 HTML 页面的接入检查清单
 
 新增任何 HTML 页面（例如第 5 期文章列表 `WeChatArticleList5.html`）时：
 
-1. 复制现有同级页面的 `<head>` 中的 PWA 区块（8 行：manifest、favicon、
-   apple-touch-icon、theme-color、3 个 mobile-web-app meta、apple-mobile-web-app-title）；
+1. 复制现有同级页面的 `<head>` 中的 PWA 区块（9 行：manifest、SVG favicon、
+   PNG favicon、apple-touch-icon、theme-color、3 个 mobile-web-app meta、
+   apple-mobile-web-app-title）；
 2. 按「硬性规则 4」调整相对路径前缀；
 3. 保证页面 `<script src="...script.js" defer>` 存在（SW 注册随 script.js 自动生效）；
 4. 无需修改 `sw.js` 与 `manifest.webmanifest`（除非该页面要加入预缓存清单）。
@@ -116,3 +132,9 @@ python3 pwa/generate-icons.py   # 仅用标准库，无第三方依赖
   全站 head 区块、SW 注册、本交接文档）。
 - 2026-10：隔离 CacheStorage 操作，仅清理和查询 `plainwhite-` 命名空间内的缓存；
   缓存版本递增至 `v2`。
+- 2026-10：页脚加入 1×1 像素装饰水印（`icons/PW-Icon-FinalVer.svg`），缓存版本
+  递增至 `v3`。
+- 2026-10：正式图标替换——把 `icons/PW-Icon-FinalVer.svg` 移入 `pwa/icon.svg`
+  （删除 `icons/`，文件树对齐 Common Manual），重写 `generate-icons.py` 为 SVG
+  栅格化器并重新生成全部 PNG；manifest 增补 SVG 图标条目、全站 11 页增补 SVG
+  favicon；新增 SW 更新提示横幅（不再静默 skipWaiting）；缓存版本递增至 `v4`。
