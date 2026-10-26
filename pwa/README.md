@@ -82,9 +82,10 @@
    `data:` URI——Web Clip 图标抓取流程不解析 base64 数据，因此
    `pwa/apple-touch-icon.base64.txt` 只能用于内联备用，不能放进 link 的 href；
    ② `sw.js` 已把路径含 `apple-touch-icon` 的请求**直接放行**（不经过 Service
-   Worker 的缓存策略），因为 iOS 添加主屏时的图标抓取对 SW 返回的缓存响应存在
-   兼容性问题。若真机仍显示占位图标，先删除旧主屏图标并重新「添加到主屏幕」
-   （iOS 对 Web Clip 图标的缓存非常顽固）。
+   Worker 的缓存策略）。这是为避免缓存成为变量的兼容性措施，**并未在真机上证实
+   缓存就是占位图标的根因**。若真机仍显示占位图标，应核对部署后的页面 `<head>`、
+   图标 URL / HTTP 响应和站点子路径，再删除旧 Web Clip 后重新添加；iOS 可能会
+   长期复用已缓存的图标。
 
 10. **`viewport` meta 必须含 `viewport-fit=cover`**，否则 `env(safe-area-inset-*)`
     不生效，底部 Tab Bar 会被 iOS 的 Home 指示条 / Android 手势导航条遮挡。
@@ -97,6 +98,17 @@
     或 iOS 的 `navigator.standalone`；样式由 `html[data-standalone]` 与
     `html[data-app="ios"|"android"]` 驱动。浏览器里访问不设置这些属性，效果与
     未安装时完全一致。Tab Bar 项改动只需改 `script.js` 里 `items` 数组。
+
+12. **iOS 安装态是 HIG 启发的 Web 适配，不是原生 UIKit 控件**。header 使用
+    粘性定位并处于文档流中，顶部安全区只计入一次；首页与子页面不再用固定高度
+    重复抵消 header。底部导航在安全区上方悬浮，五个入口等宽，单项至少 44 CSS px
+    高，选中项使用高对比度前景色；`aria-current="location"` 表示首页内的当前位置，
+    子页面则标记其父级栏目。启用「降低透明度」时，材质退化为不透明背景。
+    CSS `backdrop-filter` 只能近似系统材质，不能调用或保证等同 UIKit / Liquid Glass。
+    新增页面结构或调整导航后，必须在实际 iPhone/iPad 上检查安全区、横竖屏、放大
+    文字、VoiceOver、深浅色与降低透明度；浏览器模拟的安全区值不能代替真机验收。
+    设计参考：[Apple HIG — Tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars)
+    与 [Configuring Web Applications](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html)。
 
 ## 三、未来待办（完整部署 PWA 还需做的事，按优先级排序）
 
@@ -121,9 +133,9 @@
   - 深色模式 ✅ 已完成：`style/style.css` 用 `@media (prefers-color-scheme: dark)`
     覆盖 CSS 变量，遵循 WCAG 对比度；`<head>` 的 `theme-color` 拆分浅/深两条，
     `offline.html` 与 `color-scheme` 同步适配，浏览器与安装模式均跟随系统；
-  - 底部悬浮 Tab Bar ✅ 已完成：仅安装模式（standalone）显示，iOS 为高斯模糊
-    玻璃态、Android 为低饱和紫罗兰紫（Material You 莫奈色）胶囊，均按官方
-    安全区文档适配底部 inset；浏览器里访问不显示，保持原样。
+  - 底部 Tab Bar ✅ 已实现：仅安装模式（standalone）显示，iOS 采用 HIG 启发的
+    等宽底部导航与安全区布局，Android 为低饱和紫罗兰紫胶囊；浏览器里访问不显示。
+    iOS CSS 材质只是 Web 近似，不代表原生 Liquid Glass 或完整 HIG 认证。
 - [ ] **⑤ 测试清单**：
   - Chrome/Edge 桌面：安装图标出现、离线刷新仍可浏览已访问页面；
   - Android Chrome：添加到主屏幕 → 独立窗口（standalone）打开；
@@ -171,9 +183,10 @@ python3 pwa/generate-icons.py   # 依赖：Python 3 + numpy（无其他第三方
   （删除 `icons/`，文件树对齐 Common Manual），重写 `generate-icons.py` 为 SVG
   栅格化器并重新生成全部 PNG；manifest 增补 SVG 图标条目、全站 11 页增补 SVG
   favicon；新增 SW 更新提示横幅（不再静默 skipWaiting）；缓存版本递增至 `v4`。
-- 2026-10：修复 iOS 添加到主屏时图标不显示的问题——`apple-touch-icon.png`
+- 2026-10：尝试解决 iOS 添加到主屏时图标不显示的问题——`apple-touch-icon.png`
   改为无 alpha 的 RGB PNG、补 `sizes="180x180"`、并在站点根目录生成同源副本
-  （Apple 文档的整站 Web Clip 兜底位置）；缓存版本递增至 `v5`。
+  （Apple 文档的整站 Web Clip 兜底位置）；真机仍曾报告占位图标，故问题尚未确认
+  解决；缓存版本递增至 `v5`。
 - 2026-10：原生体验增强——① 全站 viewport 加 `viewport-fit=cover`；② 新增
   底部悬浮 Tab Bar（仅安装模式显示，iOS 玻璃态 / Android 莫奈色胶囊，安全区
   适配）；③ 深色模式（`prefers-color-scheme` 覆盖 CSS 变量 + `color-scheme` +
@@ -184,7 +197,8 @@ python3 pwa/generate-icons.py   # 依赖：Python 3 + numpy（无其他第三方
   （带尺寸命名，根目录 + pwa/）与 `apple-touch-icon.base64.txt`，并在文档确认
   iOS touch icon 不支持 data URI；新增 `pwa/android-ui-guide.md` 移交 Android 端
   待办；缓存版本递增至 `v7`。
-- 2026-10：按 Apple HIG / Liquid Glass 修正 iOS 玻璃态——Tab Bar 材质不透明度
-  回调至 0.78、模糊升至 40px、改为左右贴边的全宽悬浮胶囊（带高光边缘），内容
-  底部让位增至 7rem 解决遮挡；`sw.js` 对 `apple-touch-icon` 请求直接放行，修复
-  iOS 添加主屏时图标被 SW 缓存策略干扰的问题；缓存版本递增至 `v8`。
+- 本次 iOS HIG 启发式修正：将 standalone header 改为占据文档流的 sticky header，
+  避免首屏和子页面被 fixed header 覆盖；重算顶部安全区、锚点与底部滚动留白；
+  将五个 tab 目标设为等宽并保证至少 44 CSS px 高，改善选中状态对比度与键盘焦点，
+  并响应降低透明度偏好。Tab Bar 材质仅为 CSS 近似；仍需 iOS 真机验证安全区、
+  VoiceOver、文字放大及图标部署结果。Service Worker 缓存递增至 `v9`。

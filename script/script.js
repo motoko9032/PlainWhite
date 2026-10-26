@@ -348,11 +348,11 @@
         updateHeader();
     });
 
-    // ---- PWA：底部悬浮 Tab Bar（仅安装为 App 的 standalone 模式显示）----
+    // ---- PWA：底部 Tab Bar（仅安装为 App 的 standalone 模式显示）----
     // 本脚本以 defer 加载，执行时 DOM 已解析完毕，可直接注入 DOM。
     // 浏览器里访问不会设置 html[data-standalone]，因此 Tab Bar 完全不
     // 出现、与未安装时的效果一致；样式见 style/style.css 的 .app-tabbar。
-    // 平台差异：iOS 玻璃态、Android 莫奈色胶囊（详见 CSS 注释）。
+    // 平台差异：iOS 安全区与材质样式、Android 莫奈色胶囊（详见 CSS 注释）。
     function initAppTabBar() {
         // 判定「添加到主屏」的安装模式：
         //   - 标准 matchMedia('(display-mode: standalone)')（Chrome/Edge/Android）
@@ -409,6 +409,7 @@
         items.forEach(function (item) {
             const a = document.createElement('a');
             a.className = 'app-tabbar-item';
+            a.setAttribute('data-section', item.hash);
             // 首页用纯 hash 平滑滚动到对应栏目；子页面跳回首页对应锚点
             a.href = isHome ? item.hash : homeBase.href + item.hash;
             a.innerHTML =
@@ -428,14 +429,13 @@
 
         document.body.appendChild(tabbar);
 
-        // 当前项高亮：首页根据视口中「最靠近顶部」的 section 动态切换；
-        // 子页面没有这些锚点，固定高亮「首页」项。
+        // 首页按当前可见 section 高亮；子页面按其所属顶层栏目高亮。
         const links = tabbar.querySelectorAll('.app-tabbar-item');
 
         function setCurrent(hash) {
             links.forEach(function (link) {
-                if (link.getAttribute('href') === hash) {
-                    link.setAttribute('aria-current', 'page');
+                if (link.getAttribute('data-section') === hash) {
+                    link.setAttribute('aria-current', 'location');
                 } else {
                     link.removeAttribute('aria-current');
                 }
@@ -458,10 +458,22 @@
             });
             setCurrent('#hero');
         } else {
-            // 子页面：链接指向「首页锚点」的完整 URL，无法按 hash 匹配，
-            // 固定高亮第一项（首页）即可。
-            if (links.length) {
-                links[0].setAttribute('aria-current', 'page');
+            // 子页面仍属于其父级栏目。未知页面不伪造选中状态。
+            const path = location.pathname.toLowerCase();
+            let currentSection = isHome ? '#hero' : null;
+            if (!isHome) {
+                if (path.indexOf('/announcements/') !== -1) {
+                    currentSection = '#announcements';
+                } else if (path.indexOf('/sub/wechat/') !== -1 ||
+                           path.indexOf('/sub/lofter/') !== -1 ||
+                           path.indexOf('/sub/special-sub/') !== -1) {
+                    currentSection = path.indexOf('contact') !== -1
+                        ? '#about'
+                        : '#columns';
+                }
+            }
+            if (currentSection) {
+                setCurrent(currentSection);
             }
         }
     }
