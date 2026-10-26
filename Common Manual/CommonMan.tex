@@ -3,7 +3,7 @@
 
 \title{\bfseries 纯白通用工作手册}
 \author{\kaishu 素子-白色封皮纯白运营小组}
-\date{2026年10月27日 第九版}
+\date{2026年10月27日 第十版}
 
 \begin{document}
 
@@ -149,7 +149,9 @@
 	\item{更换品牌图标时，只修改 \verb|pwa/icon.svg|，并运行 \verb|python3 pwa/generate-icons.py| 重新生成全部 PNG 图标——脚本会解析 SVG 矢量并按要求加粗描边，无需手工编辑任何 PNG。当前正式图标为手写「纯白」字标（仅描边）。}
 	\item{iOS 添加到主屏的图标必须是无透明通道（无 alpha）的 PNG，\verb|apple-touch-icon.png| 与 \verb|apple-touch-icon-180x180.png| 由生成脚本输出为 RGB，并同步写一份到站点根目录（iOS 的整站 Web Clip 兜底位置）；iOS 的 \verb|<link rel="apple-touch-icon">| 不支持 \verb|data:| URI（base64 硬编码不可行），\verb|pwa/apple-touch-icon.base64.txt| 仅作内联备用，不要放进 link 的 href；\verb|sw.js| 对路径含 \verb|apple-touch-icon| 的请求一律直接放行，避免 Service Worker 的缓存策略干扰 iOS 添加主屏时的图标抓取。}
 	\item{每个页面的 \verb|viewport| meta 必须含 \verb|viewport-fit=cover|，否则底部安全区 \verb|env(safe-area-inset-*)| 不生效，悬浮 Tab Bar 会被系统手势条遮挡；\verb|<head>| 中的 \verb|theme-color| 已按浅色/深色拆成两条（带 \verb|media| 属性），新增页面时两条都要复制。}
-	\item{底部 Tab Bar 仅在安装模式（standalone）显示：iOS 使用 HIG 启发的等宽底部导航及安全区布局，Android 为低饱和紫罗兰紫胶囊；普通浏览器访问不显示。检测与注入逻辑在 \verb|script/script.js|，样式在 \verb|style/style.css|。}
+	\item{导航按运行平台隔离：Tab Bar 仅在安装模式（standalone）显示；普通浏览器访问不显示。iOS standalone 隐藏汉堡菜单，并使用应用式多页面导航；Android standalone 保持原有锚点导航；普通浏览器和 Android 不得受 iOS 页面隐藏或路由逻辑影响。检测与注入逻辑在 \verb|script/script.js|，样式在 \verb|style/style.css|。}
+	\item{iOS standalone 顶层栏目为首页、公告、阅读、下载、更多，分别对应首页、公告、栏目、下载与动态「更多」目录；更多目录含关于、特别文章、分发方式、支持、致谢、联系与投稿六个子页。应用路由格式为 \verb|#app/<route>|，子页仍选中「更多」，支持应用内返回与浏览器历史返回。当前页仅显示对应内容，主标题和 \verb|aria-current| 必须随路由更新。路由与页面映射维护在 \verb|script/script.js| 的 \verb|initIOSAppNavigation()|。}
+	\item{iOS 样式为 HIG 启发的 Web 适配，不是原生 UIKit 控件或 HIG 认证：iPhone 使用底部悬浮玻璃 Tab Bar，宽屏触控设备使用顶部 Tab Bar；触控目标至少 44 CSS px 高，安全区、降低透明度偏好和深色模式均须适配。卡片圆角由 \verb|clamp()| 与 \verb|vmin| 按视口短边响应计算；\verb|backdrop-filter| 仅近似系统材质。每次导航或页面结构变更后，必须在真机验收安全区、放大文字、VoiceOver、横竖屏与深浅色。}
 	\item{深色模式跟随系统 \verb|prefers-color-scheme|，遵循 WCAG 对比度与无障碍标准（\verb|color-scheme|、焦点可见、\verb|prefers-reduced-motion|、\verb|prefers-contrast|）；新增颜色一律使用 \verb|style/style.css| 顶部的语义 CSS 变量，禁止写死新颜色。}
 	\item{iOS 安装模式采用 HIG 启发的 Web 适配：header 在文档流中粘性定位并让出顶部安全区，避免覆盖首屏；底部 Tab Bar 单项至少 44 CSS px 高，适配底部及横向安全区，并支持降低透明度偏好。CSS 材质不能等同 UIKit / Liquid Glass，也不构成完整 HIG 认证；发布前须在真机检查安全区、文字放大、VoiceOver、横竖屏与深浅色。参考 \verb|developer.apple.com/design/human-interface-guidelines/tab-bars|；Android 端其余适配待办登记在 \verb|pwa/android-ui-guide.md|。}
 \end{itemize}
@@ -184,6 +186,7 @@
 	      重算顶部安全区、锚点与底部滚动留白；Tab Bar 五个入口等宽，单项至少
 	      44 CSS px 高，并改善选中对比度、键盘焦点和降低透明度偏好。CSS 材质仅为
 	      Web 近似，仍需 iOS 真机验证安全区、VoiceOver、文字放大及图标部署结果。}
+	\item{本次 iOS PWA 导航重构：standalone 新增首页、公告、阅读、下载、更多五个顶层页面及六个「更多」子页，使用 \verb|#app/| 路由、页面标题与辅助技术状态同步、应用内返回和滚动位置恢复；浏览器与 Android standalone 保持原导航。玻璃材质通透度提高，卡片圆角按视口尺寸响应计算。}
 \end{itemize}
 
 \end{document}

@@ -93,20 +93,33 @@
     `prefers-color-scheme` 拆成浅色/深色两条（带 `media` 属性），复制 PWA 区块时
     两条都要带上，浏览器状态栏颜色才能跟随深色模式。
 
-11. **底部 Tab Bar 只在「添加到主屏」的安装模式（standalone）显示**。检测逻辑
-    在 `script/script.js` 的 `initAppTabBar()`：`matchMedia('(display-mode: standalone)')`
-    或 iOS 的 `navigator.standalone`；样式由 `html[data-standalone]` 与
-    `html[data-app="ios"|"android"]` 驱动。浏览器里访问不设置这些属性，效果与
-    未安装时完全一致。Tab Bar 项改动只需改 `script.js` 里 `items` 数组。
+11. **导航按运行平台隔离**。底部 Tab Bar 只在「添加到主屏」的安装模式
+    （standalone）显示，检测入口为 `script/script.js` 的 `initAppTabBar()`：
+    `matchMedia('(display-mode: standalone)')` 或 iOS 的 `navigator.standalone`。
+    浏览器访问不会设置 standalone 属性，也不会创建 Tab Bar。iOS 安装态会隐藏汉堡
+    菜单并启用应用式页面路由；Android standalone 仍使用原有锚点导航；普通浏览器
+    与 Android 的既有页面结构、滚动行为不可被 iOS 路由改动影响。
 
-12. **iOS 安装态是 HIG 启发的 Web 适配，不是原生 UIKit 控件**。header 使用
-    粘性定位并处于文档流中，顶部安全区只计入一次；首页与子页面不再用固定高度
-    重复抵消 header。底部导航在安全区上方悬浮，五个入口等宽，单项至少 44 CSS px
-    高，选中项使用高对比度前景色；`aria-current="location"` 表示首页内的当前位置，
-    子页面则标记其父级栏目。启用「降低透明度」时，材质退化为不透明背景。
-    CSS `backdrop-filter` 只能近似系统材质，不能调用或保证等同 UIKit / Liquid Glass。
-    新增页面结构或调整导航后，必须在实际 iPhone/iPad 上检查安全区、横竖屏、放大
-    文字、VoiceOver、深浅色与降低透明度；浏览器模拟的安全区值不能代替真机验收。
+12. **iOS standalone 的页面与路由**。其顶层 Tab 为：首页（`#hero`）、公告
+    （`#announcements`）、阅读（`#columns`）、下载（`#downloads`）、更多（动态生成
+    的 `#iosMoreView`）。切换时只显示当前页面，主标题同步成为当前页面唯一的
+    `h1.section-title`，页面标题和 `aria-current="page"` 也同步更新。「更多」目录
+    再进入关于、特别文章、分发方式、支持、致谢、联系与投稿六个子页。
+    新路由形式为 `#app/home`、`#app/announcements`、`#app/reading`、
+    `#app/downloads`、`#app/more` 与 `#app/more/<子页>`；子页的 Tab 仍选中「更多」，
+    并通过应用内返回按钮及浏览器历史记录回到上级。不要重新引入靠
+    `IntersectionObserver` 猜测当前 Tab 的逻辑，也不要把 iOS 的应用路由套用到
+    浏览器或 Android standalone。修改顶层路由、子页映射或页面标题时，应同步检查
+    `initIOSAppNavigation()`、`iosAppRoutes`、`iosMoreRoutes` 和本节说明。
+
+13. **iOS 样式是 HIG 启发的 Web 适配，不是原生 UIKit 控件或 HIG 认证**。
+    iPhone 使用底部安全区上方的悬浮玻璃 Tab Bar；宽屏触控设备使用顶部粘性 Tab
+    Bar。触控目标至少 44 CSS px 高，当前项对比度清晰；header 处于文档流中的粘性
+    定位，顶部安全区只计入一次。玻璃背景提高了透明度，启用「降低透明度」时回退
+    为实色背景。卡片圆角不依赖设备型号，而由 CSS `clamp()` 与 `vmin` 根据视口短边
+    响应计算。`backdrop-filter` 只能近似系统材质，不能保证等同 UIKit / Liquid Glass。
+    新增页面或调整导航后，必须在真实 iPhone/iPad 检查安全区、横竖屏、放大文字、
+    VoiceOver、深浅色与降低透明度；模拟器的安全区值不能代替真机验收。
     设计参考：[Apple HIG — Tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars)
     与 [Configuring Web Applications](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html)。
 
@@ -134,8 +147,9 @@
     覆盖 CSS 变量，遵循 WCAG 对比度；`<head>` 的 `theme-color` 拆分浅/深两条，
     `offline.html` 与 `color-scheme` 同步适配，浏览器与安装模式均跟随系统；
   - 底部 Tab Bar ✅ 已实现：仅安装模式（standalone）显示，iOS 采用 HIG 启发的
-    等宽底部导航与安全区布局，Android 为低饱和紫罗兰紫胶囊；浏览器里访问不显示。
-    iOS CSS 材质只是 Web 近似，不代表原生 Liquid Glass 或完整 HIG 认证。
+    应用式多页面路由、等宽导航与安全区布局，Android 为低饱和紫罗兰紫胶囊；
+    浏览器与 Android 的既有导航行为保持不变。iOS CSS 材质只是 Web 近似，不代表
+    原生 Liquid Glass 或完整 HIG 认证。
 - [ ] **⑤ 测试清单**：
   - Chrome/Edge 桌面：安装图标出现、离线刷新仍可浏览已访问页面；
   - Android Chrome：添加到主屏幕 → 独立窗口（standalone）打开；

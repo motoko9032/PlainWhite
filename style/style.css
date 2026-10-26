@@ -1543,25 +1543,25 @@ html[data-standalone][data-app="android"] .app-tabbar-item:focus-visible {
     }
 }
 
-/* ---- iOS：安装态的 HIG 风格底部标签栏 ---- */
-/* Web 页面无法调用 UIKit 的原生 Tab Bar / Liquid Glass；这里仅采用
-   相同的信息架构，并用 CSS 材质作渐进增强。背景保持足够不透明，
-   避免滚动文字透过栏体影响标签辨识。 */
+/* ---- iOS：安装态的 HIG 启发式浮动标签栏 ---- */
+/* Web 无法调用 UIKit 的原生 Tab Bar / Liquid Glass；以高斯模糊和半透明
+   背景近似系统材质，并提供 prefers-reduced-transparency 不透明回退。 */
 html[data-standalone][data-app="ios"] .app-tabbar {
     left: max(1rem, env(safe-area-inset-left, 0px));
     right: max(1rem, env(safe-area-inset-right, 0px));
     transform: none;
-    max-width: 36rem;
+    max-width: min(36rem, calc(100vw - 2rem));
+    width: auto;
     margin-inline: auto;
     gap: 0;
     padding: 0.25rem;
     border: 1px solid rgba(58, 58, 60, 0.16);
     border-radius: 1.25rem;
-    background: rgba(253, 252, 251, 0.94);
-    -webkit-backdrop-filter: saturate(180%) blur(24px);
-    backdrop-filter: saturate(180%) blur(24px);
+    background: rgba(253, 252, 251, 0.6);
+    -webkit-backdrop-filter: saturate(180%) blur(34px);
+    backdrop-filter: saturate(180%) blur(34px);
     box-shadow:
-        0 4px 16px rgba(58, 58, 60, 0.14),
+        0 6px 24px rgba(58, 58, 60, 0.18),
         inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
@@ -1571,7 +1571,7 @@ html[data-standalone][data-app="ios"] .app-tabbar-item {
     min-height: 2.75rem;
     padding: 0.25rem 0.125rem;
     gap: 0.125rem;
-    border-radius: 1rem;
+    border-radius: 0.875rem;
     color: var(--ink-light);
     font-size: 0.6875rem;
     letter-spacing: 0;
@@ -1588,9 +1588,13 @@ html[data-standalone][data-app="ios"] .app-tabbar-item-label {
     white-space: nowrap;
 }
 
-html[data-standalone][data-app="ios"] .app-tabbar-item[aria-current="location"] {
+html[data-standalone][data-app="ios"] .app-tabbar-item[aria-current="page"] {
     color: var(--app-tabbar-active);
     font-weight: 600;
+}
+
+html[data-standalone][data-app="ios"] .app-tabbar-item[aria-current="page"] svg {
+    stroke-width: 2.1;
 }
 
 html[data-standalone][data-app="ios"] .app-tabbar-item:hover,
@@ -1603,13 +1607,13 @@ html[data-standalone][data-app="ios"] .app-tabbar-item:focus-visible {
     outline-offset: 1px;
 }
 
-/* 深色外观下保持相同布局，并使用足够不透明的深色材质。 */
+/* 深色外观维持同一导航层级，玻璃仍允许页面内容柔和透出。 */
 @media (prefers-color-scheme: dark) {
     html[data-standalone][data-app="ios"] .app-tabbar {
-        background: rgba(31, 31, 35, 0.94);
+        background: rgba(31, 31, 35, 0.62);
         border-color: rgba(232, 232, 236, 0.18);
         box-shadow:
-            0 4px 16px rgba(0, 0, 0, 0.38),
+            0 6px 24px rgba(0, 0, 0, 0.42),
             inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
     html[data-standalone][data-app="ios"] .app-tabbar-item:hover,
@@ -1627,48 +1631,301 @@ html[data-standalone][data-app="ios"] .app-tabbar-item:focus-visible {
     }
 }
 
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    html[data-standalone][data-app="ios"] .app-tabbar {
+        background: var(--paper-soft);
+    }
+}
+
 /* ============================================
-   iOS 安装模式（standalone）UI 适配
+   iOS 安装模式（standalone）应用式导航与页面
    ============================================
-   参考 Apple HIG 与 iOS Web App 开发规范：
-   - 状态栏：<meta name="apple-mobile-web-app-status-bar-style"
-     被改为 black-translucent（见各页面 <head>），状态栏透明、
-     内容延伸到状态栏之后，需配合顶部安全区让位。
-   - 顶部安全区：iOS 底部有 Home 指示条、顶部有状态栏，均用
-     env(safe-area-inset-*) 让位，防止内容被系统 UI 遮挡。
-   - 仅 data-app="ios"（由 script.js 判定）时生效，浏览器与
-     Android 不受影响。
+   仅 script.js 在 iOS standalone 模式设置 data-ios-app / data-ios-view。
+   普通 Safari、桌面浏览器和 Android 不进入这些规则。
    ============================================ */
 
-/* 安装模式下取消顶部汉堡菜单：底部 Tab Bar 已承担导航职责，
-   顶部只保留品牌 logo，避免双重导航（桌面端本就不显示汉堡）。 */
+/* 安装模式下不重复呈现网站汉堡菜单与网页导航。 */
 html[data-standalone] .menu-toggle {
     display: none !important;
 }
 
-/* 将 header 留在文档流中：它仍固定在视口顶部，但会为首屏内容
-   保留真实高度，不再依赖 hero / 子页面的固定空白抵消覆盖问题。 */
 html[data-standalone][data-app="ios"] .header {
     position: sticky;
     top: 0;
     padding-top: env(safe-area-inset-top, 0px);
+    background: rgba(253, 252, 251, 0.6);
+    -webkit-backdrop-filter: saturate(180%) blur(28px);
+    backdrop-filter: saturate(180%) blur(28px);
+    box-shadow: 0 1px 0 rgba(58, 58, 60, 0.08);
 }
 
-/* header 已在文档流中，只保留少量视觉间距，不再重复扣除 header /
-   safe-area 高度。锚点滚动仍需避开粘性 header 与状态栏区域。 */
-html[data-standalone][data-app="ios"] section {
-    scroll-margin-top: calc(var(--header-height) + env(safe-area-inset-top, 0px) + 0.75rem);
+@media (prefers-color-scheme: dark) {
+    html[data-standalone][data-app="ios"] .header {
+        background: rgba(22, 22, 24, 0.62);
+        border-bottom-color: rgba(232, 232, 236, 0.12);
+        box-shadow: 0 1px 0 rgba(232, 232, 236, 0.08);
+    }
 }
 
-html[data-standalone][data-app="ios"] .hero {
-    padding-top: 2rem;
+html[data-ios-app] .header-inner {
+    padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.25rem, env(safe-area-inset-right, 0px));
 }
 
-html[data-standalone][data-app="ios"] .article-list-section {
-    padding-top: 1.5rem;
+html[data-ios-app] .header .logo,
+html[data-ios-app] .header .nav {
+    display: none;
 }
 
-/* 悬浮栏占用的空间由同一组安全区约束补足，保证滚动到底时页脚可达。 */
+html[data-ios-app] .ios-app-navigation {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+html[data-ios-app] .ios-app-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 2.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-left: -0.5rem;
+    border: 0;
+    border-radius: 50%;
+    color: var(--sakura-deep);
+    background: transparent;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html[data-ios-app] .ios-app-back[hidden] {
+    display: none;
+}
+
+html[data-ios-app] .ios-app-back svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+html[data-ios-app] .ios-app-back:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+}
+
+html[data-ios-app] .ios-app-title {
+    overflow: hidden;
+    margin: 0;
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 页面按导航状态渐进显示，只有当前目的地进入可访问树。 */
+html[data-ios-app][data-ios-view] main > section[hidden] {
+    display: none !important;
+}
+
+html[data-ios-app] main > section {
+    scroll-margin-top: calc(var(--header-height) + env(safe-area-inset-top, 0px) + 1rem);
+}
+
+html[data-ios-app] main > section:not(.hero) {
+    padding: 1.5rem 0 2.5rem;
+    background: none;
+}
+
+html[data-ios-app] main > section .section-title {
+    margin-bottom: 1.25rem;
+    padding-bottom: 0;
+    border: 0;
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    font-weight: 700;
+    letter-spacing: 0;
+    text-align: left;
+    text-transform: none;
+}
+
+html[data-ios-app] .container {
+    width: 100%;
+    max-width: 48rem;
+    padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.25rem, env(safe-area-inset-right, 0px));
+}
+
+html[data-ios-app] .hero {
+    min-height: 68vh;
+    min-height: min(68dvh, 42rem);
+    padding: 2rem max(1.25rem, env(safe-area-inset-left, 0px));
+}
+
+html[data-ios-app] .hero-title {
+    font-size: clamp(2.5rem, 11vw, 4rem);
+}
+
+html[data-ios-app] .hero-meta {
+    margin-bottom: 1.75rem;
+}
+
+html[data-ios-app] .about-text,
+html[data-ios-app] .support-text,
+html[data-ios-app] .thanks-text,
+html[data-ios-app] .contact-text {
+    max-width: 48rem;
+    font-size: 1.0625rem;
+    line-height: 1.8;
+}
+
+/* 使用 vmin（视口短边）作为卡片尺寸参照，旋转设备或切换设备尺寸时
+   自动重算圆角；clamp 限定范围，避免小屏过尖或大屏过度圆润。 */
+html[data-ios-app] {
+    --ios-card-radius: clamp(1.125rem, 4.5vmin, 1.75rem);
+}
+
+html[data-ios-app] .announcement-item,
+html[data-ios-app] .announcement-history-link,
+html[data-ios-app] .stat-item,
+html[data-ios-app] .column-card,
+html[data-ios-app] .download-card,
+html[data-ios-app] .distribution-item,
+html[data-ios-app] .contact-media-card,
+html[data-ios-app] .qr-frame,
+html[data-ios-app] .ios-app-more-link {
+    border-radius: var(--ios-card-radius);
+}
+
+html[data-ios-app] .stat-item {
+    padding: 1rem;
+    background: var(--paper-soft);
+    border: 1px solid var(--border);
+}
+
+html[data-ios-app] .announcement-item,
+html[data-ios-app] .column-card,
+html[data-ios-app] .download-card,
+html[data-ios-app] .contact-media-card {
+    box-shadow: 0 2px 12px rgba(58, 58, 60, 0.045);
+}
+
+html[data-ios-app] .announcement-item:hover,
+html[data-ios-app] .column-card:hover,
+html[data-ios-app] .download-card:hover,
+html[data-ios-app] .contact-media-card:hover {
+    transform: none;
+}
+
+html[data-ios-app] .distribution-item {
+    background: var(--paper-soft);
+    border: 1px solid var(--border);
+}
+
+html[data-ios-app] .ios-app-more {
+    min-height: calc(100svh - var(--header-height) - 8rem);
+}
+
+html[data-ios-app] .ios-app-more-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+html[data-ios-app] .ios-app-more-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 4.5rem;
+    gap: 1rem;
+    padding: 0.875rem 1rem 0.875rem 1.125rem;
+    color: var(--ink);
+    background: var(--paper-soft);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html[data-ios-app] .ios-app-more-link:focus-visible {
+    outline: 2px solid var(--sakura-deep);
+    outline-offset: 2px;
+}
+
+html[data-ios-app] .ios-app-more-copy {
+    display: grid;
+    gap: 0.2rem;
+}
+
+html[data-ios-app] .ios-app-more-title {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+html[data-ios-app] .ios-app-more-description {
+    color: var(--ink-muted);
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+}
+
+html[data-ios-app] .ios-app-more-arrow {
+    color: var(--ink-muted);
+    font-family: var(--font-sans);
+    font-size: 1.75rem;
+    line-height: 1;
+}
+
+html[data-ios-app] footer.footer {
+    display: none;
+}
+
+/* 底部浮动栏的避让只应用于 iPhone/窄屏；宽屏平板的栏位在文档流内。 */
 html[data-standalone][data-app="ios"] body {
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 5.5rem);
+}
+
+/* iPad 横向/常规宽度遵循 HIG：主标签靠近顶部，而不是占据底部屏幕空间。 */
+@media (min-width: 768px) and (hover: none) and (pointer: coarse) {
+    html[data-standalone][data-app="ios"] .app-tabbar {
+        position: sticky;
+        top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+        left: auto;
+        right: auto;
+        bottom: auto;
+        transform: none;
+        width: min(40rem, calc(100% - 3rem));
+        max-width: none;
+        margin: 0 auto 0.75rem;
+    }
+
+    html[data-standalone][data-app="ios"] body {
+        padding-bottom: 1.5rem;
+    }
+}
+
+/* 防止系统辅助功能的降低透明度设置被半透明效果覆盖。 */
+@media (prefers-reduced-transparency: reduce) {
+    html[data-standalone][data-app="ios"] .header {
+        background: var(--paper-soft);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html[data-ios-app] *,
+    html[data-ios-app] *::before,
+    html[data-ios-app] *::after {
+        scroll-behavior: auto !important;
+    }
 }

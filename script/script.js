@@ -348,15 +348,10 @@
         updateHeader();
     });
 
-    // ---- PWA：底部 Tab Bar（仅安装为 App 的 standalone 模式显示）----
-    // 本脚本以 defer 加载，执行时 DOM 已解析完毕，可直接注入 DOM。
-    // 浏览器里访问不会设置 html[data-standalone]，因此 Tab Bar 完全不
-    // 出现、与未安装时的效果一致；样式见 style/style.css 的 .app-tabbar。
-    // 平台差异：iOS 安全区与材质样式、Android 莫奈色胶囊（详见 CSS 注释）。
+    // ---- PWA：仅安装态注入平台导航 ----
+    // 普通浏览器不设置 data-standalone，不创建底栏，也不改动页面结构。
+    // iOS standalone 使用独立页面路由；Android 保留原来的锚点导航。
     function initAppTabBar() {
-        // 判定「添加到主屏」的安装模式：
-        //   - 标准 matchMedia('(display-mode: standalone)')（Chrome/Edge/Android）
-        //   - iOS Safari 的特有属性 window.navigator.standalone
         const standalone = (window.matchMedia &&
             window.matchMedia('(display-mode: standalone)').matches) ||
             (window.navigator && window.navigator.standalone === true);
@@ -373,7 +368,8 @@
         root.setAttribute('data-standalone', '');
         root.setAttribute('data-app', isIOS ? 'ios' : 'android');
 
-        // 首页基准 URL：本脚本位于 script/ 子目录，上溯一级即站点根目录。
+        // 脚本始终位于站点根目录下的 script/；由脚本 URL 计算站点根，
+        // 因此 GitHub Pages 的 /PlainWhite/ 子路径和二级页面都能正确工作。
         let homeBase;
         try {
             homeBase = new URL('../', scriptElement.src);
@@ -384,9 +380,13 @@
         const isHome = location.pathname === homeBase.pathname ||
             location.pathname === homeBase.pathname + 'index.html';
 
-        // Tab Bar 的 5 个入口，与首页各 section 的 id 对应。
-        // 图标为内联 SVG 线性图标（stroke 风格），label 供朗读与显示。
-        const items = [
+        if (isIOS) {
+            initIOSAppNavigation(homeBase, isHome);
+            return;
+        }
+
+        // Android 保持原有五个锚点入口和滚动高亮逻辑。
+        const androidItems = [
             { hash: '#hero', label: '首页',
               icon: '<path d="M4 11.2 12 5l8 6.2"/><path d="M6.5 9.8V19h11V9.8"/>' },
             { hash: '#announcements', label: '公告',
@@ -402,11 +402,8 @@
         const tabbar = document.createElement('nav');
         tabbar.className = 'app-tabbar';
         tabbar.setAttribute('aria-label', '应用底部导航');
-
-        // id → 元素 的映射，仅首页用于可见性高亮
         const sections = {};
-
-        items.forEach(function (item) {
+        androidItems.forEach(function (item) {
             const a = document.createElement('a');
             a.className = 'app-tabbar-item';
             a.setAttribute('data-section', item.hash);
@@ -429,9 +426,7 @@
 
         document.body.appendChild(tabbar);
 
-        // 首页按当前可见 section 高亮；子页面按其所属顶层栏目高亮。
         const links = tabbar.querySelectorAll('.app-tabbar-item');
-
         function setCurrent(hash) {
             links.forEach(function (link) {
                 if (link.getAttribute('data-section') === hash) {
@@ -475,6 +470,345 @@
             if (currentSection) {
                 setCurrent(currentSection);
             }
+        }
+    }
+
+    function initIOSAppNavigation(homeBase, isHome) {
+        const root = document.documentElement;
+        root.setAttribute('data-ios-app', '');
+
+        const tabs = [
+            { id: 'home', label: '首页',
+              icon: '<path d="M4 11.2 12 5l8 6.2"/><path d="M6.5 9.8V19h11V9.8"/>' },
+            { id: 'announcements', label: '公告',
+              icon: '<path d="M6 9.5a6 6 0 0 1 12 0c0 4.5 2 5.5 2 5.5H4s2-1 2-5.5"/><path d="M10 18.5a2 2 0 0 0 4 0"/>' },
+            { id: 'reading', label: '阅读',
+              icon: '<path d="M4.5 5.5c3-1.4 5-1.4 7.5 0 2.5-1.4 4.5-1.4 7.5 0v13c-3-1.4-5-1.4-7.5 0-2.5-1.4-4.5-1.4-7.5 0z"/><path d="M12 5.5v13"/>' },
+            { id: 'downloads', label: '下载',
+              icon: '<path d="M12 4.5v10"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M5 19.5h14"/>' },
+            { id: 'more', label: '更多',
+              icon: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>' }
+        ];
+
+        const views = {
+            home: { title: '纯白', tab: 'home', sections: ['hero'] },
+            announcements: {
+                title: '公告', tab: 'announcements', sections: ['announcements']
+            },
+            reading: { title: '阅读', tab: 'reading', sections: ['columns'] },
+            downloads: { title: '下载', tab: 'downloads', sections: ['downloads'] },
+            more: { title: '更多', tab: 'more', sections: ['iosMoreView'] },
+            'more/about': { title: '关于', tab: 'more', sections: ['about'] },
+            'more/special': {
+                title: '特别文章', tab: 'more', sections: ['special']
+            },
+            'more/distribution': {
+                title: '分发方式', tab: 'more', sections: ['distribution']
+            },
+            'more/support': { title: '支持', tab: 'more', sections: ['support'] },
+            'more/thanks': { title: '致谢', tab: 'more', sections: ['thanks'] },
+            'more/contact': { title: '联系', tab: 'more', sections: ['contact'] }
+        };
+
+        const moreItems = [
+            { route: 'more/about', title: '关于纯白', description: '刊物与编务团队' },
+            { route: 'more/special', title: '特别文章', description: '独立发布的专题作品' },
+            { route: 'more/distribution', title: '分发方式', description: '线上与纸本刊物' },
+            { route: 'more/support', title: '支持纯白', description: '了解项目支持方式' },
+            { route: 'more/thanks', title: '致谢', description: '感谢每一位参与者' },
+            { route: 'more/contact', title: '联系与投稿', description: '投稿邮箱与公众号' }
+        ];
+
+        const main = document.querySelector('main');
+        const header = document.querySelector('.header');
+        const headerInner = header && header.querySelector('.header-inner');
+        const tabbar = document.createElement('nav');
+        tabbar.className = 'app-tabbar';
+        tabbar.setAttribute('aria-label', '应用主导航');
+
+        tabs.forEach(function (tab) {
+            const link = document.createElement('a');
+            link.className = 'app-tabbar-item';
+            link.href = new URL('#app/' + tab.id, homeBase).href;
+            link.setAttribute('data-ios-route', tab.id);
+            link.innerHTML =
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+                'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ' +
+                'aria-hidden="true">' + tab.icon + '</svg>' +
+                '<span class="app-tabbar-item-label">' + tab.label + '</span>';
+            tabbar.appendChild(link);
+        });
+
+        let moreView = null;
+        let appTitle = null;
+        let backButton = null;
+
+        if (isHome && main) {
+            moreView = document.createElement('section');
+            moreView.id = 'iosMoreView';
+            moreView.className = 'ios-app-more';
+            moreView.setAttribute('aria-labelledby', 'iosMoreHeading');
+
+            const heading = document.createElement('h2');
+            heading.className = 'section-title';
+            heading.id = 'iosMoreHeading';
+            heading.textContent = '了解纯白';
+            moreView.appendChild(heading);
+
+            const list = document.createElement('nav');
+            list.className = 'ios-app-more-list';
+            list.setAttribute('aria-label', '更多页面');
+
+            moreItems.forEach(function (item) {
+                const link = document.createElement('a');
+                link.className = 'ios-app-more-link';
+                link.href = '#app/' + item.route;
+                link.setAttribute('data-ios-route', item.route);
+
+                const text = document.createElement('span');
+                text.className = 'ios-app-more-copy';
+                const title = document.createElement('span');
+                title.className = 'ios-app-more-title';
+                title.textContent = item.title;
+                const description = document.createElement('span');
+                description.className = 'ios-app-more-description';
+                description.textContent = item.description;
+                text.appendChild(title);
+                text.appendChild(description);
+
+                const arrow = document.createElement('span');
+                arrow.className = 'ios-app-more-arrow';
+                arrow.setAttribute('aria-hidden', 'true');
+                arrow.textContent = '›';
+                link.appendChild(text);
+                link.appendChild(arrow);
+                list.appendChild(link);
+            });
+            moreView.appendChild(list);
+            main.appendChild(moreView);
+
+            if (headerInner) {
+                const navigation = document.createElement('div');
+                navigation.className = 'ios-app-navigation';
+
+                backButton = document.createElement('button');
+                backButton.className = 'ios-app-back';
+                backButton.type = 'button';
+                backButton.setAttribute('aria-label', '返回更多');
+                backButton.innerHTML =
+                    '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+                    '<path d="m15 18-6-6 6-6"/>' +
+                    '</svg>';
+
+                appTitle = document.createElement('span');
+                appTitle.className = 'ios-app-title';
+                appTitle.setAttribute('aria-live', 'polite');
+                appTitle.setAttribute('aria-atomic', 'true');
+                appTitle.textContent = '纯白';
+
+                navigation.appendChild(backButton);
+                navigation.appendChild(appTitle);
+                headerInner.appendChild(navigation);
+            }
+        }
+
+        // Place navigation directly after the header. On iPhone it is fixed to
+        // the bottom edge; on wider iPad layouts CSS can keep it near the top.
+        if (header && header.parentNode) {
+            header.parentNode.insertBefore(tabbar, header.nextSibling);
+        } else {
+            document.body.appendChild(tabbar);
+        }
+
+        function routeForSection(sectionId) {
+            const routes = {
+                hero: 'home',
+                announcements: 'announcements',
+                columns: 'reading',
+                special: 'more/special',
+                downloads: 'downloads',
+                about: 'more/about',
+                distribution: 'more/distribution',
+                support: 'more/support',
+                thanks: 'more/thanks',
+                contact: 'more/contact'
+            };
+            return routes[sectionId] || null;
+        }
+
+        function routeFromCurrentLocation() {
+            const hash = location.hash;
+            if (hash.indexOf('#app/') === 0) {
+                const route = hash.slice(5);
+                if (views[route]) {
+                    return route;
+                }
+            }
+            if (hash.charAt(0) === '#') {
+                const legacyRoute = routeForSection(hash.slice(1));
+                if (legacyRoute) {
+                    return legacyRoute;
+                }
+            }
+
+            const path = location.pathname.toLowerCase();
+            if (path.indexOf('/announcements/') !== -1) {
+                return 'announcements';
+            }
+            if (path.indexOf('/sub/wechat/') !== -1 ||
+                path.indexOf('/sub/lofter/') !== -1 ||
+                path.indexOf('/sub/special-sub/') !== -1) {
+                return path.indexOf('contact') !== -1 ? 'more/contact' : 'reading';
+            }
+            return 'home';
+        }
+
+        const savedScrollPositions = {};
+        let activeRoute = '';
+
+        function setScrollPosition(top) {
+            const previousBehavior = root.style.scrollBehavior;
+            root.style.scrollBehavior = 'auto';
+            window.scrollTo(0, top);
+            window.requestAnimationFrame(function () {
+                root.style.scrollBehavior = previousBehavior;
+            });
+        }
+
+        function setPageHeading(route) {
+            if (!isHome || !main) {
+                return;
+            }
+            const activeSections = views[route].sections;
+            main.querySelectorAll('h1.section-title, h2.section-title').forEach(function (heading) {
+                const section = heading.closest('section');
+                const isCurrentSection = section && activeSections.indexOf(section.id) !== -1;
+                const desiredTag = isCurrentSection ? 'H1' : 'H2';
+                if (heading.tagName === desiredTag) {
+                    return;
+                }
+
+                const replacement = document.createElement(desiredTag.toLowerCase());
+                Array.prototype.forEach.call(heading.attributes, function (attribute) {
+                    replacement.setAttribute(attribute.name, attribute.value);
+                });
+                replacement.innerHTML = heading.innerHTML;
+                heading.replaceWith(replacement);
+            });
+        }
+
+        function renderRoute(route) {
+            if (!views[route]) {
+                route = 'home';
+            }
+            if (activeRoute) {
+                savedScrollPositions[activeRoute] = window.scrollY;
+            }
+
+            activeRoute = route;
+            const view = views[route];
+            root.setAttribute('data-ios-view', route.replace('/', '-'));
+
+            if (isHome && main) {
+                Array.prototype.forEach.call(main.children, function (child) {
+                    if (child.tagName === 'SECTION') {
+                        child.hidden = view.sections.indexOf(child.id) === -1;
+                    }
+                });
+                setPageHeading(route);
+            }
+
+            tabbar.querySelectorAll('.app-tabbar-item').forEach(function (link) {
+                if (link.getAttribute('data-ios-route') === view.tab) {
+                    link.setAttribute('aria-current', 'page');
+                } else {
+                    link.removeAttribute('aria-current');
+                }
+            });
+
+            if (appTitle) {
+                appTitle.textContent = view.title;
+            }
+            if (backButton) {
+                backButton.hidden = route.indexOf('more/') !== 0;
+            }
+            document.title = view.title === '纯白'
+                ? '纯白 — 一份属于白色封皮的综合文学交流成果'
+                : view.title + ' · 纯白';
+
+            setScrollPosition(savedScrollPositions[route] || 0);
+        }
+
+        function navigate(route, pushState) {
+            if (!views[route]) {
+                return;
+            }
+
+            // Secondary pages use history entries so both the visible back
+            // control and the system back gesture can return to More.
+            const url = isHome
+                ? new URL('#app/' + route, location.href).href
+                : new URL('#app/' + route, homeBase).href;
+            if (pushState) {
+                history.pushState({ iosAppRoute: route }, '', url);
+            } else {
+                history.replaceState({ iosAppRoute: route }, '', url);
+            }
+            if (isHome) {
+                renderRoute(route);
+            } else {
+                location.href = url;
+            }
+        }
+
+        if (isHome) {
+            const initialRoute = routeFromCurrentLocation();
+            const initialUrl = new URL('#app/' + initialRoute, location.href).href;
+            history.replaceState({ iosAppRoute: initialRoute }, '', initialUrl);
+            renderRoute(initialRoute);
+
+            document.addEventListener('click', function (event) {
+                const link = event.target.closest('a');
+                if (!link) {
+                    return;
+                }
+
+                const route = link.getAttribute('data-ios-route');
+                if (route && views[route]) {
+                    event.preventDefault();
+                    navigate(route, route.indexOf('more/') === 0);
+                    return;
+                }
+
+                const href = link.getAttribute('href') || '';
+                if (href.charAt(0) === '#') {
+                    const sectionRoute = routeForSection(href.slice(1));
+                    if (sectionRoute) {
+                        event.preventDefault();
+                        navigate(sectionRoute, sectionRoute.indexOf('more/') === 0);
+                    }
+                }
+            });
+
+            if (backButton) {
+                backButton.addEventListener('click', function () {
+                    navigate('more', false);
+                });
+            }
+
+            window.addEventListener('popstate', function () {
+                renderRoute(routeFromCurrentLocation());
+            });
+        } else {
+            const currentRoute = routeFromCurrentLocation();
+            const selectedTab = currentRoute.indexOf('more/') === 0
+                ? 'more'
+                : currentRoute;
+            tabbar.querySelectorAll('.app-tabbar-item').forEach(function (link) {
+                if (link.getAttribute('data-ios-route') === selectedTab) {
+                    link.setAttribute('aria-current', 'page');
+                }
+            });
         }
     }
 
