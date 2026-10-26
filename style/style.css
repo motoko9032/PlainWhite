@@ -1549,7 +1549,7 @@ html[data-standalone][data-app="android"] .app-tabbar-item:focus-visible {
 html[data-standalone][data-app="ios"] .app-tabbar {
     left: max(1rem, env(safe-area-inset-left, 0px));
     right: max(1rem, env(safe-area-inset-right, 0px));
-    bottom: calc(var(--ios-safe-area-bottom, env(safe-area-inset-bottom, 0px)) + 0.75rem);
+    bottom: var(--ios-safe-area-bottom, env(safe-area-inset-bottom, 0px));
     transform: none;
     max-width: min(36rem, calc(100vw - 2rem));
     width: auto;
@@ -1928,13 +1928,13 @@ html[data-ios-app] {
     --ios-safe-area-right: env(safe-area-inset-right, 0px);
     --ios-safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --ios-safe-area-left: env(safe-area-inset-left, 0px);
-    --ios-header-block-size: calc(var(--header-height) + var(--ios-safe-area-top));
+    --ios-header-block-size: calc(var(--header-height) + var(--ios-safe-area-top) + 0.5rem);
 }
 
 html[data-standalone][data-app="ios"] .app-tabbar {
     left: max(1rem, var(--ios-safe-area-left));
     right: max(1rem, var(--ios-safe-area-right));
-    bottom: calc(var(--ios-safe-area-bottom) + 0.75rem);
+    bottom: var(--ios-safe-area-bottom);
 }
 
 html[data-ios-app] body {
@@ -1956,7 +1956,7 @@ html[data-ios-app] body :where(*) {
 }
 
 html[data-standalone][data-app="ios"] .header {
-    padding-top: var(--ios-safe-area-top);
+    padding-top: calc(var(--ios-safe-area-top) + 0.5rem);
 }
 
 html[data-ios-app] .header-inner {

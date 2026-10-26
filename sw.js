@@ -18,7 +18,7 @@
 /* CacheStorage 按 origin 共享，因此所有本站缓存统一使用专属前缀，
    activate 阶段只清理此前缀下的旧版本，不能清除同源其他应用的缓存。 */
 const CACHE_PREFIX = 'plainwhite-';
-const CACHE_VERSION = 'v11';
+const CACHE_VERSION = 'v12';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 
 /* 预缓存清单：SW 安装时一次性写入的应用外壳（App Shell）。
