@@ -107,11 +107,14 @@ Local variable fonts live in [`fonts/`](./fonts/) (the Chinese fonts are large, 
 | Path | Purpose |
 | ---- | ------- |
 | `index.html` | Homepage |
+| `manifest.webmanifest` | PWA web app manifest (name, theme color, icons, shortcuts) |
+| `sw.js` | PWA service worker (app shell precache, offline fallback, static asset caching) |
+| `offline.html` | Offline fallback page rendered when a navigation request fails with no cache |
 | `style/style.css` | All styles for the site |
 | `style/fonts-local.css` | Local `@font-face` declarations (default font source) |
 | `style/fonts-google.css` | Google Fonts `@import` fallback, loaded when page load is slow |
 | `script/font-loader.js` | Loads the chosen font stylesheet early in `<head>` |
-| `script/script.js` | Interactions, announcement rendering, and font-loading strategy |
+| `script/script.js` | Interactions, announcement rendering, font-loading strategy, and service worker registration |
 | `script/wechat-articles.js` | Dynamic rendering of per-issue WeChat article lists |
 | `script/lofter-articles.js` | Dynamic rendering of per-issue LOFTER article lists |
 | `script/special-articles.js` | Dynamic rendering of the White Cover special articles list |
@@ -123,7 +126,16 @@ Local variable fonts live in [`fonts/`](./fonts/) (the Chinese fonts are large, 
 | `sub/special-sub/` | White Cover special articles list page, Markdown article files, and `data.js` fallback |
 | `sub/README.md` | Shared maintenance instructions for all sub-directories |
 | `fonts/` | Local webfonts |
+| `pwa/` | PWA icons, icon source/generator, and the PWA handover document (`pwa/README.md`) |
 | `Common Manual/` | Common editorial manual (LaTeX source) |
+
+## PWA (Progressive Web App)
+
+The site ships with a complete PWA foundation: a web app manifest, a service worker with app-shell precaching and offline fallback, installable icons, and offline support. All 11 HTML pages include the PWA `<head>` block, and the service worker is registered by [`script/script.js`](./script/script.js) on every page.
+
+The foundation is intentionally basic: once the design team settles on a final icon and optional features (update banners, push notifications, offline PDF reading), continue from the handover document rather than rebuilding. See [`pwa/README.md`](./pwa/README.md) for the full handover notes — hard rules, the remaining TODO list, local verification steps, and the new-page checklist.
+
+Key operational rule: after every deployment of changed static assets, bump `CACHE_VERSION` at the top of [`sw.js`](./sw.js), or users will keep seeing stale content.
 
 ## Repository Hygiene
 

@@ -347,4 +347,26 @@
     document.addEventListener('DOMContentLoaded', function () {
         updateHeader();
     });
+
+    // ---- PWA：Service Worker 注册 ----
+    // 可安装 + 离线缓存能力由站点根目录 sw.js 提供（manifest 见根目录
+    // manifest.webmanifest，交接文档见 pwa/README.md）。
+    // 注册时机放在 window load 之后，避免与首屏资源加载抢占带宽；
+    // 仅在安全上下文（HTTPS 或 localhost 本地调试）中注册，失败不影响站点功能。
+    if ('serviceWorker' in navigator &&
+        (location.protocol === 'https:' ||
+         location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+        window.addEventListener('load', function () {
+            // sw.js 必须与站点根目录同级，其作用域即整个站点：
+            // 本脚本位于 script/ 子目录，从本脚本地址上溯一级得到站点根目录，
+            // 因此任意目录深度的页面都能解析出同一个 sw.js 地址。
+            const swUrl = scriptElement && scriptElement.src
+                ? new URL('../sw.js', scriptElement.src).href
+                : new URL('sw.js', location.href).href;
+
+            navigator.serviceWorker.register(swUrl).catch(function (error) {
+                console.warn('[PWA] Service Worker 注册失败（不影响站点正常使用）：', error);
+            });
+        });
+    }
 })();

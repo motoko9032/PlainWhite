@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="纯白 — 白色封皮公众号二维码与公众号名片。">
+    <!-- PWA 基础支持（渐进式 Web 应用）：manifest 声明、主题色与图标。
+         相对路径必须与页面所在目录层级匹配：根目录页面用 ./，
+         二级目录页面（sub/*/、announcements/history/）用 ../../。
+         新增 HTML 页面时请完整复制本区块。详见 pwa/README.md。 -->
+    <link rel="manifest" href="../../manifest.webmanifest">
+    <link rel="icon" href="../../pwa/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="../../pwa/apple-touch-icon.png">
+    <meta name="theme-color" content="#f9f8f6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="纯白">
     <title>纯白 · 来看看公众号</title>
     <script src="../../script/font-loader.js"></script>
     <link rel="stylesheet" href="../../style/style.css">

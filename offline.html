@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="纯白 — 离线状态提示页。">
+    <meta name="theme-color" content="#f9f8f6">
+    <title>离线 — 纯白</title>
+    <!-- 本页为 Service Worker 的离线兜底页，样式全部内联、不依赖任何外部资源，
+         以保证在没有网络且缓存中只剩本页时也能完整渲染。 -->
+    <style>
+        :root {
+            --paper: #f9f8f6;
+            --ink: #3a3a3c;
+            --ink-light: #626264;
+            --sakura: #e8a0b0;
+            --sakura-deep: #d48496;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                         "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            text-align: center;
+            padding: 2rem;
+        }
+        .card { max-width: 28rem; }
+        .mark {
+            width: 4rem;
+            height: 4rem;
+            margin: 0 auto 1.5rem;
+            background: var(--ink);
+            position: relative;
+        }
+        .mark::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 2rem;
+            height: 2rem;
+            transform: translate(-50%, -50%);
+            background: var(--sakura);
+        }
+        h1 { font-size: 1.6rem; font-weight: 600; margin-bottom: 0.75rem; }
+        p { color: var(--ink-light); line-height: 1.8; margin-bottom: 1.5rem; }
+        .actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+        button, a.btn {
+            font: inherit;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            padding: 0.7rem 1.6rem;
+            border-radius: 999px;
+            background: var(--ink);
+            color: #fff;
+        }
+        a.btn--ghost { background: transparent; color: var(--sakura-deep); border: 1px solid var(--sakura); }
+        button:hover, a.btn:hover { opacity: 0.85; }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <div class="mark" aria-hidden="true"></div>
+        <h1>当前处于离线状态</h1>
+        <p>《纯白》需要网络连接才能加载最新内容。<br>已访问过的页面仍可在缓存中离线查看。</p>
+        <div class="actions">
+            <button type="button" onclick="location.reload()">重新加载</button>
+            <a class="btn btn--ghost" href="./">返回首页</a>
+        </div>
+    </main>
+</body>
+</html>

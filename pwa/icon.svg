@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 纯白 PWA 图标矢量源文件：纸白底 + 墨色方 + 樱色内方。
+       PNG 图标由 generate-icons.py 依据同一设计生成。 -->
+  <rect width="512" height="512" fill="#f9f8f6"/>
+  <rect x="144" y="144" width="224" height="224" fill="#3a3a3c"/>
+  <rect x="200" y="200" width="112" height="112" fill="#e8a0b0"/>
+</svg>

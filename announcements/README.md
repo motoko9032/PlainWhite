@@ -48,4 +48,5 @@ badge: 最新
 - 网站部署或使用本地服务器（如 Live Server）访问时，自动读取上面的 Markdown 文件；
 - 如果直接双击打开 `index.html`（`file://` 协议），浏览器禁止读取文件，此时会回退到 `data.js` 中的数据；两种方式内容应保持一致；
 - 首页公告区最多展示最新 3 条，更早的公告自动归档到 [历史公告页](./history/)；`data.js` 是回退数据源，首页与历史公告页共用同一份数据，归档同样自动生效；
-- 无需修改 `index.html`、`style/style.css` 或 `script/script.js`。
+- 无需修改 `index.html`、`style/style.css` 或 `script/script.js`；
+- 全站已内置 PWA 基础支持（manifest、Service Worker、离线兜底页，详见 [pwa/README.md](../pwa/README.md)）。若新增 HTML 页面（例如新的归档页），请照抄现有页面 `<head>` 中的 PWA 区块，并按目录层级调整相对路径前缀（二级目录页面用 `../../`）；Service Worker 随 `script/script.js` 自动注册，无需额外配置。

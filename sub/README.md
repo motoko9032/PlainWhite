@@ -10,6 +10,10 @@
 
 此外，`sub/WeChat/WeChatContact.html` 是公众号联系页面，展示公众号二维码与公众号名片，从首页「联系」栏目的「来看看公众号」按钮进入。更新内容时只需替换 `files/白色封皮公众号.JPG` 或修改该页面中的二维码图片路径。
 
+### 关于 PWA（渐进式 Web 应用）
+
+全站已内置 PWA 基础支持（manifest、Service Worker、离线兜底页，详见 [pwa/README.md](../pwa/README.md)）。新增 HTML 页面时，请照抄现有同级页面 `<head>` 中的 PWA 区块（manifest、favicon、apple-touch-icon、theme-color 等 8 行注释已标明的标签），并按页面所在目录层级调整相对路径前缀——本目录下的页面一律用 `../../`。Service Worker 会随 `script/script.js` 在页面加载后自动注册，无需额外配置。
+
 ## 公众号原文
 
 - `sub/WeChat/WeChatArticleList1.html` — 第 1 期公众号原文列表页（显示 `issue: 1` 的文章）

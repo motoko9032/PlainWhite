@@ -1,0 +1,171 @@
+/* ============================================================
+   纯白 — Service Worker（PWA 离线缓存与安装支持）
+
+   作用域：本文件位于站点根目录（GitHub Pages 上即 /PlainWhite/ 的
+   根路径），作用域自动覆盖整个站点，所有页面共用这一份 SW。
+
+   交接须知（给未来的维护者 / 大模型）：
+   - 完整的设计文档与未完成事项见 pwa/README.md；
+   - 每次更新静态资源后必须递增 CACHE_VERSION（见下方说明）；
+   - files/ 下的大文件（PDF/EPUB）有意不缓存，原因见 fetch 处理器注释；
+   - 本文件使用 ES5 语法，兼容所有支持 Service Worker 的浏览器。
+   ============================================================ */
+
+/* 缓存版本：发布任何静态资源变更（HTML/CSS/JS/公告数据等）后，
+   必须递增此版本号（例如 'v1' → 'v2'），旧缓存会在 activate 阶段
+   被自动清空。⚠️ 这是目前唯一的缓存失效开关，忘记递增会导致
+   用户长期看到旧内容。 */
+const CACHE_VERSION = 'v1';
+const CACHE_NAME = 'plainwhite-' + CACHE_VERSION;
+
+/* 预缓存清单：SW 安装时一次性写入的应用外壳（App Shell）。
+   路径相对于 sw.js 所在目录，即站点根目录。
+   仅收录首页必需、体积小的核心资源；大文件（fonts/*.ttf、
+   files/*.pdf、files/*.epub）严禁加入预缓存，它们会在用户
+   实际访问时按需缓存或保持不缓存。 */
+const PRECACHE_URLS = [
+    './',
+    './index.html',
+    './offline.html',
+    './style/style.css',
+    './style/fonts-local.css',
+    './script/script.js',
+    './script/font-loader.js',
+    './script/announcements.js',
+    './announcements/data.js'
+];
+
+/* ---- install：写入预缓存，并立即接管（skipWaiting）---- */
+self.addEventListener('install', function (event) {
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then(function (cache) {
+                /* 单个资源预缓存失败只记录警告、不中断安装：
+                   避免某个资源 404 导致整个 SW 安装失败。 */
+                return Promise.all(PRECACHE_URLS.map(function (url) {
+                    return cache.add(url).catch(function (error) {
+                        console.warn('[SW] 预缓存失败（不影响安装）：' + url, error);
+                    });
+                }));
+            })
+            .then(function () {
+                return self.skipWaiting();
+            })
+    );
+});
+
+/* ---- activate：清空旧版本缓存，并立即控制已打开的页面 ---- */
+self.addEventListener('activate', function (event) {
+    event.waitUntil(
+        caches.keys().then(function (keys) {
+            return Promise.all(keys.map(function (key) {
+                if (key !== CACHE_NAME) {
+                    return caches.delete(key);
+                }
+            }));
+        }).then(function () {
+            return self.clients.claim();
+        })
+    );
+});
+
+/* ---- fetch：拦截请求，按类型区分缓存策略 ---- */
+self.addEventListener('fetch', function (event) {
+    const request = event.request;
+
+    /* 只处理同源 GET 请求；POST 与跨域请求（Google Fonts、
+       CC 协议链接等）一律放行，由浏览器默认处理。 */
+    if (request.method !== 'GET') {
+        return;
+    }
+    const url = new URL(request.url);
+    if (url.origin !== self.location.origin) {
+        return;
+    }
+
+    /* files/ 目录（PDF/EPUB 等大文件）不缓存、不拦截：
+       1) 体积大，缓存收益低且容易撑爆存储配额；
+       2) PDF 阅读器使用 Range 分段请求，缓存整份响应后
+          按 Range 读取会出错。 */
+    if (url.pathname.indexOf('/files/') !== -1) {
+        return;
+    }
+
+    /* 页面导航（HTML 文档请求）：网络优先。
+       成功时以请求 URL 为键缓存本次响应（离线时原样回放），
+       首页（站点根路径或其 index.html）额外写入 './index.html'
+       缓存位，作为首页导航离线时的兜底。
+       失败（离线）时依次回退：请求本身缓存 →（仅首页）首页兜底 →
+       offline.html。非首页一律回退到 offline.html 而不是首页，
+       因为首页 HTML 的 ./ 相对资源路径在子目录 URL 下会解析错误，
+       导致样式丢失。 */
+    if (request.mode === 'navigate') {
+        event.respondWith(
+            fetch(request).then(function (response) {
+                if (response && response.status === 200) {
+                    /* 首页判定：请求路径等于站点根路径或根路径下的 index.html。
+                       './' 以 sw.js 所在目录为基准解析，即站点根目录。 */
+                    const scopePath = new URL('./', self.location.href).pathname;
+                    const isHome = url.pathname === scopePath ||
+                        url.pathname === scopePath + 'index.html';
+                    const copy = response.clone();
+                    caches.open(CACHE_NAME).then(function (cache) {
+                        cache.put(request, copy.clone());
+                        if (isHome) {
+                            cache.put('./index.html', copy);
+                        }
+                    });
+                }
+                return response;
+            }).catch(function () {
+                const scopePath = new URL('./', self.location.href).pathname;
+                const isHome = url.pathname === scopePath ||
+                    url.pathname === scopePath + 'index.html';
+                return caches.match(request)
+                    .then(function (cached) {
+                        if (cached) {
+                            return cached;
+                        }
+                        return isHome ? caches.match('./index.html') : null;
+                    })
+                    .then(function (cached) {
+                        if (cached) {
+                            return cached;
+                        }
+                        /* 最后兜底：offline.html 在预缓存清单中，
+                           正常安装后必然存在；此分支仅为极端情况保险。 */
+                        return caches.match('./offline.html').then(function (offlinePage) {
+                            return offlinePage || new Response(
+                                '纯白 — 当前处于离线状态，请联网后重试。',
+                                { status: 503, statusText: 'Offline',
+                                  headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
+                            );
+                        });
+                    });
+            })
+        );
+        return;
+    }
+
+    /* 同源静态资源（CSS/JS/字体/图标等）：缓存优先 + 后台更新
+       （stale-while-revalidate）。命中缓存立即返回，同时后台
+       发起网络请求刷新缓存；未命中缓存则等待网络，失败时静默。 */
+    event.respondWith(
+        caches.match(request).then(function (cached) {
+            const fetched = fetch(request).then(function (response) {
+                if (response && response.status === 200 && response.type === 'basic') {
+                    const copy = response.clone();
+                    caches.open(CACHE_NAME).then(function (cache) {
+                        cache.put(request, copy);
+                    });
+                }
+                return response;
+            }).catch(function () {
+                return cached;
+            });
+            /* 未缓存且网络失败时返回 error 响应（浏览器按资源加载失败处理），
+               避免 respondWith 收到 undefined 抛出异常。 */
+            return cached || fetched || Response.error();
+        })
+    );
+});
