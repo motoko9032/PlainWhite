@@ -110,6 +110,7 @@ Local variable fonts live in [`fonts/`](./fonts/) (the Chinese fonts are large, 
 | `manifest.webmanifest` | PWA web app manifest (name, theme color, icons, shortcuts) |
 | `sw.js` | PWA service worker (app shell precache, offline fallback, static asset caching) |
 | `offline.html` | Offline fallback page rendered when a navigation request fails with no cache |
+| `apple-touch-icon.png` | iOS add-to-home-screen icon (site-root fallback location required by iOS; no alpha channel) |
 | `style/style.css` | All styles for the site |
 | `style/fonts-local.css` | Local `@font-face` declarations (default font source) |
 | `style/fonts-google.css` | Google Fonts `@import` fallback, loaded when page load is slow |

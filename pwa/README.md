@@ -19,7 +19,8 @@
 | `offline.html` | 离线兜底页（样式内联、零外部依赖） | ✅ 已就绪 |
 | `pwa/icon-192.png`、`pwa/icon-512.png` | manifest 图标（purpose: any） | ✅ 由正式字标栅格化生成 |
 | `pwa/icon-maskable-512.png` | manifest 图标（purpose: maskable） | ✅ 由正式字标栅格化生成 |
-| `pwa/apple-touch-icon.png`（180×180）、`pwa/favicon-32.png` | iOS 主屏图标、浏览器标签页图标 | ✅ 由正式字标栅格化生成 |
+| `pwa/apple-touch-icon.png`（180×180，RGB 无 alpha）、根目录 `apple-touch-icon.png` | iOS 添加到主屏图标（`<link rel="apple-touch-icon">`） | ✅ 由正式字标栅格化生成 |
+| `pwa/favicon-32.png` | 浏览器标签页图标 | ✅ 由正式字标栅格化生成 |
 | `pwa/icon.svg` | 正式字标矢量源（手写「纯白」，仅描边） | ✅ 已替换占位设计 |
 | `pwa/generate-icons.py` | 纯 Python（标准库 + numpy）SVG 栅格化脚本 | ✅ 可复现 |
 | 全部 11 个 HTML 页面 | 已在 `<head>` 加入 PWA 区块（manifest、SVG/PNG favicon、iOS 元数据） | ✅ 已就绪 |
@@ -69,6 +70,12 @@
    numpy 光栅化，按 `STROKE_SCALE` 加粗描边——字标原始 `stroke-width=5` 在
    16800px 宽的 viewBox 里按比例缩到图标尺寸后不可见。不要手工编辑 PNG，也
    无需改动 `manifest.webmanifest` 的图标条目（除非增减尺寸）。
+
+9. **iOS 添加到主屏的图标必须是无 alpha 通道的 PNG**。iOS 不读取 SVG/含透明
+   通道的 `apple-touch-icon`，会拒绝并回退为「网站标题首字」方块（如「纯」）。
+   `generate-icons.py` 已把 `apple-touch-icon.png` 输出为 RGB（颜色类型 2），
+   并同步写一份到站点根目录（Apple 文档的整站 Web Clip 兜底位置）。不要手工
+   把该 PNG 换成带透明通道的文件；若更换图标，重跑脚本即可同时刷新两份。
 
 ## 三、未来待办（完整部署 PWA 还需做的事，按优先级排序）
 
@@ -120,8 +127,8 @@ python3 pwa/generate-icons.py   # 依赖：Python 3 + numpy（无其他第三方
 新增任何 HTML 页面（例如第 5 期文章列表 `WeChatArticleList5.html`）时：
 
 1. 复制现有同级页面的 `<head>` 中的 PWA 区块（9 行：manifest、SVG favicon、
-   PNG favicon、apple-touch-icon、theme-color、3 个 mobile-web-app meta、
-   apple-mobile-web-app-title）；
+   PNG favicon、apple-touch-icon（含 `sizes="180x180"`）、theme-color、
+   3 个 mobile-web-app meta、apple-mobile-web-app-title）；
 2. 按「硬性规则 4」调整相对路径前缀；
 3. 保证页面 `<script src="...script.js" defer>` 存在（SW 注册随 script.js 自动生效）；
 4. 无需修改 `sw.js` 与 `manifest.webmanifest`（除非该页面要加入预缓存清单）。
@@ -138,3 +145,6 @@ python3 pwa/generate-icons.py   # 依赖：Python 3 + numpy（无其他第三方
   （删除 `icons/`，文件树对齐 Common Manual），重写 `generate-icons.py` 为 SVG
   栅格化器并重新生成全部 PNG；manifest 增补 SVG 图标条目、全站 11 页增补 SVG
   favicon；新增 SW 更新提示横幅（不再静默 skipWaiting）；缓存版本递增至 `v4`。
+- 2026-10：修复 iOS 添加到主屏时图标不显示的问题——`apple-touch-icon.png`
+  改为无 alpha 的 RGB PNG、补 `sizes="180x180"`、并在站点根目录生成同源副本
+  （Apple 文档的整站 Web Clip 兜底位置）；缓存版本递增至 `v5`。

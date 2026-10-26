@@ -6,8 +6,11 @@
     icon-192.png           192x192   manifest "any" 用途
     icon-512.png           512x512   manifest "any" 用途
     icon-maskable-512.png  512x512   manifest "maskable" 用途（全出血底 + 安全区适配）
-    apple-touch-icon.png   180x180   iOS 主屏图标（<link rel="apple-touch-icon">）
+    apple-touch-icon.png   180x180   iOS 主屏图标（<link rel="apple-touch-icon">，无 alpha）
     favicon-32.png         32x32     浏览器标签页图标（<link rel="icon">）
+
+其中 apple-touch-icon.png 会额外写一份到站点根目录（../apple-touch-icon.png），
+因为 iOS 的整站 Web Clip 图标按 Apple 文档应位于根目录下；两者内容同源。
 
 为何需要本脚本：`pwa/icon.svg` 是纯矢量的字标（viewBox 16800x12600、
 stroke-width 5）。按等比缩放后，在 512px 图标里原始线宽只有约 0.15px，
@@ -31,9 +34,23 @@ import math
 import os
 import re
 import struct
+import sys
 import zlib
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError:  # 类型检查器/未装 numpy 的环境下也能通过静态分析
+    np = None
+
+
+def require_numpy():
+    """确保 numpy 可用；缺失时给出可执行的安装提示。"""
+    if np is None:
+        raise SystemExit(
+            '本脚本需要 numpy（唯一第三方依赖）。请先安装：\n'
+            '    python3 -m pip install numpy'
+        )
+    return np
 
 # ---- 颜色常量 ----
 PAPER = (0xF9, 0xF8, 0xF6)      # --paper: #f9f8f6（纯白品牌底色，图标全出血底）
@@ -282,19 +299,28 @@ def render(size, segments, bbox, maskable):
 
 # ==================== PNG 写入 ====================
 
-def write_png(path, arr):
-    """把 (size, size, 4) 的 RGBA numpy 数组写为 PNG 文件。"""
+def write_png(path, arr, alpha=True):
+    """把 (size, size, 3/4) 的 numpy 数组写为 PNG 文件。
+
+    alpha=True  输出 RGBA（颜色类型 6，4 字节/像素），用于 manifest 与
+               浏览器 favicon 等允许透明通道的场合。
+    alpha=False 输出 RGB（颜色类型 2，3 字节/像素，无 alpha 通道），
+               用于 iOS 的 apple-touch-icon——iOS 的 Web Clip 图标
+               不允许包含透明通道，含 alpha 会被拒绝并回退为标题首字。
+    """
     size = arr.shape[0]
+    color_type = 6 if alpha else 2
+    channels = 4 if alpha else 3
 
     def chunk(tag, data):
         raw = tag + data
         return struct.pack('>I', len(data)) + raw + struct.pack('>I', zlib.crc32(raw))
 
-    ihdr = struct.pack('>IIBBBBB', size, size, 8, 6, 0, 0, 0)  # 8bit RGBA
+    ihdr = struct.pack('>IIBBBBB', size, size, 8, color_type, 0, 0, 0)
     raw = bytearray()
     for y in range(size):
         raw.append(0)  # filter type 0 (None)
-        raw.extend(arr[y].tobytes())
+        raw.extend(arr[y][:, :channels].tobytes())
     idat = zlib.compress(bytes(raw), 9)
 
     with open(path, 'wb') as f:
@@ -349,8 +375,21 @@ def main():
     for filename, (size, maskable) in targets.items():
         out = os.path.join(here, filename)
         arr = render(size, segments, bbox, maskable)
-        write_png(out, arr)
+        # apple-touch-icon 专供 iOS 添加到主屏幕使用：必须无 alpha 通道，
+        # 否则 iOS 会拒绝该图标并回退为「网站标题首字」方块。
+        # 其余 PNG（manifest/favicon）保留 RGBA 无碍。
+        write_png(out, arr, alpha=(filename != 'apple-touch-icon.png'))
         print('wrote %s (%dx%d)' % (out, size, size))
+
+    # iOS 的站点级兜底：Apple 文档要求「整站图标」放在站点根目录下、名为
+    # apple-touch-icon.png。部分 iOS 版本在 <link> 失效时会回退到根目录查找
+    # 该文件；这里在生成图标时同步写一份到仓库根目录（与本脚本同级再上一级），
+    # 保证根目录副本与 pwa/ 内副本永远同源、不会漂移。
+    root_icon = os.path.join(here, os.pardir, 'apple-touch-icon.png')
+    root_icon = os.path.abspath(root_icon)
+    arr = render(180, segments, bbox, False)
+    write_png(root_icon, arr, alpha=False)
+    print('wrote %s (180x180)' % root_icon)
 
 
 if __name__ == '__main__':

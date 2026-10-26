@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.9.25)  26 OCT 2026 21:57
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.9.25)  27 OCT 2026 04:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -720,11 +720,11 @@ LaTeX Font Info:    Font shape `TU/FandolSong-Regular(0)/m/sl' in size <10.5393
 7> not available
 (Font)              Font shape `TU/FandolSong-Regular(0)/m/it' tried instead on
  input line 64.
- [2]
+ [2] [3]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7.52812> on input line 108.
- [3]
-Overfull \hbox (89.50624pt too wide) in paragraph at lines 123--124
+(Font)              <7.52812> on input line 109.
+
+Overfull \hbox (89.50624pt too wide) in paragraph at lines 124--125
 []\TU/lmr/m/n/10.53937 announcements  |\TU/FandolKai-Regular(0)/m/n/10.53937 –|
   公 告 文 件 夹  |（存 储 首 页 公 告 的 \TU/lmr/m/n/10.53937 Markdown \TU/FandolKai-Regula
 r(0)/m/n/10.53937 文 件 与 回 退 数 据，|  由[][] \TU/lmtt/m/n/10.53937 script/announcem
@@ -732,26 +732,26 @@ ents.js[]
  []
 
 [4]
-Overfull \hbox (5.74553pt too wide) in paragraph at lines 155--158
+Overfull \hbox (5.74553pt too wide) in paragraph at lines 157--160
 []\TU/lmr/m/n/10.53937 2026-10-26\TU/FandolSong-Regular(0)/m/n/10.53937 ：|  正 式
  图 标 替 换 为 手 写  |「纯 白」|  字 标  |（[][]\TU/lmtt/m/n/10.53937 pwa/icon.svg[]\TU/Fan
 dolSong-Regular(0)/m/n/10.53937 ） ，| [][]\TU/lmtt/m/n/10.53937 pwa/generate-ico
 ns.py[]
  []
 
-[5] (./CommonMan.aux)
+[5] [6] (./CommonMan.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2026/08/11>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 8056 strings out of 467717
- 255662 string characters out of 5421760
- 687230 words of memory out of 5000000
- 37161 multiletter control sequences out of 15000+600000
+ 8065 strings out of 467717
+ 256387 string characters out of 5421760
+ 689230 words of memory out of 5000000
+ 37170 multiletter control sequences out of 15000+600000
  631547 words of font info for 92 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  93i,6n,112p,386b,521s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on CommonMan.pdf (6 pages).
+Output written on CommonMan.pdf (7 pages).

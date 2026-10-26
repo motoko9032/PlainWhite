@@ -3,7 +3,7 @@
 
 \title{\bfseries 纯白通用工作手册}
 \author{\kaishu 素子-白色封皮纯白运营小组}
-\date{2026年10月26日 第五版}
+\date{2026年10月27日 第六版}
 
 \begin{document}
 
@@ -34,6 +34,7 @@
 		\item{\verb|manifest.webmanifest|}
 		\item{\verb|sw.js|}
 		\item{\verb|offline.html|}
+		\item{\verb|apple-touch-icon.png|}
 		\item{\verb|README.md|}
 		\item{\verb|CommonMan.pdf|}
 		\item{\verb|announcements|}
@@ -143,6 +144,7 @@
 	\item{\verb|files/| 目录中的大文件（PDF、EPUB）不缓存：体积大，且 PDF 阅读器按 Range 分段读取，缓存整份响应会导致读取错乱；}
 	\item{新增 HTML 页面时，必须照抄现有同级页面 \verb|<head>| 中的 PWA 区块（manifest、图标、主题色等标签），并按页面所在目录层级调整相对路径前缀（根目录页面用 \verb|./|，二级目录页面用 \verb|../../|）；}
 	\item{更换品牌图标时，只修改 \verb|pwa/icon.svg|，并运行 \verb|python3 pwa/generate-icons.py| 重新生成全部 PNG 图标——脚本会解析 SVG 矢量并按要求加粗描边，无需手工编辑任何 PNG。当前正式图标为手写「纯白」字标（仅描边）。}
+	\item{iOS 添加到主屏的图标必须是无透明通道（无 alpha）的 PNG，\verb|apple-touch-icon.png| 由生成脚本输出为 RGB，并同步写一份到站点根目录（iOS 的整站 Web Clip 兜底位置）；不要手工替换为含透明通道的文件。}
 \end{itemize}
 
 \section{本文档的更新}
@@ -157,6 +159,9 @@
 	      已移除，图标统一归档于 \verb|pwa/|，目录结构与本手册一致。}
 	\item{2026-10-26：新增 Service Worker 更新提示横幅（发现新版本时提示刷新），
 	      不再静默换新。}
+	\item{2026-10-27：修复 iOS 添加到主屏时图标不生效（只显示标题首字「纯」）
+	      的问题——\verb|apple-touch-icon.png| 改为无 alpha 的 RGB、补
+	      \verb|sizes="180x180"|、并在站点根目录生成同源副本。}
 \end{itemize}
 
 \end{document}
