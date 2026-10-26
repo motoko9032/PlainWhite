@@ -125,6 +125,18 @@ Local variable fonts live in [`fonts/`](./fonts/) (the Chinese fonts are large, 
 | `fonts/` | Local webfonts |
 | `Common Manual/` | Common editorial manual (LaTeX source) |
 
+## Repository Hygiene
+
+macOS Finder creates `.DS_Store` metadata files every time a folder is browsed, which used to show up in `git status` and even landed in commits. They are now ignored in [`.gitignore`](./.gitignore), and a versioned Git hook removes any that slip in.
+
+Enable the hook once per clone:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+The [`.githooks/pre-commit`](./.githooks/pre-commit) hook deletes `.DS_Store` files from the working tree and unstages any that were force-added, so a commit can never contain them. macOS has no supported option to stop Finder from writing these files on local volumes, so the hook cleans up at every commit instead.
+
 ## License
 
 Online content is released under the [Creative Commons Attribution-NonCommercial (CC BY-NC)](https://creativecommons.org/licenses/by-nc/4.0/) license.

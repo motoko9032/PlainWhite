@@ -1,0 +1,20 @@
+#!/bin/bash
+# Keep macOS Finder metadata (.DS_Store) out of every commit.
+# Enable once per clone: git config core.hooksPath .githooks
+
+staged=()
+while IFS= read -r -d '' path; do
+    case $path in
+        .DS_Store | */.DS_Store) staged+=("$path") ;;
+    esac
+done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+
+for path in ${staged[@]+"${staged[@]}"}; do
+    if git rm --cached --quiet -- "$path"; then
+        echo "pre-commit: removed $path from the index"
+    fi
+done
+
+find . -name .git -prune -o -name .DS_Store -type f -exec rm -f {} +
+
+exit 0
