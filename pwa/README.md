@@ -123,6 +123,25 @@
     设计参考：[Apple HIG — Tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars)
     与 [Configuring Web Applications](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html)。
 
+14. **iOS standalone 的排版只使用 iOS 系统 UI 字体**。`script/font-loader.js`
+    在字体样式表加载前识别 iOS standalone，并跳过本地/Google 编辑字体；普通 Safari
+    与非 iOS 安装模式继续使用原有字体逻辑。`style/style.css` 以
+    `-apple-system-body`、`-apple-system-headline` 和 `-apple-system-footnote` 等
+    WebKit 系统文本样式为基础，并按 Apple HIG 的 17 pt 默认、11 pt 最小字号组织层级；
+    标题尺寸相对正文缩放，避免固定像素字号破坏 Dynamic Type。新增文字样式应继续使用
+    系统字体、足够对比度和可伸展布局，不要在 iOS 安装态引入自托管或远程字体。
+    参考：[Apple HIG — Typography](https://developer.apple.com/design/human-interface-guidelines/typography)
+    与 [WebKit — Using the System Font in Web Content](https://webkit.org/blog/3709/using-the-system-font-in-web-content/)。
+
+15. **iOS 安装态的内容与控件必须尊重系统安全区**。依赖现有
+    `viewport-fit=cover`，使用 `env(safe-area-inset-top|right|bottom|left)` 读取设备/
+    窗口实际 inset；不要按机型写死刘海、灵动岛或 Home 指示条尺寸，也不要套用 tvOS
+    的安全边距。header 顶部只计入一次 safe-top；主内容的左右边距取常规阅读留白与
+    对应方向 safe inset 的较大值；iPhone 底部 Tab Bar 位于 safe-bottom 上方，正文
+    底部留白须保证最后内容滚动时不会被栏遮挡。宽屏 iPad 的 Tab Bar 在 header 后进入
+    文档流，顶部 sticky 位置应按 header 总高度（含 safe-top）计算。参考：
+    [Apple HIG — Layout: Guides and safe areas](https://developer.apple.com/design/human-interface-guidelines/layout#Guides-and-safe-areas)。
+
 ## 三、未来待办（完整部署 PWA 还需做的事，按优先级排序）
 
 - [x] **① 替换正式图标**：已用正式设计（手写「纯白」字标）替换占位几何设计，

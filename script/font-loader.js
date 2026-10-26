@@ -12,6 +12,26 @@
     const FONT_FALLBACK_KEY = 'plainwhite:font-fallback';
     const GOOGLE_FONT_TIMEOUT_MS = 10000;
 
+    function isIOSStandalone() {
+        const nav = window.navigator || {};
+        const standalone = nav.standalone === true ||
+            (window.matchMedia &&
+             window.matchMedia('(display-mode: standalone)').matches);
+        const userAgent = nav.userAgent || '';
+        const isIOS = /iPad|iPhone|iPod/.test(userAgent) ||
+            (nav.platform === 'MacIntel' && (nav.maxTouchPoints || 0) > 1);
+
+        return standalone && isIOS;
+    }
+
+    // iOS standalone uses the platform's UI font and must not load the site's
+    // editorial font files. Safari and every non-iOS installation keep the
+    // existing local/Google font selection below.
+    if (isIOSStandalone()) {
+        document.documentElement.classList.add('ios-standalone-system-font');
+        return;
+    }
+
     function resolveSiteAsset(path) {
         if (scriptElement && scriptElement.src) {
             return new URL(path, scriptElement.src).href;

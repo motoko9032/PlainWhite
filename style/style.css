@@ -1549,6 +1549,7 @@ html[data-standalone][data-app="android"] .app-tabbar-item:focus-visible {
 html[data-standalone][data-app="ios"] .app-tabbar {
     left: max(1rem, env(safe-area-inset-left, 0px));
     right: max(1rem, env(safe-area-inset-right, 0px));
+    bottom: calc(var(--ios-safe-area-bottom, env(safe-area-inset-bottom, 0px)) + 0.75rem);
     transform: none;
     max-width: min(36rem, calc(100vw - 2rem));
     width: auto;
@@ -1891,14 +1892,14 @@ html[data-ios-app] footer.footer {
 
 /* 底部浮动栏的避让只应用于 iPhone/窄屏；宽屏平板的栏位在文档流内。 */
 html[data-standalone][data-app="ios"] body {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 5.5rem);
+    padding-bottom: calc(var(--ios-safe-area-bottom, 0px) + 5.5rem);
 }
 
 /* iPad 横向/常规宽度遵循 HIG：主标签靠近顶部，而不是占据底部屏幕空间。 */
 @media (min-width: 768px) and (hover: none) and (pointer: coarse) {
     html[data-standalone][data-app="ios"] .app-tabbar {
         position: sticky;
-        top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+        top: var(--ios-header-block-size);
         left: auto;
         right: auto;
         bottom: auto;
@@ -1911,6 +1912,127 @@ html[data-standalone][data-app="ios"] body {
     html[data-standalone][data-app="ios"] body {
         padding-bottom: 1.5rem;
     }
+}
+
+/* iOS standalone uses only system typefaces; the font loader sets this class
+   before stylesheets paint so custom editorial fonts are never requested. */
+html.ios-standalone-system-font,
+html[data-ios-app] {
+    --ios-system-font: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-serif: var(--ios-system-font);
+    --font-sans: var(--ios-system-font);
+}
+
+html[data-ios-app] {
+    --ios-safe-area-top: env(safe-area-inset-top, 0px);
+    --ios-safe-area-right: env(safe-area-inset-right, 0px);
+    --ios-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --ios-safe-area-left: env(safe-area-inset-left, 0px);
+    --ios-header-block-size: calc(var(--header-height) + var(--ios-safe-area-top));
+}
+
+html[data-standalone][data-app="ios"] .app-tabbar {
+    left: max(1rem, var(--ios-safe-area-left));
+    right: max(1rem, var(--ios-safe-area-right));
+    bottom: calc(var(--ios-safe-area-bottom) + 0.75rem);
+}
+
+html[data-ios-app] body {
+    font-family: var(--ios-system-font);
+    font-size: 17px;
+    line-height: normal;
+    text-align: start;
+    font-feature-settings: normal;
+    font: -apple-system-body;
+    line-height: normal;
+}
+
+/* Keep all existing component rules on the same system-font body scale.
+   Relative sizes below scale with the native body text style. */
+html[data-ios-app] body :where(*) {
+    font-family: var(--ios-system-font);
+    font-size: 1em;
+    letter-spacing: normal;
+}
+
+html[data-standalone][data-app="ios"] .header {
+    padding-top: var(--ios-safe-area-top);
+}
+
+html[data-ios-app] .header-inner {
+    padding-inline-start: max(1.25rem, var(--ios-safe-area-left));
+    padding-inline-end: max(1.25rem, var(--ios-safe-area-right));
+}
+
+html[data-ios-app] .container {
+    padding-inline-start: max(1.25rem, var(--ios-safe-area-left));
+    padding-inline-end: max(1.25rem, var(--ios-safe-area-right));
+}
+
+html[data-ios-app] .hero {
+    padding-block: 2rem;
+    padding-inline-start: max(1.25rem, var(--ios-safe-area-left));
+    padding-inline-end: max(1.25rem, var(--ios-safe-area-right));
+}
+
+html[data-ios-app] main > section.ios-app-more {
+    padding-inline-start: max(1.25rem, var(--ios-safe-area-left));
+    padding-inline-end: max(1.25rem, var(--ios-safe-area-right));
+}
+
+html[data-ios-app] main > section {
+    scroll-margin-top: calc(var(--ios-header-block-size) + 1rem);
+}
+
+html[data-ios-app] .hero-title {
+    font-size: 2em;
+    line-height: 1.12;
+    letter-spacing: normal;
+}
+
+html[data-ios-app] .hero-subtitle {
+    font-size: 1.18em;
+    line-height: 1.25;
+    letter-spacing: normal;
+}
+
+html[data-ios-app] main > section .section-title {
+    font-size: 1.65em;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: normal;
+}
+
+html[data-ios-app] .column-name,
+html[data-ios-app] .download-name,
+html[data-ios-app] .distribution-title,
+html[data-ios-app] .announcement-title,
+html[data-ios-app] .ios-app-more-title {
+    font-size: 1em;
+    line-height: 1.25;
+    font-weight: 600;
+    letter-spacing: normal;
+}
+
+html[data-ios-app] .hero-meta,
+html[data-ios-app] .announcement-date,
+html[data-ios-app] .announcement-badge,
+html[data-ios-app] .column-desc,
+html[data-ios-app] .download-desc,
+html[data-ios-app] .stat-label,
+html[data-ios-app] .ios-app-more-description {
+    font: -apple-system-footnote;
+    line-height: normal;
+}
+
+html[data-ios-app] .app-tabbar-item-label {
+    font-size: 11px;
+    line-height: 1.2;
+}
+
+html[data-ios-app] .ios-app-title {
+    font: -apple-system-headline;
+    line-height: normal;
 }
 
 /* 防止系统辅助功能的降低透明度设置被半透明效果覆盖。 */
