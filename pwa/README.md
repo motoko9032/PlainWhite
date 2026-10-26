@@ -19,7 +19,9 @@
 | `offline.html` | 离线兜底页（样式内联、零外部依赖） | ✅ 已就绪 |
 | `pwa/icon-192.png`、`pwa/icon-512.png` | manifest 图标（purpose: any） | ✅ 由正式字标栅格化生成 |
 | `pwa/icon-maskable-512.png` | manifest 图标（purpose: maskable） | ✅ 由正式字标栅格化生成 |
-| `pwa/apple-touch-icon.png`（180×180，RGB 无 alpha）、根目录 `apple-touch-icon.png` | iOS 添加到主屏图标（`<link rel="apple-touch-icon">`） | ✅ 由正式字标栅格化生成 |
+| `pwa/apple-touch-icon.png`（180×180，RGB 无 alpha）、根目录 `apple-touch-icon.png`、根目录 `apple-touch-icon-180x180.png` | iOS 添加到主屏图标（`<link rel="apple-touch-icon">` 与站点根兜底） | ✅ 由正式字标栅格化生成 |
+| `pwa/apple-touch-icon.base64.txt` | 图标 base64 数据（仅作内联备用，不能用于 iOS touch icon） | ✅ 随生成脚本产出 |
+| `pwa/android-ui-guide.md` | Android 移动版 UI 适配开发文档（待办移交） | ✅ 已就绪 |
 | `pwa/favicon-32.png` | 浏览器标签页图标 | ✅ 由正式字标栅格化生成 |
 | `pwa/icon.svg` | 正式字标矢量源（手写「纯白」，仅描边） | ✅ 已替换占位设计 |
 | `pwa/generate-icons.py` | 纯 Python（标准库 + numpy）SVG 栅格化脚本 | ✅ 可复现 |
@@ -74,9 +76,13 @@
 
 9. **iOS 添加到主屏的图标必须是无 alpha 通道的 PNG**。iOS 不读取 SVG/含透明
    通道的 `apple-touch-icon`，会拒绝并回退为「网站标题首字」方块（如「纯」）。
-   `generate-icons.py` 已把 `apple-touch-icon.png` 输出为 RGB（颜色类型 2），
-   并同步写一份到站点根目录（Apple 文档的整站 Web Clip 兜底位置）。不要手工
-   把该 PNG 换成带透明通道的文件；若更换图标，重跑脚本即可同时刷新两份。
+   `generate-icons.py` 已把 `apple-touch-icon.png` 与 `apple-touch-icon-180x180.png`
+   输出为 RGB（颜色类型 2），并同步写一份到站点根目录（Apple 文档的整站 Web Clip
+   兜底位置）。**注意：iOS 的 `<link rel="apple-touch-icon">` 不支持 `data:` URI**——
+   Web Clip 图标抓取流程不解析 base64 数据，因此 `pwa/apple-touch-icon.base64.txt`
+   只能用于内联备用（如 CSS background / offline 兜底），不能放进 link 的 href。
+   若真机仍显示占位图标，先删除旧主屏图标并重新「添加到主屏幕」（iOS 对 Web Clip
+   图标的缓存非常顽固）。
 
 10. **`viewport` meta 必须含 `viewport-fit=cover`**，否则 `env(safe-area-inset-*)`
     不生效，底部 Tab Bar 会被 iOS 的 Home 指示条 / Android 手势导航条遮挡。
@@ -170,3 +176,9 @@ python3 pwa/generate-icons.py   # 依赖：Python 3 + numpy（无其他第三方
   底部悬浮 Tab Bar（仅安装模式显示，iOS 玻璃态 / Android 莫奈色胶囊，安全区
   适配）；③ 深色模式（`prefers-color-scheme` 覆盖 CSS 变量 + `color-scheme` +
   双 `theme-color`，offline.html 同步适配）；缓存版本递增至 `v6`。
+- 2026-10：iOS 安装模式 UI 适配——状态栏改为 `black-translucent`、header 顶部
+  安全区让位、隐藏顶部汉堡菜单（底部 Tab Bar 承担导航）、玻璃态 Tab Bar 透明度
+  提高（背景降至 ~0.45 + 32px 模糊）；图标前置工作：新增 `apple-touch-icon-180x180.png`
+  （带尺寸命名，根目录 + pwa/）与 `apple-touch-icon.base64.txt`，并在文档确认
+  iOS touch icon 不支持 data URI；新增 `pwa/android-ui-guide.md` 移交 Android 端
+  待办；缓存版本递增至 `v7`。

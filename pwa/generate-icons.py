@@ -370,26 +370,40 @@ def main():
         'icon-512.png': (512, False),
         'icon-maskable-512.png': (512, True),
         'apple-touch-icon.png': (180, False),
+        'apple-touch-icon-180x180.png': (180, False),
         'favicon-32.png': (32, False),
     }
     for filename, (size, maskable) in targets.items():
         out = os.path.join(here, filename)
         arr = render(size, segments, bbox, maskable)
-        # apple-touch-icon 专供 iOS 添加到主屏幕使用：必须无 alpha 通道，
+        # apple-touch-icon* 专供 iOS 添加到主屏幕使用：必须无 alpha 通道，
         # 否则 iOS 会拒绝该图标并回退为「网站标题首字」方块。
         # 其余 PNG（manifest/favicon）保留 RGBA 无碍。
-        write_png(out, arr, alpha=(filename != 'apple-touch-icon.png'))
+        write_png(out, arr, alpha=(not filename.startswith('apple-touch-icon')))
         print('wrote %s (%dx%d)' % (out, size, size))
 
-    # iOS 的站点级兜底：Apple 文档要求「整站图标」放在站点根目录下、名为
-    # apple-touch-icon.png。部分 iOS 版本在 <link> 失效时会回退到根目录查找
-    # 该文件；这里在生成图标时同步写一份到仓库根目录（与本脚本同级再上一级），
-    # 保证根目录副本与 pwa/ 内副本永远同源、不会漂移。
-    root_icon = os.path.join(here, os.pardir, 'apple-touch-icon.png')
-    root_icon = os.path.abspath(root_icon)
+    # iOS 的站点级兜底：Apple 文档要求「整站图标」放在站点根目录下。
+    # iOS 的查找顺序会依次尝试 apple-touch-icon-<size>x<size>.png 与
+    # apple-touch-icon.png，因此两种命名都写到仓库根目录（与本脚本同级再
+    # 上一级），保证根目录副本与 pwa/ 内副本永远同源、不会漂移。
     arr = render(180, segments, bbox, False)
-    write_png(root_icon, arr, alpha=False)
-    print('wrote %s (180x180)' % root_icon)
+    for root_name in ('apple-touch-icon.png', 'apple-touch-icon-180x180.png'):
+        root_icon = os.path.abspath(os.path.join(here, os.pardir, root_name))
+        write_png(root_icon, arr, alpha=False)
+        print('wrote %s (180x180)' % root_icon)
+
+    # 前置工作：输出一份 base64 编码（无换行），供后续需要内联图标的场景
+    # 使用（例如 CSS background、offline.html 的内联图、或自建 manifest）。
+    # 注意：iOS 的 <link rel="apple-touch-icon"> 不支持 data: URI（Web Clip
+    # 抓取流程不解析 data:），因此此 base64 文件不能直接用于 iOS 主屏图标，
+    # 仅作为数据备用。详见 pwa/README.md 的 iOS 图标说明。
+    b64_path = os.path.join(here, 'apple-touch-icon.base64.txt')
+    with open(b64_path, 'w', encoding='ascii') as f:
+        import base64
+        png_path = os.path.join(here, 'apple-touch-icon.png')
+        with open(png_path, 'rb') as pf:
+            f.write(base64.b64encode(pf.read()).decode('ascii'))
+    print('wrote %s (base64 data)' % b64_path)
 
 
 if __name__ == '__main__':

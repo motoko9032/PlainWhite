@@ -1540,13 +1540,15 @@ html[data-standalone][data-app="android"] .app-tabbar-item:focus-visible {
 }
 
 /* ---- iOS：悬浮圆角 · 高斯模糊玻璃态 ---- */
+/* 背景透明度保持较低（约 0.45），让玻璃态充分透出底层内容；
+   高斯模糊 + 饱和度提升模拟 iOS 原生工具栏的磨砂玻璃效果。 */
 html[data-standalone][data-app="ios"] .app-tabbar {
-    background: rgba(253, 252, 251, 0.72);
-    -webkit-backdrop-filter: blur(28px) saturate(180%);
-    backdrop-filter: blur(28px) saturate(180%);
-    border: 1px solid rgba(58, 58, 60, 0.10);
+    background: rgba(253, 252, 251, 0.45);
+    -webkit-backdrop-filter: blur(32px) saturate(200%);
+    backdrop-filter: blur(32px) saturate(200%);
+    border: 1px solid rgba(58, 58, 60, 0.08);
     border-radius: 1.75rem;
-    box-shadow: 0 10px 32px rgba(58, 58, 60, 0.16);
+    box-shadow: 0 10px 32px rgba(58, 58, 60, 0.14);
 }
 
 html[data-standalone][data-app="ios"] .app-tabbar-item {
@@ -1563,11 +1565,11 @@ html[data-standalone][data-app="ios"] .app-tabbar-item:focus-visible {
     background: rgba(58, 58, 60, 0.06);
 }
 
-/* 深色下 iOS 玻璃态切换为深色玻璃 */
+/* 深色下 iOS 玻璃态切换为深色玻璃（同样保持低透明度） */
 @media (prefers-color-scheme: dark) {
     html[data-standalone][data-app="ios"] .app-tabbar {
-        background: rgba(31, 31, 35, 0.72);
-        border-color: rgba(232, 232, 236, 0.14);
+        background: rgba(31, 31, 35, 0.45);
+        border-color: rgba(232, 232, 236, 0.12);
         box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5);
     }
     html[data-standalone][data-app="ios"] .app-tabbar-item {
@@ -1581,4 +1583,33 @@ html[data-standalone][data-app="ios"] .app-tabbar-item:focus-visible {
     html[data-standalone][data-app="ios"] .app-tabbar-item:focus-visible {
         background: rgba(232, 232, 236, 0.08);
     }
+}
+
+/* ============================================
+   iOS 安装模式（standalone）UI 适配
+   ============================================
+   参考 Apple HIG 与 iOS Web App 开发规范：
+   - 状态栏：<meta name="apple-mobile-web-app-status-bar-style"
+     被改为 black-translucent（见各页面 <head>），状态栏透明、
+     内容延伸到状态栏之后，需配合顶部安全区让位。
+   - 顶部安全区：iOS 底部有 Home 指示条、顶部有状态栏，均用
+     env(safe-area-inset-*) 让位，防止内容被系统 UI 遮挡。
+   - 仅 data-app="ios"（由 script.js 判定）时生效，浏览器与
+     Android 不受影响。
+   ============================================ */
+
+/* 安装模式下取消顶部汉堡菜单：底部 Tab Bar 已承担导航职责，
+   顶部只保留品牌 logo，避免双重导航（桌面端本就不显示汉堡）。 */
+html[data-standalone] .menu-toggle {
+    display: none !important;
+}
+
+/* 顶部 header：让出 iOS 状态栏高度，导航内容下移到安全区之下 */
+html[data-standalone][data-app="ios"] .header {
+    padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* 子页面（文章列表等）的内容顶部：header 变高后同步让位 */
+html[data-standalone][data-app="ios"] .article-list-section {
+    padding-top: calc(var(--header-height) + env(safe-area-inset-top, 0px) + 4rem);
 }

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.9.25)  27 OCT 2026 04:28
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.9.25)  27 OCT 2026 04:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -722,9 +722,9 @@ LaTeX Font Info:    Font shape `TU/FandolSong-Regular(0)/m/sl' in size <10.5393
  input line 64.
  [2] [3]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7.52812> on input line 109.
+(Font)              <7.52812> on input line 112.
 
-Overfull \hbox (89.50624pt too wide) in paragraph at lines 124--125
+Overfull \hbox (89.50624pt too wide) in paragraph at lines 127--128
 []\TU/lmr/m/n/10.53937 announcements  |\TU/FandolKai-Regular(0)/m/n/10.53937 –|
   公 告 文 件 夹  |（存 储 首 页 公 告 的 \TU/lmr/m/n/10.53937 Markdown \TU/FandolKai-Regula
 r(0)/m/n/10.53937 文 件 与 回 退 数 据，|  由[][] \TU/lmtt/m/n/10.53937 script/announcem
@@ -732,7 +732,7 @@ ents.js[]
  []
 
 [4]
-Overfull \hbox (70.22545pt too wide) in paragraph at lines 148--149
+Overfull \hbox (70.22545pt too wide) in paragraph at lines 151--152
 []\TU/FandolSong-Regular(0)/m/n/10.53937 每 个 页 面 的[][] \TU/lmtt/m/n/10.53937 vi
 ewport[] \TU/lmr/m/n/10.53937 meta \TU/FandolSong-Regular(0)/m/n/10.53937 必 须 含
 [][] \TU/lmtt/m/n/10.53937 viewport-fit=cover[]\TU/FandolSong-Regular(0)/m/n/10
@@ -740,7 +740,7 @@ ewport[] \TU/lmr/m/n/10.53937 meta \TU/FandolSong-Regular(0)/m/n/10.53937 必 �
  []
 
 
-Overfull \hbox (39.31247pt too wide) in paragraph at lines 150--151
+Overfull \hbox (39.31247pt too wide) in paragraph at lines 153--154
 []\TU/FandolSong-Regular(0)/m/n/10.53937 深 色 模 式 跟 随 系 统[][] \TU/lmtt/m/n/10.53
 937 prefers-color-scheme[]\TU/FandolSong-Regular(0)/m/n/10.53937 ，|  遵 循 \TU/lm
 r/m/n/10.53937 WCAG \TU/FandolSong-Regular(0)/m/n/10.53937 对 比 度 与 无 障 碍 标 准  |
@@ -749,22 +749,29 @@ r/m/n/10.53937 WCAG \TU/FandolSong-Regular(0)/m/n/10.53937 对 比 度 与 无 �
  []
 
 
-Overfull \hbox (48.48267pt too wide) in paragraph at lines 150--151
+Overfull \hbox (48.48267pt too wide) in paragraph at lines 153--154
 \TU/FandolSong-Regular(0)/m/n/10.53937 焦 点 可 见、| [][]\TU/lmtt/m/n/10.53937 pref
 ers-reduced-motion[]\TU/FandolSong-Regular(0)/m/n/10.53937 、| [][]\TU/lmtt/m/n/
 10.53937 prefers-contrast[]\TU/FandolSong-Regular(0)/m/n/10.53937 ） ；|  新 增 颜 色
  一 律 使 用[][] \TU/lmtt/m/n/10.53937 style/style.css[]
  []
 
-
-Overfull \hbox (5.74553pt too wide) in paragraph at lines 160--163
+[5]
+Overfull \hbox (5.74553pt too wide) in paragraph at lines 164--167
 []\TU/lmr/m/n/10.53937 2026-10-26\TU/FandolSong-Regular(0)/m/n/10.53937 ：|  正 式
  图 标 替 换 为 手 写  |「纯 白」|  字 标  |（[][]\TU/lmtt/m/n/10.53937 pwa/icon.svg[]\TU/Fan
 dolSong-Regular(0)/m/n/10.53937 ） ，| [][]\TU/lmtt/m/n/10.53937 pwa/generate-ico
 ns.py[]
  []
 
-[5] [6] (./CommonMan.aux)
+
+Overfull \hbox (69.24527pt too wide) in paragraph at lines 176--182
+\TU/FandolSong-Regular(0)/m/n/10.53937 隐 藏 汉 堡 菜 单、|  玻 璃 态 \TU/lmr/m/n/10.5393
+7 Tab Bar \TU/FandolSong-Regular(0)/m/n/10.53937 透 明 度 提 高；|  图 标 前 置 工 作  |— —
+|  新 增[][] \TU/lmtt/m/n/10.53937 apple-touch-icon-180x180.png[]
+ []
+
+[6] (./CommonMan.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2026/08/11>
@@ -773,10 +780,10 @@ L3 programming layer <2026/08/11>
 Here is how much of TeX's memory you used:
  8065 strings out of 467717
  256387 string characters out of 5421760
- 693230 words of memory out of 5000000
+ 694230 words of memory out of 5000000
  37170 multiletter control sequences out of 15000+600000
  631547 words of font info for 92 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 93i,6n,112p,386b,521s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 93i,6n,112p,396b,521s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on CommonMan.pdf (7 pages).
