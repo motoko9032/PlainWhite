@@ -1464,9 +1464,11 @@ html[data-standalone] .app-tabbar {
     box-sizing: border-box;
 }
 
-/* 安装模式下为底部 Tab Bar 留出空间，避免遮挡页脚内容 */
+/* 安装模式下为底部 Tab Bar 留出空间，避免遮挡页脚内容。
+   Tab Bar 高度约 4rem + 底部悬浮间距 0.75rem，这里多留余量，
+   保证滚动到底时最后的内容完整显示在 Tab Bar 上方。 */
 html[data-standalone] body {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 5.5rem);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 7rem);
 }
 
 .app-tabbar-item {
@@ -1539,49 +1541,59 @@ html[data-standalone][data-app="android"] .app-tabbar-item:focus-visible {
     }
 }
 
-/* ---- iOS：悬浮圆角 · 高斯模糊玻璃态 ---- */
-/* 背景透明度保持较低（约 0.45），让玻璃态充分透出底层内容；
-   高斯模糊 + 饱和度提升模拟 iOS 原生工具栏的磨砂玻璃效果。 */
+/* ---- iOS：悬浮圆角 · 高斯模糊玻璃态（对齐 iOS Liquid Glass / HIG）---- */
+/* iOS 26 起系统采用 Liquid Glass 设计：底部栏为悬浮玻璃胶囊。
+   按 HIG 材质取不透明度约 0.78（浅色），配合高强度高斯模糊与
+   顶部高光边缘，模拟系统 UITabBar 的磨砂玻璃。透明度不宜过低，
+   否则底层内容清晰透出会造成「遮挡/重叠」的混乱观感。 */
 html[data-standalone][data-app="ios"] .app-tabbar {
-    background: rgba(253, 252, 251, 0.45);
-    -webkit-backdrop-filter: blur(32px) saturate(200%);
-    backdrop-filter: blur(32px) saturate(200%);
-    border: 1px solid rgba(58, 58, 60, 0.08);
-    border-radius: 1.75rem;
-    box-shadow: 0 10px 32px rgba(58, 58, 60, 0.14);
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+    max-width: none;
+    background: rgba(253, 252, 251, 0.78);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 1.5rem;
+    box-shadow:
+        0 12px 40px rgba(58, 58, 60, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 html[data-standalone][data-app="ios"] .app-tabbar-item {
-    color: #7a7a82;
+    color: #6b6b73;
 }
 
 html[data-standalone][data-app="ios"] .app-tabbar-item[aria-current="page"] {
     color: var(--sakura-deep);
-    background: rgba(232, 160, 176, 0.14);
+    background: rgba(232, 160, 176, 0.16);
 }
 
 html[data-standalone][data-app="ios"] .app-tabbar-item:hover,
 html[data-standalone][data-app="ios"] .app-tabbar-item:focus-visible {
-    background: rgba(58, 58, 60, 0.06);
+    background: rgba(58, 58, 60, 0.07);
 }
 
-/* 深色下 iOS 玻璃态切换为深色玻璃（同样保持低透明度） */
+/* 深色下 iOS 玻璃态切换为深色玻璃（材质不透明度保持一致） */
 @media (prefers-color-scheme: dark) {
     html[data-standalone][data-app="ios"] .app-tabbar {
-        background: rgba(31, 31, 35, 0.45);
-        border-color: rgba(232, 232, 236, 0.12);
-        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5);
+        background: rgba(28, 28, 32, 0.78);
+        border-color: rgba(255, 255, 255, 0.12);
+        box-shadow:
+            0 12px 40px rgba(0, 0, 0, 0.55),
+            inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
     html[data-standalone][data-app="ios"] .app-tabbar-item {
         color: #a5a5af;
     }
     html[data-standalone][data-app="ios"] .app-tabbar-item[aria-current="page"] {
         color: var(--sakura-deep);
-        background: rgba(242, 184, 198, 0.16);
+        background: rgba(242, 184, 198, 0.18);
     }
     html[data-standalone][data-app="ios"] .app-tabbar-item:hover,
     html[data-standalone][data-app="ios"] .app-tabbar-item:focus-visible {
-        background: rgba(232, 232, 236, 0.08);
+        background: rgba(232, 232, 236, 0.10);
     }
 }
 

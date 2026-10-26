@@ -78,11 +78,13 @@
    通道的 `apple-touch-icon`，会拒绝并回退为「网站标题首字」方块（如「纯」）。
    `generate-icons.py` 已把 `apple-touch-icon.png` 与 `apple-touch-icon-180x180.png`
    输出为 RGB（颜色类型 2），并同步写一份到站点根目录（Apple 文档的整站 Web Clip
-   兜底位置）。**注意：iOS 的 `<link rel="apple-touch-icon">` 不支持 `data:` URI**——
-   Web Clip 图标抓取流程不解析 base64 数据，因此 `pwa/apple-touch-icon.base64.txt`
-   只能用于内联备用（如 CSS background / offline 兜底），不能放进 link 的 href。
-   若真机仍显示占位图标，先删除旧主屏图标并重新「添加到主屏幕」（iOS 对 Web Clip
-   图标的缓存非常顽固）。
+   兜底位置）。**注意两点**：① iOS 的 `<link rel="apple-touch-icon">` 不支持
+   `data:` URI——Web Clip 图标抓取流程不解析 base64 数据，因此
+   `pwa/apple-touch-icon.base64.txt` 只能用于内联备用，不能放进 link 的 href；
+   ② `sw.js` 已把路径含 `apple-touch-icon` 的请求**直接放行**（不经过 Service
+   Worker 的缓存策略），因为 iOS 添加主屏时的图标抓取对 SW 返回的缓存响应存在
+   兼容性问题。若真机仍显示占位图标，先删除旧主屏图标并重新「添加到主屏幕」
+   （iOS 对 Web Clip 图标的缓存非常顽固）。
 
 10. **`viewport` meta 必须含 `viewport-fit=cover`**，否则 `env(safe-area-inset-*)`
     不生效，底部 Tab Bar 会被 iOS 的 Home 指示条 / Android 手势导航条遮挡。
@@ -182,3 +184,7 @@ python3 pwa/generate-icons.py   # 依赖：Python 3 + numpy（无其他第三方
   （带尺寸命名，根目录 + pwa/）与 `apple-touch-icon.base64.txt`，并在文档确认
   iOS touch icon 不支持 data URI；新增 `pwa/android-ui-guide.md` 移交 Android 端
   待办；缓存版本递增至 `v7`。
+- 2026-10：按 Apple HIG / Liquid Glass 修正 iOS 玻璃态——Tab Bar 材质不透明度
+  回调至 0.78、模糊升至 40px、改为左右贴边的全宽悬浮胶囊（带高光边缘），内容
+  底部让位增至 7rem 解决遮挡；`sw.js` 对 `apple-touch-icon` 请求直接放行，修复
+  iOS 添加主屏时图标被 SW 缓存策略干扰的问题；缓存版本递增至 `v8`。

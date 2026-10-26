@@ -18,7 +18,7 @@
 /* CacheStorage 按 origin 共享，因此所有本站缓存统一使用专属前缀，
    activate 阶段只清理此前缀下的旧版本，不能清除同源其他应用的缓存。 */
 const CACHE_PREFIX = 'plainwhite-';
-const CACHE_VERSION = 'v7';
+const CACHE_VERSION = 'v8';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 
 /* 预缓存清单：SW 安装时一次性写入的应用外壳（App Shell）。
@@ -108,6 +108,15 @@ self.addEventListener('fetch', function (event) {
        2) PDF 阅读器使用 Range 分段请求，缓存整份响应后
           按 Range 读取会出错。 */
     if (url.pathname.indexOf('/files/') !== -1) {
+        return;
+    }
+
+    /* iOS 添加到主屏幕（Web Clip）的图标请求直接放行、不拦截：
+       iOS 在「添加到主屏幕」时抓取 apple-touch-icon 的流程对
+       Service Worker 返回的缓存响应存在兼容性问题（可能因此拿不到
+       图标而回退为「标题首字」占位）。这里一律直连网络，保证 iOS
+       能拿到原始 PNG 图标。 */
+    if (url.pathname.indexOf('apple-touch-icon') !== -1) {
         return;
     }
 

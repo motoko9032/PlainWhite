@@ -3,7 +3,7 @@
 
 \title{\bfseries 纯白通用工作手册}
 \author{\kaishu 素子-白色封皮纯白运营小组}
-\date{2026年10月27日 第八版}
+\date{2026年10月27日 第九版}
 
 \begin{document}
 
@@ -147,7 +147,7 @@
 	\item{\verb|files/| 目录中的大文件（PDF、EPUB）不缓存：体积大，且 PDF 阅读器按 Range 分段读取，缓存整份响应会导致读取错乱；}
 	\item{新增 HTML 页面时，必须照抄现有同级页面 \verb|<head>| 中的 PWA 区块（manifest、图标、主题色等标签），并按页面所在目录层级调整相对路径前缀（根目录页面用 \verb|./|，二级目录页面用 \verb|../../|）；}
 	\item{更换品牌图标时，只修改 \verb|pwa/icon.svg|，并运行 \verb|python3 pwa/generate-icons.py| 重新生成全部 PNG 图标——脚本会解析 SVG 矢量并按要求加粗描边，无需手工编辑任何 PNG。当前正式图标为手写「纯白」字标（仅描边）。}
-	\item{iOS 添加到主屏的图标必须是无透明通道（无 alpha）的 PNG，\verb|apple-touch-icon.png| 与 \verb|apple-touch-icon-180x180.png| 由生成脚本输出为 RGB，并同步写一份到站点根目录（iOS 的整站 Web Clip 兜底位置）；iOS 的 \verb|<link rel="apple-touch-icon">| 不支持 \verb|data:| URI（base64 硬编码不可行），\verb|pwa/apple-touch-icon.base64.txt| 仅作内联备用，不要放进 link 的 href。}
+	\item{iOS 添加到主屏的图标必须是无透明通道（无 alpha）的 PNG，\verb|apple-touch-icon.png| 与 \verb|apple-touch-icon-180x180.png| 由生成脚本输出为 RGB，并同步写一份到站点根目录（iOS 的整站 Web Clip 兜底位置）；iOS 的 \verb|<link rel="apple-touch-icon">| 不支持 \verb|data:| URI（base64 硬编码不可行），\verb|pwa/apple-touch-icon.base64.txt| 仅作内联备用，不要放进 link 的 href；\verb|sw.js| 对路径含 \verb|apple-touch-icon| 的请求一律直接放行，避免 Service Worker 的缓存策略干扰 iOS 添加主屏时的图标抓取。}
 	\item{每个页面的 \verb|viewport| meta 必须含 \verb|viewport-fit=cover|，否则底部安全区 \verb|env(safe-area-inset-*)| 不生效，悬浮 Tab Bar 会被系统手势条遮挡；\verb|<head>| 中的 \verb|theme-color| 已按浅色/深色拆成两条（带 \verb|media| 属性），新增页面时两条都要复制。}
 	\item{底部悬浮 Tab Bar 仅在「添加到主屏」的安装模式（standalone）显示：iOS 为高斯模糊玻璃态，Android 为低饱和紫罗兰紫（Material You 莫奈色）胶囊，均在底部并适配安全区；浏览器里访问不显示，保持原样。检测与注入逻辑在 \verb|script/script.js|，样式在 \verb|style/style.css|。}
 	\item{深色模式跟随系统 \verb|prefers-color-scheme|，遵循 WCAG 对比度与无障碍标准（\verb|color-scheme|、焦点可见、\verb|prefers-reduced-motion|、\verb|prefers-contrast|）；新增颜色一律使用 \verb|style/style.css| 顶部的语义 CSS 变量，禁止写死新颜色。}
@@ -179,6 +179,10 @@
 	      \verb|apple-touch-icon.base64.txt|，确认 iOS touch icon 不支持
 	      \verb|data:| URI；新增 \verb|pwa/android-ui-guide.md| 移交 Android
 	      端待办。}
+	\item{2026-10-27：按 Apple HIG / Liquid Glass 修正 iOS 玻璃态——Tab Bar
+	      材质不透明度回调至 0.78、模糊升至 40px、改为左右贴边全宽悬浮胶囊，
+	      内容底部让位增至 7rem 解决遮挡；\verb|sw.js| 放行
+	      \verb|apple-touch-icon| 请求，修复 iOS 主屏图标抓取被 SW 干扰。}
 \end{itemize}
 
 \end{document}
