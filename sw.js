@@ -15,8 +15,11 @@
    必须递增此版本号（例如 'v1' → 'v2'），旧缓存会在 activate 阶段
    被自动清空。⚠️ 这是目前唯一的缓存失效开关，忘记递增会导致
    用户长期看到旧内容。 */
-const CACHE_VERSION = 'v1';
-const CACHE_NAME = 'plainwhite-' + CACHE_VERSION;
+/* CacheStorage 按 origin 共享，因此所有本站缓存统一使用专属前缀，
+   activate 阶段只清理此前缀下的旧版本，不能清除同源其他应用的缓存。 */
+const CACHE_PREFIX = 'plainwhite-';
+const CACHE_VERSION = 'v2';
+const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 
 /* 预缓存清单：SW 安装时一次性写入的应用外壳（App Shell）。
    路径相对于 sw.js 所在目录，即站点根目录。
@@ -54,12 +57,14 @@ self.addEventListener('install', function (event) {
     );
 });
 
-/* ---- activate：清空旧版本缓存，并立即控制已打开的页面 ---- */
+/* ---- activate：清空本项目旧版本缓存，并立即控制已打开的页面 ---- */
 self.addEventListener('activate', function (event) {
     event.waitUntil(
         caches.keys().then(function (keys) {
             return Promise.all(keys.map(function (key) {
-                if (key !== CACHE_NAME) {
+                /* CacheStorage 按 origin 共享，而非按 Service Worker 作用域隔离。
+                   只删除带本项目专属前缀的旧缓存，避免清除同源其他应用的数据。 */
+                if (key.indexOf(CACHE_PREFIX) === 0 && key !== CACHE_NAME) {
                     return caches.delete(key);
                 }
             }));
@@ -121,27 +126,31 @@ self.addEventListener('fetch', function (event) {
                 const scopePath = new URL('./', self.location.href).pathname;
                 const isHome = url.pathname === scopePath ||
                     url.pathname === scopePath + 'index.html';
-                return caches.match(request)
-                    .then(function (cached) {
-                        if (cached) {
-                            return cached;
-                        }
-                        return isHome ? caches.match('./index.html') : null;
-                    })
-                    .then(function (cached) {
-                        if (cached) {
-                            return cached;
-                        }
-                        /* 最后兜底：offline.html 在预缓存清单中，
-                           正常安装后必然存在；此分支仅为极端情况保险。 */
-                        return caches.match('./offline.html').then(function (offlinePage) {
-                            return offlinePage || new Response(
-                                '纯白 — 当前处于离线状态，请联网后重试。',
-                                { status: 503, statusText: 'Offline',
-                                  headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
-                            );
-                        });
+                return caches.open(CACHE_NAME).then(function (cache) {
+                    return cache.match(request);
+                }).then(function (cached) {
+                    if (cached) {
+                        return cached;
+                    }
+                    return isHome ? caches.open(CACHE_NAME).then(function (cache) {
+                        return cache.match('./index.html');
+                    }) : null;
+                }).then(function (cached) {
+                    if (cached) {
+                        return cached;
+                    }
+                    /* 最后兜底：offline.html 在预缓存清单中，
+                       正常安装后必然存在；此分支仅为极端情况保险。 */
+                    return caches.open(CACHE_NAME).then(function (cache) {
+                        return cache.match('./offline.html');
+                    }).then(function (offlinePage) {
+                        return offlinePage || new Response(
+                            '纯白 — 当前处于离线状态，请联网后重试。',
+                            { status: 503, statusText: 'Offline',
+                              headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
+                        );
                     });
+                });
             })
         );
         return;
@@ -151,21 +160,21 @@ self.addEventListener('fetch', function (event) {
        （stale-while-revalidate）。命中缓存立即返回，同时后台
        发起网络请求刷新缓存；未命中缓存则等待网络，失败时静默。 */
     event.respondWith(
-        caches.match(request).then(function (cached) {
-            const fetched = fetch(request).then(function (response) {
-                if (response && response.status === 200 && response.type === 'basic') {
-                    const copy = response.clone();
-                    caches.open(CACHE_NAME).then(function (cache) {
+        caches.open(CACHE_NAME).then(function (cache) {
+            return cache.match(request).then(function (cached) {
+                const fetched = fetch(request).then(function (response) {
+                    if (response && response.status === 200 && response.type === 'basic') {
+                        const copy = response.clone();
                         cache.put(request, copy);
-                    });
-                }
-                return response;
-            }).catch(function () {
-                return cached;
+                    }
+                    return response;
+                }).catch(function () {
+                    return cached;
+                });
+                /* 未缓存且网络失败时返回 error 响应（浏览器按资源加载失败处理），
+                   避免 respondWith 收到 undefined 抛出异常。 */
+                return cached || fetched || Response.error();
             });
-            /* 未缓存且网络失败时返回 error 响应（浏览器按资源加载失败处理），
-               避免 respondWith 收到 undefined 抛出异常。 */
-            return cached || fetched || Response.error();
         })
     );
 });

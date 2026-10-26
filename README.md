@@ -135,7 +135,7 @@ The site ships with a complete PWA foundation: a web app manifest, a service wor
 
 The foundation is intentionally basic: once the design team settles on a final icon and optional features (update banners, push notifications, offline PDF reading), continue from the handover document rather than rebuilding. See [`pwa/README.md`](./pwa/README.md) for the full handover notes — hard rules, the remaining TODO list, local verification steps, and the new-page checklist.
 
-Key operational rule: after every deployment of changed static assets, bump `CACHE_VERSION` at the top of [`sw.js`](./sw.js), or users will keep seeing stale content.
+Key operational rule: after every deployment of changed static assets, bump `CACHE_VERSION` at the top of [`sw.js`](./sw.js), or users will keep seeing stale content. Cache cleanup is scoped to the `plainwhite-` namespace so this PWA does not delete unrelated apps' CacheStorage entries on the same origin.
 
 ## Repository Hygiene
 
