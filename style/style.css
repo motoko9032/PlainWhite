@@ -1015,6 +1015,7 @@ a {
 }
 
 .footer-inner {
+    position: relative;
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 0 1.5rem;
@@ -1069,6 +1070,16 @@ a {
     color: var(--ink-muted);
     text-align: center;
     opacity: 0.75;
+}
+
+.footer-watermark {
+    position: absolute;
+    right: 1.5rem;
+    bottom: 0.5rem;
+    width: 1px;
+    height: 1px;
+    opacity: 0.2;
+    pointer-events: none;
 }
 
 /* ---- 弹窗 ---- */
