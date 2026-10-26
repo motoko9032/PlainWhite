@@ -113,13 +113,15 @@
     `initIOSAppNavigation()`、`iosAppRoutes`、`iosMoreRoutes` 和本节说明。
 
 13. **iOS 样式是 HIG 启发的 Web 适配，不是原生 UIKit 控件或 HIG 认证**。
-    iPhone 使用底部安全区上方的悬浮玻璃 Tab Bar；宽屏触控设备使用顶部粘性 Tab
-    Bar。触控目标至少 44 CSS px 高，当前项对比度清晰；header 处于文档流中的粘性
-    定位，顶部安全区只计入一次。玻璃背景提高了透明度，启用「降低透明度」时回退
-    为实色背景。卡片圆角不依赖设备型号，而由 CSS `clamp()` 与 `vmin` 根据视口短边
-    响应计算。`backdrop-filter` 只能近似系统材质，不能保证等同 UIKit / Liquid Glass。
-    新增页面或调整导航后，必须在真实 iPhone/iPad 检查安全区、横竖屏、放大文字、
-    VoiceOver、深浅色与降低透明度；模拟器的安全区值不能代替真机验收。
+    Tab Bar 在 iPhone/iPad、横竖屏和不同页面上始终固定在视口底部，并以
+    `safe-area-inset-bottom` 为定位基准；不要再按宽度切换到文档流中的 sticky 定位，
+    否则滚动/切页会造成位置跳变。header 处于文档流中的粘性定位，顶部安全区只计入
+    一次。触控目标至少 44 CSS px 高，当前项对比度清晰；玻璃背景允许页面更多透出，
+    启用「降低透明度」时回退为实色背景。页面切换有轻量入场动效，必须尊重
+    `prefers-reduced-motion`。卡片圆角不依赖设备型号，而由 CSS `clamp()` 与 `vmin`
+    根据视口短边响应计算。`backdrop-filter` 只能近似系统材质，不能保证等同 UIKit /
+    Liquid Glass。新增页面或调整导航后，必须在真实 iPhone/iPad 检查安全区、横竖屏、
+    放大文字、VoiceOver、深浅色与降低透明度；模拟器的安全区值不能代替真机验收。
     设计参考：[Apple HIG — Tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars)
     与 [Configuring Web Applications](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html)。
 
@@ -137,9 +139,8 @@
     `viewport-fit=cover`，使用 `env(safe-area-inset-top|right|bottom|left)` 读取设备/
     窗口实际 inset；不要按机型写死刘海、灵动岛或 Home 指示条尺寸，也不要套用 tvOS
     的安全边距。header 顶部只计入一次 safe-top；主内容的左右边距取常规阅读留白与
-    对应方向 safe inset 的较大值；iPhone 底部 Tab Bar 位于 safe-bottom 上方，正文
-    底部留白须保证最后内容滚动时不会被栏遮挡。宽屏 iPad 的 Tab Bar 在 header 后进入
-    文档流，顶部 sticky 位置应按 header 总高度（含 safe-top）计算。参考：
+    对应方向 safe inset 的较大值；各尺寸下底部 Tab Bar 固定在 safe-bottom 上，正文
+    底部留白须保证最后内容滚动时不会被栏遮挡。参考：
     [Apple HIG — Layout: Guides and safe areas](https://developer.apple.com/design/human-interface-guidelines/layout#Guides-and-safe-areas)。
 
 ## 三、未来待办（完整部署 PWA 还需做的事，按优先级排序）

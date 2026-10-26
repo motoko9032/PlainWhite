@@ -701,6 +701,7 @@
             if (!views[route]) {
                 route = 'home';
             }
+            const shouldAnimate = activeRoute !== '';
             if (activeRoute) {
                 savedScrollPositions[activeRoute] = window.scrollY;
             }
@@ -712,7 +713,12 @@
             if (isHome && main) {
                 Array.prototype.forEach.call(main.children, function (child) {
                     if (child.tagName === 'SECTION') {
+                        child.classList.remove('ios-route-enter');
                         child.hidden = view.sections.indexOf(child.id) === -1;
+                        if (!child.hidden && shouldAnimate) {
+                            void child.offsetWidth;
+                            child.classList.add('ios-route-enter');
+                        }
                     }
                 });
                 setPageHeading(route);
