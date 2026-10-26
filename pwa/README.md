@@ -23,8 +23,9 @@
 | `pwa/favicon-32.png` | 浏览器标签页图标 | ✅ 由正式字标栅格化生成 |
 | `pwa/icon.svg` | 正式字标矢量源（手写「纯白」，仅描边） | ✅ 已替换占位设计 |
 | `pwa/generate-icons.py` | 纯 Python（标准库 + numpy）SVG 栅格化脚本 | ✅ 可复现 |
-| 全部 11 个 HTML 页面 | 已在 `<head>` 加入 PWA 区块（manifest、SVG/PNG favicon、iOS 元数据） | ✅ 已就绪 |
-| `script/script.js` | Service Worker 注册 + 新版本提示横幅（所有页面共用） | ✅ 已就绪 |
+| 全部 11 个 HTML 页面 | 已在 `<head>` 加入 PWA 区块（manifest、SVG/PNG favicon、iOS 元数据、viewport-fit、双 theme-color） | ✅ 已就绪 |
+| `script/script.js` | SW 注册 + 新版本横幅 + 底部 Tab Bar（仅安装模式显示） | ✅ 已就绪 |
+| `style/style.css` | 深色模式变量 + 底部 Tab Bar 样式（Android 莫奈胶囊 / iOS 玻璃态） | ✅ 已就绪 |
 
 图标体系说明：正式图标是手写「纯白」字标（`pwa/icon.svg`，仅描边）。它同时被用于
 四处：① `manifest.webmanifest` 的 SVG 图标条目（`sizes: "any"`，现代浏览器安装时
@@ -77,6 +78,18 @@
    并同步写一份到站点根目录（Apple 文档的整站 Web Clip 兜底位置）。不要手工
    把该 PNG 换成带透明通道的文件；若更换图标，重跑脚本即可同时刷新两份。
 
+10. **`viewport` meta 必须含 `viewport-fit=cover`**，否则 `env(safe-area-inset-*)`
+    不生效，底部 Tab Bar 会被 iOS 的 Home 指示条 / Android 手势导航条遮挡。
+    新增页面照抄现有页面的 viewport 行即可。`<head>` 中的 `theme-color` 已按
+    `prefers-color-scheme` 拆成浅色/深色两条（带 `media` 属性），复制 PWA 区块时
+    两条都要带上，浏览器状态栏颜色才能跟随深色模式。
+
+11. **底部 Tab Bar 只在「添加到主屏」的安装模式（standalone）显示**。检测逻辑
+    在 `script/script.js` 的 `initAppTabBar()`：`matchMedia('(display-mode: standalone)')`
+    或 iOS 的 `navigator.standalone`；样式由 `html[data-standalone]` 与
+    `html[data-app="ios"|"android"]` 驱动。浏览器里访问不设置这些属性，效果与
+    未安装时完全一致。Tab Bar 项改动只需改 `script.js` 里 `items` 数组。
+
 ## 三、未来待办（完整部署 PWA 还需做的事，按优先级排序）
 
 - [x] **① 替换正式图标**：已用正式设计（手写「纯白」字标）替换占位几何设计，
@@ -97,8 +110,12 @@
     发 `SKIP_WAITING`，接管后自动刷新；样式见 style.css 的 `.sw-update-banner`）；
   - 推送通知（刊物更新通知）——需要后端推送服务，超出静态站范围；
   - 迁移 Workbox（当前手写 ES5 SW，无构建依赖，功能已够用，无强制理由）；
-  - 深色模式（`style/style.css` 顶部注释明确「无暗色模式」，manifest 的
-    `theme_color`/`background_color` 均为纸白 `#f9f8f6`，改色需两处同步）。
+  - 深色模式 ✅ 已完成：`style/style.css` 用 `@media (prefers-color-scheme: dark)`
+    覆盖 CSS 变量，遵循 WCAG 对比度；`<head>` 的 `theme-color` 拆分浅/深两条，
+    `offline.html` 与 `color-scheme` 同步适配，浏览器与安装模式均跟随系统；
+  - 底部悬浮 Tab Bar ✅ 已完成：仅安装模式（standalone）显示，iOS 为高斯模糊
+    玻璃态、Android 为低饱和紫罗兰紫（Material You 莫奈色）胶囊，均按官方
+    安全区文档适配底部 inset；浏览器里访问不显示，保持原样。
 - [ ] **⑤ 测试清单**：
   - Chrome/Edge 桌面：安装图标出现、离线刷新仍可浏览已访问页面；
   - Android Chrome：添加到主屏幕 → 独立窗口（standalone）打开；
@@ -126,9 +143,10 @@ python3 pwa/generate-icons.py   # 依赖：Python 3 + numpy（无其他第三方
 
 新增任何 HTML 页面（例如第 5 期文章列表 `WeChatArticleList5.html`）时：
 
-1. 复制现有同级页面的 `<head>` 中的 PWA 区块（9 行：manifest、SVG favicon、
-   PNG favicon、apple-touch-icon（含 `sizes="180x180"`）、theme-color、
-   3 个 mobile-web-app meta、apple-mobile-web-app-title）；
+1. 复制现有同级页面的 `<head>` 中的 PWA 区块（manifest、SVG favicon、PNG favicon、
+   apple-touch-icon（含 `sizes="180x180"`）、theme-color 两条（浅/深、带 `media`）、
+   3 个 mobile-web-app meta、apple-mobile-web-app-title），以及含
+   `viewport-fit=cover` 的 viewport meta；
 2. 按「硬性规则 4」调整相对路径前缀；
 3. 保证页面 `<script src="...script.js" defer>` 存在（SW 注册随 script.js 自动生效）；
 4. 无需修改 `sw.js` 与 `manifest.webmanifest`（除非该页面要加入预缓存清单）。
@@ -148,3 +166,7 @@ python3 pwa/generate-icons.py   # 依赖：Python 3 + numpy（无其他第三方
 - 2026-10：修复 iOS 添加到主屏时图标不显示的问题——`apple-touch-icon.png`
   改为无 alpha 的 RGB PNG、补 `sizes="180x180"`、并在站点根目录生成同源副本
   （Apple 文档的整站 Web Clip 兜底位置）；缓存版本递增至 `v5`。
+- 2026-10：原生体验增强——① 全站 viewport 加 `viewport-fit=cover`；② 新增
+  底部悬浮 Tab Bar（仅安装模式显示，iOS 玻璃态 / Android 莫奈色胶囊，安全区
+  适配）；③ 深色模式（`prefers-color-scheme` 覆盖 CSS 变量 + `color-scheme` +
+  双 `theme-color`，offline.html 同步适配）；缓存版本递增至 `v6`。

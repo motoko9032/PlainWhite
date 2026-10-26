@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.9.25)  27 OCT 2026 04:10
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.9.25)  27 OCT 2026 04:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -732,7 +732,32 @@ ents.js[]
  []
 
 [4]
-Overfull \hbox (5.74553pt too wide) in paragraph at lines 157--160
+Overfull \hbox (70.22545pt too wide) in paragraph at lines 148--149
+[]\TU/FandolSong-Regular(0)/m/n/10.53937 每 个 页 面 的[][] \TU/lmtt/m/n/10.53937 vi
+ewport[] \TU/lmr/m/n/10.53937 meta \TU/FandolSong-Regular(0)/m/n/10.53937 必 须 含
+[][] \TU/lmtt/m/n/10.53937 viewport-fit=cover[]\TU/FandolSong-Regular(0)/m/n/10
+.53937 ，|  否 则 底 部 安 全 区[][] \TU/lmtt/m/n/10.53937 env(safe-area-inset-*)[]
+ []
+
+
+Overfull \hbox (39.31247pt too wide) in paragraph at lines 150--151
+[]\TU/FandolSong-Regular(0)/m/n/10.53937 深 色 模 式 跟 随 系 统[][] \TU/lmtt/m/n/10.53
+937 prefers-color-scheme[]\TU/FandolSong-Regular(0)/m/n/10.53937 ，|  遵 循 \TU/lm
+r/m/n/10.53937 WCAG \TU/FandolSong-Regular(0)/m/n/10.53937 对 比 度 与 无 障 碍 标 准  |
+（[][]\TU/lmtt/m/n/10.53937 color-scheme[]\TU/FandolSong-Regular(0)/m/n/10.53937
+ 、|
+ []
+
+
+Overfull \hbox (48.48267pt too wide) in paragraph at lines 150--151
+\TU/FandolSong-Regular(0)/m/n/10.53937 焦 点 可 见、| [][]\TU/lmtt/m/n/10.53937 pref
+ers-reduced-motion[]\TU/FandolSong-Regular(0)/m/n/10.53937 、| [][]\TU/lmtt/m/n/
+10.53937 prefers-contrast[]\TU/FandolSong-Regular(0)/m/n/10.53937 ） ；|  新 增 颜 色
+ 一 律 使 用[][] \TU/lmtt/m/n/10.53937 style/style.css[]
+ []
+
+
+Overfull \hbox (5.74553pt too wide) in paragraph at lines 160--163
 []\TU/lmr/m/n/10.53937 2026-10-26\TU/FandolSong-Regular(0)/m/n/10.53937 ：|  正 式
  图 标 替 换 为 手 写  |「纯 白」|  字 标  |（[][]\TU/lmtt/m/n/10.53937 pwa/icon.svg[]\TU/Fan
 dolSong-Regular(0)/m/n/10.53937 ） ，| [][]\TU/lmtt/m/n/10.53937 pwa/generate-ico
@@ -748,7 +773,7 @@ L3 programming layer <2026/08/11>
 Here is how much of TeX's memory you used:
  8065 strings out of 467717
  256387 string characters out of 5421760
- 689230 words of memory out of 5000000
+ 693230 words of memory out of 5000000
  37170 multiletter control sequences out of 15000+600000
  631547 words of font info for 92 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191

@@ -2,19 +2,30 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="纯白 — 离线状态提示页。">
-    <meta name="theme-color" content="#f9f8f6">
+    <meta name="theme-color" content="#f9f8f6" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#161618" media="(prefers-color-scheme: dark)">
     <title>离线 — 纯白</title>
     <!-- 本页为 Service Worker 的离线兜底页，样式全部内联、不依赖任何外部资源，
          以保证在没有网络且缓存中只剩本页时也能完整渲染。 -->
     <style>
         :root {
+            color-scheme: light dark;
             --paper: #f9f8f6;
             --ink: #3a3a3c;
             --ink-light: #626264;
             --sakura: #e8a0b0;
             --sakura-deep: #d48496;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --paper: #161618;
+                --ink: #e8e8ec;
+                --ink-light: #c5c5cd;
+                --sakura: #f2b8c6;
+                --sakura-deep: #ec9fb2;
+            }
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { font-size: 16px; -webkit-font-smoothing: antialiased; }

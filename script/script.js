@@ -348,6 +348,126 @@
         updateHeader();
     });
 
+    // ---- PWA：底部悬浮 Tab Bar（仅安装为 App 的 standalone 模式显示）----
+    // 本脚本以 defer 加载，执行时 DOM 已解析完毕，可直接注入 DOM。
+    // 浏览器里访问不会设置 html[data-standalone]，因此 Tab Bar 完全不
+    // 出现、与未安装时的效果一致；样式见 style/style.css 的 .app-tabbar。
+    // 平台差异：iOS 玻璃态、Android 莫奈色胶囊（详见 CSS 注释）。
+    function initAppTabBar() {
+        // 判定「添加到主屏」的安装模式：
+        //   - 标准 matchMedia('(display-mode: standalone)')（Chrome/Edge/Android）
+        //   - iOS Safari 的特有属性 window.navigator.standalone
+        const standalone = (window.matchMedia &&
+            window.matchMedia('(display-mode: standalone)').matches) ||
+            (window.navigator && window.navigator.standalone === true);
+        if (!standalone) {
+            return;
+        }
+
+        // 平台判定：与 detectPlatformAndFontFeature 相同的 iOS 判定逻辑；
+        // 其余环境（Android / 桌面安装窗口）统一按 Android 莫奈色处理。
+        const ua = navigator.userAgent || '';
+        const isIOS = /iPad|iPhone|iPod/.test(ua) ||
+            (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1);
+        const root = document.documentElement;
+        root.setAttribute('data-standalone', '');
+        root.setAttribute('data-app', isIOS ? 'ios' : 'android');
+
+        // 首页基准 URL：本脚本位于 script/ 子目录，上溯一级即站点根目录。
+        let homeBase;
+        try {
+            homeBase = new URL('../', scriptElement.src);
+        } catch (e) {
+            homeBase = new URL('../', location.href);
+        }
+        // 当前页面是否即首页（含 /index.html 的写法）
+        const isHome = location.pathname === homeBase.pathname ||
+            location.pathname === homeBase.pathname + 'index.html';
+
+        // Tab Bar 的 5 个入口，与首页各 section 的 id 对应。
+        // 图标为内联 SVG 线性图标（stroke 风格），label 供朗读与显示。
+        const items = [
+            { hash: '#hero', label: '首页',
+              icon: '<path d="M4 11.2 12 5l8 6.2"/><path d="M6.5 9.8V19h11V9.8"/>' },
+            { hash: '#announcements', label: '公告',
+              icon: '<path d="M6 9.5a6 6 0 0 1 12 0c0 4.5 2 5.5 2 5.5H4s2-1 2-5.5"/><path d="M10 18.5a2 2 0 0 0 4 0"/>' },
+            { hash: '#columns', label: '阅读',
+              icon: '<path d="M4.5 5.5c3-1.4 5-1.4 7.5 0 2.5-1.4 4.5-1.4 7.5 0v13c-3-1.4-5-1.4-7.5 0-2.5-1.4-4.5-1.4-7.5 0z"/><path d="M12 5.5v13"/>' },
+            { hash: '#downloads', label: '下载',
+              icon: '<path d="M12 4.5v10"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M5 19.5h14"/>' },
+            { hash: '#about', label: '关于',
+              icon: '<circle cx="12" cy="12" r="8.5"/><path d="M12 11.5v5"/><path d="M12 8h.01"/>' }
+        ];
+
+        const tabbar = document.createElement('nav');
+        tabbar.className = 'app-tabbar';
+        tabbar.setAttribute('aria-label', '应用底部导航');
+
+        // id → 元素 的映射，仅首页用于可见性高亮
+        const sections = {};
+
+        items.forEach(function (item) {
+            const a = document.createElement('a');
+            a.className = 'app-tabbar-item';
+            // 首页用纯 hash 平滑滚动到对应栏目；子页面跳回首页对应锚点
+            a.href = isHome ? item.hash : homeBase.href + item.hash;
+            a.innerHTML =
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+                'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ' +
+                'aria-hidden="true">' + item.icon + '</svg>' +
+                '<span class="app-tabbar-item-label">' + item.label + '</span>';
+            tabbar.appendChild(a);
+
+            if (isHome) {
+                const section = document.querySelector(item.hash);
+                if (section) {
+                    sections[item.hash] = section;
+                }
+            }
+        });
+
+        document.body.appendChild(tabbar);
+
+        // 当前项高亮：首页根据视口中「最靠近顶部」的 section 动态切换；
+        // 子页面没有这些锚点，固定高亮「首页」项。
+        const links = tabbar.querySelectorAll('.app-tabbar-item');
+
+        function setCurrent(hash) {
+            links.forEach(function (link) {
+                if (link.getAttribute('href') === hash) {
+                    link.setAttribute('aria-current', 'page');
+                } else {
+                    link.removeAttribute('aria-current');
+                }
+            });
+        }
+
+        if (isHome && 'IntersectionObserver' in window) {
+            // rootMargin 把判定区间压缩到视口顶部附近：某 section 进入
+            // 该区间时即视为「当前所在栏目」，据此更新 aria-current。
+            const observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        setCurrent('#' + entry.target.id);
+                    }
+                });
+            }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+
+            Object.keys(sections).forEach(function (hash) {
+                observer.observe(sections[hash]);
+            });
+            setCurrent('#hero');
+        } else {
+            // 子页面：链接指向「首页锚点」的完整 URL，无法按 hash 匹配，
+            // 固定高亮第一项（首页）即可。
+            if (links.length) {
+                links[0].setAttribute('aria-current', 'page');
+            }
+        }
+    }
+
+    initAppTabBar();
+
     // ---- PWA：Service Worker 注册 ----
     // 可安装 + 离线缓存能力由站点根目录 sw.js 提供（manifest 见根目录
     // manifest.webmanifest，交接文档见 pwa/README.md）。
