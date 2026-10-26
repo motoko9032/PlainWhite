@@ -612,13 +612,10 @@
             }
         }
 
-        // Place navigation directly after the header. On iPhone it is fixed to
-        // the bottom edge; on wider iPad layouts CSS can keep it near the top.
-        if (header && header.parentNode) {
-            header.parentNode.insertBefore(tabbar, header.nextSibling);
-        } else {
-            document.body.appendChild(tabbar);
-        }
+        // Keep the fixed navigation directly under body. A transformed or
+        // filtered layout ancestor would become its containing block and make
+        // the bar move with that ancestor instead of staying in the viewport.
+        document.body.appendChild(tabbar);
 
         function routeForSection(sectionId) {
             const routes = {

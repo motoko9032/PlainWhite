@@ -1547,17 +1547,10 @@ html[data-standalone][data-app="android"] .app-tabbar-item:focus-visible {
 /* Web 无法调用 UIKit 的原生 Tab Bar / Liquid Glass；以高斯模糊和半透明
    背景近似系统材质，并提供 prefers-reduced-transparency 不透明回退。 */
 html[data-standalone][data-app="ios"] .app-tabbar {
-    left: max(1rem, env(safe-area-inset-left, 0px));
-    right: max(1rem, env(safe-area-inset-right, 0px));
-    bottom: var(--ios-safe-area-bottom, env(safe-area-inset-bottom, 0px));
-    transform: none;
-    max-width: min(36rem, calc(100vw - 2rem));
-    width: auto;
-    margin-inline: auto;
     gap: 0;
     padding: 0.25rem;
     border: 1px solid rgba(58, 58, 60, 0.16);
-    border-radius: 1.25rem;
+    border-radius: 9999px;
     background: rgba(253, 252, 251, 0.38);
     -webkit-backdrop-filter: saturate(180%) blur(34px);
     backdrop-filter: saturate(180%) blur(34px);
@@ -1925,12 +1918,6 @@ html[data-ios-app] {
     --ios-header-block-size: calc(var(--header-height) + var(--ios-safe-area-top) + 0.5rem);
 }
 
-html[data-standalone][data-app="ios"] .app-tabbar {
-    left: max(1rem, var(--ios-safe-area-left));
-    right: max(1rem, var(--ios-safe-area-right));
-    bottom: var(--ios-safe-area-bottom);
-}
-
 html[data-ios-app] body {
     font-family: var(--ios-system-font);
     font-size: 17px;
@@ -2027,6 +2014,19 @@ html[data-ios-app] .app-tabbar-item-label {
 html[data-ios-app] .ios-app-title {
     font: -apple-system-headline;
     line-height: normal;
+}
+
+/* One viewport anchor for every iOS app route and orientation. Keep the
+   capsule clear of the home indicator while avoiding centering transforms. */
+html[data-standalone][data-app="ios"] .app-tabbar {
+    position: fixed;
+    inset-inline-start: max(1rem, env(safe-area-inset-left, 0px));
+    inset-inline-end: max(1rem, env(safe-area-inset-right, 0px));
+    inset-block-end: calc(env(safe-area-inset-bottom, 0px) + 0.5rem);
+    width: auto;
+    max-width: min(36rem, calc(100vw - 2rem));
+    margin-inline: auto;
+    transform: none;
 }
 
 html[data-ios-app] main > section.ios-route-enter {

@@ -113,10 +113,12 @@
     `initIOSAppNavigation()`、`iosAppRoutes`、`iosMoreRoutes` 和本节说明。
 
 13. **iOS 样式是 HIG 启发的 Web 适配，不是原生 UIKit 控件或 HIG 认证**。
-    Tab Bar 在 iPhone/iPad、横竖屏和不同页面上始终固定在视口底部，并以
-    `safe-area-inset-bottom` 为定位基准；不要再按宽度切换到文档流中的 sticky 定位，
-    否则滚动/切页会造成位置跳变。header 处于文档流中的粘性定位，顶部安全区只计入
-    一次。触控目标至少 44 CSS px 高，当前项对比度清晰；玻璃背景允许页面更多透出，
+    Tab Bar 在 iPhone/iPad、横竖屏和不同页面上始终使用唯一的视口固定定位：
+    左右距离为安全区与 1rem 的较大值，底边固定在 `safe-area-inset-bottom + 0.5rem`；
+    不要按宽度切换定位、随滚动改写其坐标，或给它增加居中 `transform`。外框使用
+    `9999px` 圆角保持完整胶囊形态，并作为 `body` 的直接子元素，避免被带有
+    `transform`/`filter` 的祖先改成局部定位。header 处于文档流中的粘性定位，顶部安全区
+    只计入一次。触控目标至少 44 CSS px 高，当前项对比度清晰；玻璃背景允许页面更多透出，
     启用「降低透明度」时回退为实色背景。页面切换有轻量入场动效，必须尊重
     `prefers-reduced-motion`。卡片圆角不依赖设备型号，而由 CSS `clamp()` 与 `vmin`
     根据视口短边响应计算。`backdrop-filter` 只能近似系统材质，不能保证等同 UIKit /
