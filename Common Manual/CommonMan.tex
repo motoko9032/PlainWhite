@@ -3,7 +3,7 @@
 
 \title{\bfseries 纯白通用工作手册}
 \author{\kaishu 素子-白色封皮纯白运营小组}
-\date{2026年10月27日 第十版}
+\date{2026年10月29日 第十一版}
 
 \begin{document}
 
@@ -25,10 +25,10 @@
 
 \subsection{目录的结构}
 
-目录在代码提交后，{\heiti 必须按如下结构进行整理：}
+Git 仓库根目录即网站静态文件的根目录。目录在代码提交后，{\heiti 必须按如下结构进行整理：}
 
 \begin{itemize}
-	\item{\verb|main|}
+	\item{\verb|仓库根目录（PlainWhite/；不是需要额外创建的 main/ 子目录）|}
 	\begin{itemize}
 		\item{\verb|index.html|}
 		\item{\verb|manifest.webmanifest|}
@@ -37,6 +37,8 @@
 		\item{\verb|apple-touch-icon.png|}
 		\item{\verb|apple-touch-icon-180x180.png|}
 		\item{\verb|README.md|}
+		\item{\verb|.gitignore|}
+		\item{\verb|.githooks/pre-commit|}
 		\item{\verb|CommonMan.pdf|}
 		\item{\verb|announcements|}
 		\begin{itemize}
@@ -48,10 +50,28 @@
 				\item{\verb|index.html|}
 			\end{itemize}
 		\end{itemize}
+		\item{\verb|article|}
+		\begin{itemize}
+			\item{\verb|README.md|}
+			\item{\verb|article-01.md（等首发文章Markdown文件）|}
+			\item{\verb|covers|}
+			\begin{itemize}
+				\item{\verb|[PNG文章封面与正文插图]|}
+			\end{itemize}
+			\item{\verb|index.html（生成的文章索引与栏目入口）|}
+			\item{\verb|posts|}
+			\begin{itemize}
+				\item{\verb|[按slug生成的文章HTML页面]|}
+			\end{itemize}
+		\end{itemize}
+		\item{\verb|covers|}
+		\begin{itemize}
+			\item{\verb|cover-1st.png（等刊物期数封面）|}
+		\end{itemize}
 		\item{\verb|files|}
 		\begin{itemize}
 			\item{\verb|readme|}
-			\item{\verb|[Documents]|}
+			\item{\verb|[刊物PDF、EPUB及其他供读者下载的文件]|}
 		\end{itemize}
 		\item{\verb|fonts|}
 		\begin{itemize}
@@ -105,16 +125,28 @@
 				\item{\verb|special-article-01.md（等文章Markdown文件，编号连续）|}
 			\end{itemize}
 		\end{itemize}
+		\item{\verb|tools|}
+		\begin{itemize}
+			\item{\verb|build_articles.py（首发文章静态页面生成器）|}
+			\item{\verb|test_articles.py（生成器自测）|}
+		\end{itemize}
 		\item{\verb|Common Manual|}
 		\begin{itemize}
 			\item{\verb|README.md|}
 			\item{\verb|CommonMan.tex|}
-			\item{\verb|CommonMan.zip|\footnote{此处为本手册文件的整个\LaTeX{}项目目录压缩包}}
+			\item{\verb|CommonMan.pdf（手册发布版）|}
+			\item{\verb|CommonMan.zip|\footnote{包含本手册源码、说明与发布版的压缩包}}
+			\item{\verb|build|}
+			\begin{itemize}
+				\item{\verb|.gitignore（忽略本地编译产物）|}
+				\item{\verb|编译辅助文件与临时输出（aux、log、toc、xdv等；不提交）|}
+				\item{\verb|CommonMan.pdf（编译中间产物，发布版另存于上级目录）|}
+			\end{itemize}
 		\end{itemize}
 	\end{itemize}
 \end{itemize}
 
-{\kaishu 上述结构在纸面上大概如此，实际上只需要文件内的目录结构符合此列表的描述，顺序本身并不影响是否符合本手册的要求。}
+{\kaishu 图中的「仓库根目录」就是 Git 仓库及 GitHub Pages 发布根目录；不要为了照搬树形图而创建 main/ 并移动站点文件，否则会改变静态资源路径、Service Worker 作用域或部署地址。方括号表示同类文件的集合。上述结构的顺序本身不影响是否符合要求。}
 
 \subsection{目录的含义}
 
@@ -122,18 +154,23 @@
 
 {\kaishu \begin{itemize}
 	\item{files – 网站文件（指用户需要下载的内容）}
+	\item{covers – 刊物各期封面图片；首发文章使用的封面与正文插图归入 article/covers/}
+	\item{article – 首发文章的 Markdown 源文件、PNG 图片和静态 HTML 生成产物}
+	\item{tools – 文章静态页面生成器及其测试脚本}
 	\item{style – 样式表文件夹（存储css样式表）}
 	\item{script - JavaScript脚本文件夹（存储JavaScript脚本）}
-	\item{announcements – 公告文件夹（存储首页公告的Markdown文件与回退数据，由\verb|script/announcements.js|动态渲染）}
+	\item{announcements – 首页公告的Markdown源文件与回退数据，由页面脚本动态渲染}
 	\item{sub – 公众号原文与LOFTER原文列表页文件夹（存储各期列表页、文章Markdown文件与回退数据，按\verb|WeChat|、\verb|LOFTER|、\verb|special-sub|三个子目录存放）}
 	\item{fonts – 字体文件夹（存储网站本地字体文件）}
 	\item{pwa – PWA支持文件夹（存储应用图标、图标生成脚本与PWA交接文档，详见\verb|pwa/README.md|）}
-	\item{Common Manual – 通用手册文件夹（存储本手册的\LaTeX 项目文件）}
+	\item{Common Manual – 通用手册文件夹（存储手册源码、发布版、压缩包与 build/ 编译辅助文件）}
 \end{itemize}}
 
 \subsection{提交方法}
 
 以下是提交代码的推荐方法——你最习惯的方法，只要代码本身能够被本项目的相关人员审阅，即使使用打印纸提交代码，也是可以被理解的。
+
+通过 Git 提交首发文章时，必须把 Markdown 源文件、引用的 PNG 图片，以及重新生成的 \verb|article/index.html| 和 \verb|article/posts/*.html| 一起提交。网站为纯静态托管，部署环境不会运行 Python 生成器；若只提交源文件而漏掉生成页面，线上页面不会自动更新。
 
 \section{PWA 应用支持}
 
@@ -143,18 +180,51 @@
 
 \begin{itemize}
 	\item{\verb|sw.js| 必须始终位于站点根目录，其作用域覆盖整个站点，不得移动；}
-	\item{每次发布静态资源变更（HTML、CSS、JavaScript、公告数据等）后，必须递增 \verb|sw.js| 顶部的 \verb|CACHE_VERSION| 版本号，否则用户会持续看到旧内容；}
+	\item{每次发布静态资源变更（HTML、CSS、JavaScript、公告或文章数据、生成的HTML等）后，必须递增 \verb|sw.js| 顶部的 \verb|CACHE_VERSION| 版本号，否则用户会持续看到旧内容；}
 	\item{\verb|files/| 目录中的大文件（PDF、EPUB）不缓存：体积大，且 PDF 阅读器按 Range 分段读取，缓存整份响应会导致读取错乱；}
+	\item{首发文章页面采用导航网络优先，其他同源静态资源按需缓存；文章封面与其他大图片不得加入 \verb|PRECACHE_URLS|，避免安装时预缓存大量非首屏资源；}
 	\item{新增 HTML 页面时，必须照抄现有同级页面 \verb|<head>| 中的 PWA 区块（manifest、图标、主题色等标签），并按页面所在目录层级调整相对路径前缀（根目录页面用 \verb|./|，二级目录页面用 \verb|../../|）；}
 	\item{更换品牌图标时，只修改 \verb|pwa/icon.svg|，并运行 \verb|python3 pwa/generate-icons.py| 重新生成全部 PNG 图标——脚本会解析 SVG 矢量并按要求加粗描边，无需手工编辑任何 PNG。当前正式图标为手写「纯白」字标（仅描边）。}
 	\item{iOS 添加到主屏的图标必须是无透明通道（无 alpha）的 PNG，\verb|apple-touch-icon.png| 与 \verb|apple-touch-icon-180x180.png| 由生成脚本输出为 RGB，并同步写一份到站点根目录（iOS 的整站 Web Clip 兜底位置）；iOS 的 \verb|<link rel="apple-touch-icon">| 不支持 \verb|data:| URI（base64 硬编码不可行），\verb|pwa/apple-touch-icon.base64.txt| 仅作内联备用，不要放进 link 的 href；\verb|sw.js| 对路径含 \verb|apple-touch-icon| 的请求一律直接放行，避免 Service Worker 的缓存策略干扰 iOS 添加主屏时的图标抓取。}
-	\item{每个页面的 \verb|viewport| meta 必须含 \verb|viewport-fit=cover|，否则底部安全区 \verb|env(safe-area-inset-*)| 不生效，悬浮 Tab Bar 会被系统手势条遮挡；\verb|<head>| 中的 \verb|theme-color| 已按浅色/深色拆成两条（带 \verb|media| 属性），新增页面时两条都要复制。}
+	\item{每个页面的 \verb|viewport| meta 必须含 \verb|viewport-fit=cover|，保证设备安全区适配；新增页面时，必须复制浅色与深色两条 \verb|theme-color| 声明。}
 	\item{导航按运行平台隔离：Tab Bar 仅在安装模式（standalone）显示；普通浏览器访问不显示。iOS standalone 隐藏汉堡菜单，并使用应用式多页面导航；Android standalone 保持原有锚点导航；普通浏览器和 Android 不得受 iOS 页面隐藏或路由逻辑影响。检测与注入逻辑在 \verb|script/script.js|，样式在 \verb|style/style.css|。}
 	\item{iOS standalone 顶层栏目为首页、公告、阅读、下载、更多，分别对应首页、公告、栏目、下载与动态「更多」目录；更多目录含关于、特别文章、分发方式、支持、致谢、联系与投稿六个子页。应用路由格式为 \verb|#app/<route>|，子页仍选中「更多」，支持应用内返回与浏览器历史返回。当前页仅显示对应内容，主标题和 \verb|aria-current| 必须随路由更新。路由与页面映射维护在 \verb|script/script.js| 的 \verb|initIOSAppNavigation()|。}
 	\item{iOS 样式为 HIG 启发的 Web 适配，不是原生 UIKit 控件或 HIG 认证：iPhone 使用底部悬浮玻璃 Tab Bar，宽屏触控设备使用顶部 Tab Bar；触控目标至少 44 CSS px 高，安全区、降低透明度偏好和深色模式均须适配。卡片圆角由 \verb|clamp()| 与 \verb|vmin| 按视口短边响应计算；\verb|backdrop-filter| 仅近似系统材质。每次导航或页面结构变更后，必须在真机验收安全区、放大文字、VoiceOver、横竖屏与深浅色。}
-	\item{深色模式跟随系统 \verb|prefers-color-scheme|，遵循 WCAG 对比度与无障碍标准（\verb|color-scheme|、焦点可见、\verb|prefers-reduced-motion|、\verb|prefers-contrast|）；新增颜色一律使用 \verb|style/style.css| 顶部的语义 CSS 变量，禁止写死新颜色。}
+	\item{深色模式跟随系统偏好，并遵循对比度与无障碍要求；新增颜色必须使用样式表中定义的语义 CSS 变量，不得写入无说明的固定颜色。}
 	\item{iOS 安装模式采用 HIG 启发的 Web 适配：header 在文档流中粘性定位并让出顶部安全区，避免覆盖首屏；底部 Tab Bar 单项至少 44 CSS px 高，适配底部及横向安全区，并支持降低透明度偏好。CSS 材质不能等同 UIKit / Liquid Glass，也不构成完整 HIG 认证；发布前须在真机检查安全区、文字放大、VoiceOver、横竖屏与深浅色。参考 \verb|developer.apple.com/design/human-interface-guidelines/tab-bars|；Android 端其余适配待办登记在 \verb|pwa/android-ui-guide.md|。}
 \end{itemize}
+
+\section{首发文章与静态页面生成}
+
+首发文章源文件位于 \verb|article/|，使用一篇文章一个 Markdown 文件的方式维护。文章列表和阅读页由仓库根目录下的 \verb|tools/build_articles.py| 生成到 \verb|article/index.html| 与 \verb|article/posts/<slug>.html|。生成页是完整的静态 HTML，读者访问网站时不需要服务器端代码，也不依赖浏览器枚举目录或读取 Markdown。
+
+\subsection{新增文章的流程}
+
+\begin{enumerate}
+	\item 在 \verb|article/| 中新增按编号命名的文件，例如 \verb|article-03.md|；文件必须以 \verb|---| 开始，并在第二个 \verb|---| 后写正文。
+	\item 填写元数据：\verb|title|（标题）、\verb|date|（\verb|YYYY-MM-DD|）、\verb|column|（栏目键）和 \verb|summary|（摘要）；\verb|cover|（封面PNG路径）及 \verb|slug|（页面文件名）可选。字段值按单行 \verb|key: value| 书写，不需要 YAML 引号或列表语法。
+	\item 封面路径以 \verb|article/| 为基准，例如 \verb|covers/article-03.png|。封面必须是有效PNG；正文图片使用 \verb|![替代文本](相对路径)|，文件放在 \verb|article/| 内。
+	\item 在仓库根目录运行 \verb|python3 tools/build_articles.py|，成功后会更新文章索引并生成每篇文章的页面。可运行 \verb|python3 tools/test_articles.py| 执行生成器自测。
+	\item 提交并部署 Markdown、所引用的图片、生成的文章索引与阅读页。静态托管不会运行本地 Python 命令，因此源文件变化后必须先生成并提交产物；部署静态资源更新时按 PWA 规则递增缓存版本。
+\end{enumerate}
+
+\subsection{栏目、排序与封面规则}
+
+允许的 \verb|column| 值为 \verb|fiction|（小说）、\verb|poetry|（诗歌）、\verb|essay|（散文）、\verb|fanfic|（同人文学）、\verb|short-poems|（特别专栏-短诗）及 \verb|others|（其他）。索引按以上固定顺序显示有文章的栏目；栏目内按发布日期从新到旧排列，同日文章按源文件名升序排列。
+
+每个栏目 Hero 题图取本栏目中按日期从新到旧排列后第一篇带有有效 PNG 封面的文章。日期相同则按文件名升序确定顺序。文章无有效封面时不显示破损图片，栏目没有任何有效封面时退回无图排版。Hero 图使用替代文本、响应式裁切及懒加载；文章页封面同时输出图片尺寸以减少布局跳动。
+
+\subsection{校验、Markdown 与安全}
+
+缺少标题、日期格式不符或日历日期无效、栏目键未知、slug 格式非法或重复、front-matter 缺失等属于致命错误：生成器以非零状态中止并给出对应文件名，不生成新页面。缺少摘要时从正文首段生成并警告；缺少封面、封面路径错误或文件不是PNG时警告并按无封面处理。未知元数据字段也会警告并忽略。
+
+生成器支持标题、段落、加粗、斜体、行内代码、引用、无序与有序列表（含一层缩进嵌套）、链接、图片、围栏代码块和分隔线。它不支持完整 CommonMark/GFM 语法，例如表格、脚注与任务列表；遇到不支持的排版应使用普通段落或列表表达。
+
+正文中的原始 HTML 会转义后作为文字显示，不会插入可执行节点。外部链接仅允许 \verb|http|、\verb|https| 与 \verb|mailto| 协议；不安全协议按纯文本处理并输出警告。正文图片必须使用 \verb|article/| 内真实存在的相对路径，路径不合规或文件缺失时显示文字占位并输出警告。
+
+文章源文件须按 \verb|article-NN.md| 形式编号命名。\verb|README.md| 是维护文档，不作为文章读取；其他不符合命名规则的 Markdown 文件会被忽略并警告。
+
+生成的文章页面目录完全由脚本管理：构建会覆盖列表页、重新生成当前文章页，并清理已无对应源文章的旧页面。不要在生成目录中手工保存文件。脚本可重复运行，输出顺序稳定。
 
 \section{本文档的更新}
 
@@ -163,9 +233,11 @@
 \subsection{近期变更}
 
 \begin{itemize}
-	\item{2026-10-26：正式图标替换为手写「纯白」字标（\verb|pwa/icon.svg|），
-	      \verb|pwa/generate-icons.py| 重写为 SVG 栅格化脚本；\verb|icons/| 目录
-	      已移除，图标统一归档于 \verb|pwa/|，目录结构与本手册一致。}
+	\item{2026-10-29：目录说明改为以 Git 仓库根目录作为静态站点根目录，并补充首发文章与页面生成工具的目录结构。}
+	\item{2026-10-29：新增首发文章维护说明，涵盖元数据、Markdown、安全、排序、Hero 封面及静态部署。}
+	\item{2026-10-29：将 LaTeX 编译辅助文件集中到本目录的 \verb|build/|；发布 PDF 保留在手册目录及网站根目录。}
+	\item{2026-10-26：正式图标改用手写「纯白」字标，并统一归档在
+	      \verb|pwa/|；图标生成脚本改为 SVG 栅格化方案。}
 	\item{2026-10-26：新增 Service Worker 更新提示横幅（发现新版本时提示刷新），
 	      不再静默换新。}
 	\item{2026-10-27：尝试解决 iOS 添加到主屏时图标不生效（只显示标题首字「纯」）
@@ -176,12 +248,8 @@
 	      模式专属的底部悬浮 Tab Bar（iOS 玻璃态 / Android 莫奈色胶囊，安全区
 	      适配）；新增跟随系统的深色模式（\verb|prefers-color-scheme|、
 	      \verb|color-scheme|、双 \verb|theme-color|）。}
-	\item{2026-10-27：iOS 安装模式 UI 适配——状态栏 \verb|black-translucent|、
-	      顶部安全区让位、隐藏汉堡菜单、玻璃态 Tab Bar 透明度提高；图标前置
-	      工作——新增 \verb|apple-touch-icon-180x180.png| 与
-	      \verb|apple-touch-icon.base64.txt|，确认 iOS touch icon 不支持
-	      \verb|data:| URI；新增 \verb|pwa/android-ui-guide.md| 移交 Android
-	      端待办。}
+	\item{2026-10-27：iOS standalone 状态栏、安全区与导航适配；补充无透明通道的
+	      touch icon，并新增 Android UI 交接说明。}
 	\item{本次 iOS HIG 启发式修正：standalone header 改为占据文档流的 sticky header，
 	      重算顶部安全区、锚点与底部滚动留白；Tab Bar 五个入口等宽，单项至少
 	      44 CSS px 高，并改善选中对比度、键盘焦点和降低透明度偏好。CSS 材质仅为
