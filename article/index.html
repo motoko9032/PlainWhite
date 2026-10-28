@@ -1,0 +1,115 @@
+<!-- 本文件由 tools/build-articles.py 自动生成，请勿手工编辑。
+     修改 article/ 下的 Markdown 后，在仓库根目录运行
+     python3 tools/build_articles.py 重新生成。 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="纯白 — 白色封皮首发文章列表。按栏目分组的在线阅读入口，最新文章在前。">
+    <!-- PWA 基础支持（渐进式 Web 应用）：manifest 声明、主题色与图标。
+         相对路径必须与页面所在目录层级匹配：根目录页面用 ./，
+         二级目录页面（sub/*/、announcements/history/、article/posts/）用 ../../。
+         本区块由 tools/build-articles.py 生成。详见 pwa/README.md。 -->
+    <link rel="manifest" href="../manifest.webmanifest">
+    <link rel="icon" href="../pwa/icon.svg" type="image/svg+xml">
+    <link rel="icon" href="../pwa/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../pwa/apple-touch-icon.png">
+    <meta name="theme-color" content="#f9f8f6" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#161618" media="(prefers-color-scheme: dark)">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="纯白">
+    <title>首发文章 · 纯白</title>
+    <script src="../script/font-loader.js"></script>
+    <link rel="stylesheet" href="../style/style.css">
+    <script src="../script/script.js" defer></script>
+</head>
+<body>
+    <!-- 页眉 -->
+    <header class="header" id="header">
+        <div class="header-inner">
+            <a href="../index.html" class="logo">纯白</a>
+            <nav class="nav" id="nav" aria-label="主导航">
+                <a href="./index.html" class="nav-link" aria-current="page">文章</a>
+                <a href="../index.html#announcements" class="nav-link">公告</a>
+                <a href="../index.html#columns" class="nav-link">阅读</a>
+                <a href="../index.html#downloads" class="nav-link">下载</a>
+                <a href="../index.html#contact" class="nav-link">联系</a>
+            </nav>
+            <button class="menu-toggle" id="menuToggle" aria-label="切换导航" aria-expanded="false" aria-controls="nav">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+    <main>
+        <!-- 首发文章列表页（由 tools/build-articles.py 生成） -->
+        <section class="article-list-section">
+            <div class="container">
+                <h1 class="section-title">首发文章</h1>
+                <p class="article-list-note">
+                    白色封皮首发文章 · 独立成篇发布，按栏目分组展示，每栏目的文章按发布日期从新到旧排列。
+                </p>
+                <nav class="article-columns-nav" aria-label="栏目导航">
+            <a class="article-column-chip" href="#poetry">诗歌</a>
+            <a class="article-column-chip" href="#others">其他</a>
+                </nav>
+            <section class="article-column" id="poetry">
+                <header class="article-column-header">
+                    <h2 class="article-column-title">诗歌</h2>
+                    <p class="article-column-desc">现代诗 · 古诗词 · 诗序</p>
+                </header>
+                <ul class="article-index-list">
+                    <li>
+                        <a class="article-index-link" href="./posts/article-02.html">
+                            <time datetime="2026-10-29">2026-10-29</time>
+                            <h3 class="article-index-title">白纸（示例诗）</h3>
+                            <p class="article-index-summary">一首关于白纸的示例小诗，用于演示诗歌栏目的排版与无封面时的降级效果。正式内容上线前可删除。</p>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="article-column" id="others">
+                <header class="article-column-header">
+                    <h2 class="article-column-title">其他</h2>
+                    <p class="article-column-desc">致那些不被定义的文字</p>
+                </header>
+                <figure class="article-column-hero">
+                    <img src="./covers/article-01.png" alt="栏目「其他」题图（《首发文章栏目上线（示例文章）》封面）" width="1200" height="630" loading="lazy" decoding="async">
+                    <figcaption>栏目题图 · 封面来源：<a href="./posts/article-01.html">《首发文章栏目上线（示例文章）》</a>（本栏目最新一篇提供封面的文章）</figcaption>
+                </figure>
+                <ul class="article-index-list">
+                    <li>
+                        <a class="article-index-link" href="./posts/article-01.html">
+                            <time datetime="2026-10-28">2026-10-28</time>
+                            <h3 class="article-index-title">首发文章栏目上线（示例文章）</h3>
+                            <p class="article-index-summary">这是一篇用于演示首发文章系统的示例文章：说明栏目用途，并展示 Markdown 支持的排版能力。正式内容上线后可随时替换或删除。</p>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+            </div>
+        </section>
+    </main>
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-main">
+                <p class="footer-copyright">《纯白》 · 2026</p>
+                <nav class="footer-nav" aria-label="页脚导航">
+                    <a href="../index.html" class="footer-link">返回首页</a>
+                    <a href="./index.html" class="footer-link">首发文章列表</a>
+
+                    <a href="../index.html#contact" class="footer-link">合作联系</a>
+                </nav>
+            </div>
+            <p class="footer-note">开放知识 · 免费交流</p>
+            <p class="footer-license">线上内容采用知识共享协议（<a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh-hans">BY-NC 4.0</a>）发布</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!-- 本文件由 tools/build-articles.py 自动生成，请勿手工编辑。
+     修改 article/ 下的 Markdown 后，在仓库根目录运行
+     python3 tools/build_articles.py 重新生成。 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="这是一篇用于演示首发文章系统的示例文章：说明栏目用途，并展示 Markdown 支持的排版能力。正式内容上线后可随时替换或删除。">
+    <!-- PWA 基础支持（渐进式 Web 应用）：manifest 声明、主题色与图标。
+         相对路径必须与页面所在目录层级匹配：根目录页面用 ./，
+         二级目录页面（sub/*/、announcements/history/、article/posts/）用 ../../。
+         本区块由 tools/build-articles.py 生成。详见 pwa/README.md。 -->
+    <link rel="manifest" href="../../manifest.webmanifest">
+    <link rel="icon" href="../../pwa/icon.svg" type="image/svg+xml">
+    <link rel="icon" href="../../pwa/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../pwa/apple-touch-icon.png">
+    <meta name="theme-color" content="#f9f8f6" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#161618" media="(prefers-color-scheme: dark)">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="纯白">
+    <title>首发文章栏目上线（示例文章） · 纯白</title>
+    <script src="../../script/font-loader.js"></script>
+    <link rel="stylesheet" href="../../style/style.css">
+    <script src="../../script/script.js" defer></script>
+</head>
+<body>
+    <!-- 页眉 -->
+    <header class="header" id="header">
+        <div class="header-inner">
+            <a href="../../index.html" class="logo">纯白</a>
+            <nav class="nav" id="nav" aria-label="主导航">
+                <a href="../index.html" class="nav-link" aria-current="page">文章</a>
+                <a href="../../index.html#announcements" class="nav-link">公告</a>
+                <a href="../../index.html#columns" class="nav-link">阅读</a>
+                <a href="../../index.html#downloads" class="nav-link">下载</a>
+                <a href="../../index.html#contact" class="nav-link">联系</a>
+            </nav>
+            <button class="menu-toggle" id="menuToggle" aria-label="切换导航" aria-expanded="false" aria-controls="nav">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+    <main>
+        <!-- 首发文章阅读页（由 tools/build-articles.py 生成） -->
+        <article class="article-section">
+            <div class="container article-container">
+                <a class="article-back" href="../index.html"><span aria-hidden="true">←</span>首发文章列表</a>
+                <header class="article-header">
+                    <div class="article-meta">
+                        <span class="article-column-badge">其他</span>
+                        <time class="article-date" datetime="2026-10-28">2026-10-28</time>
+                    </div>
+                    <h1 class="article-title">首发文章栏目上线（示例文章）</h1>
+                    <p class="article-summary">这是一篇用于演示首发文章系统的示例文章：说明栏目用途，并展示 Markdown 支持的排版能力。正式内容上线后可随时替换或删除。</p>
+<img class="article-cover" src="../covers/article-01.png" alt="《首发文章栏目上线（示例文章）》封面" width="1200" height="630">
+                </header>
+                <div class="article-body">
+<h2>关于首发文章栏目（示例）</h2>
+<p>这是<strong>示例文章</strong>，用于演示「首发文章」栏目的生成流程与排版效果：由 <code>article/</code> 下的 Markdown 与 PNG 封面自动生成阅读页，并在文章列表中按栏目分组展示。</p>
+<p>正式文章上线时，替换或删除本文件即可。</p>
+<h3>支持的排版</h3>
+<h4>列表与引用</h4>
+<ul><li>无序列表条目一</li><li>无序列表条目二<ul><li>缩进两格的嵌套条目</li><li>第二个嵌套条目</li></ul></li></ul>
+<ol><li>有序列表条目一</li><li>有序列表条目二</li></ol>
+<blockquote><p>引用示例：这是纸的另一种形态。长期存在。</p></blockquote>
+<h4>代码块</h4>
+<pre><code class="language-python">print(&quot;纯白&quot;)</code></pre>
+<h4>链接与行内元素</h4>
+<p>正文中可以使用<strong>加粗</strong>、<em>斜体</em>、<code>行内代码</code>，以及<a href="https://example.com" target="_blank" rel="noopener noreferrer">外部链接</a>。原始 HTML 会被转义为纯文本显示，例如 &lt;script&gt;alert(1)&lt;/script&gt; 只会作为文字出现。</p>
+<hr>
+<p>以上即全部演示内容。新增文章的方法见 <code>article/README.md</code>。</p>
+                </div>
+                <nav class="article-pager" aria-label="文章导航">
+                    <a href="../index.html">返回首发文章列表</a>
+                    <a href="../../index.html">返回首页</a>
+                </nav>
+            </div>
+        </article>
+    </main>
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-main">
+                <p class="footer-copyright">《纯白》 · 2026</p>
+                <nav class="footer-nav" aria-label="页脚导航">
+                    <a href="../../index.html" class="footer-link">返回首页</a>
+                    <a href="../index.html" class="footer-link">首发文章列表</a>
+
+                    <a href="../../index.html#contact" class="footer-link">合作联系</a>
+                </nav>
+            </div>
+            <p class="footer-note">开放知识 · 免费交流</p>
+            <p class="footer-license">线上内容采用知识共享协议（<a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh-hans">BY-NC 4.0</a>）发布</p>
+        </div>
+    </footer>
+</body>
+</html>

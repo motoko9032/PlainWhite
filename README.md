@@ -64,6 +64,21 @@ Standalone special articles published by the **White Cover** collective alongsid
 
 The special article list works exactly like the WeChat lists: one Markdown file per article (`special-article-NN.md`) in [`sub/special-sub/`](./sub/special-sub/), rendered dynamically with a JavaScript fallback in `sub/special-sub/data.js`. No HTML, CSS, or JS changes are needed to add articles. Special article PDFs live in [`files/`](./files/) and are linked from the homepage "特别文章" section with plain `li` + `a href` entries — see [sub/README.md](./sub/README.md) for step-by-step instructions.
 
+### First-Published Articles (首发文章)
+
+First-published articles published independently by the **White Cover** collective, with full-text reading pages generated from Markdown.
+
+- [Article list (首发文章列表)](./article/) — grouped by column, newest first; each column card on the homepage links to its column anchor (e.g. `./article/#fiction`).
+
+Articles live in [`article/`](./article/) as `article-NN.md` Markdown files with front matter (`title`, `date`, `column`, `summary`, `cover`, optional `slug`) plus PNG covers in `article/covers/`. The generator [`tools/build_articles.py`](./tools/build_articles.py) (pure Python 3 standard library, no dependencies) builds the static list page `article/index.html` and one reading page per article under `article/posts/` — no runtime JavaScript or server code is needed, so the output works on any static host, including GitHub Pages. Column Hero images are auto-selected from the latest article with a valid PNG cover; missing/invalid covers degrade gracefully to text-only layout with build warnings.
+
+```bash
+python3 tools/build_articles.py   # regenerate article/index.html and article/posts/
+python3 tools/test_articles.py    # run the generator self-tests
+```
+
+Generated pages must be committed and deployed together with the sources. See [article/README.md](./article/README.md) for directory layout, metadata fields, validation/error rules, Hero selection rules, and step-by-step instructions for adding an article.
+
 ## Announcements
 
 The homepage announcement section is maintained independently in the [`announcements/`](./announcements/) directory.
@@ -126,6 +141,8 @@ Local variable fonts live in [`fonts/`](./fonts/) (the Chinese fonts are large, 
 | `sub/LOFTER/` | LOFTER article list pages, Markdown article files, and `data.js` fallback |
 | `sub/special-sub/` | White Cover special articles list page, Markdown article files, and `data.js` fallback |
 | `sub/README.md` | Shared maintenance instructions for all sub-directories |
+| `article/` | First-published articles: `article-NN.md` sources, `covers/` PNG covers, generated `index.html` list and `posts/` reading pages — see `article/README.md` |
+| `tools/build_articles.py` | Static-site generator for `article/` (pure Python 3 stdlib); `tools/test_articles.py` are its self-tests |
 | `fonts/` | Local webfonts |
 | `pwa/` | PWA icons, icon source/generator, and the PWA handover document (`pwa/README.md`) |
 | `Common Manual/` | Common editorial manual (LaTeX source) |

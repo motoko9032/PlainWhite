@@ -54,8 +54,11 @@
 4. **新页面 head 区块的相对路径必须匹配目录层级**：
    - 根目录页面：`./manifest.webmanifest`、`./pwa/...`
    - 二级目录页面（`sub/WeChat/`、`sub/LOFTER/`、`sub/special-sub/`、
-     `announcements/history/`）：`../../manifest.webmanifest`、`../../pwa/...`
-   - 每个 HTML `<head>` 中已有一段带注释的 PWA 区块，复制时按上述规则改前缀即可。
+     `announcements/history/`、`article/posts/`）：`../../manifest.webmanifest`、`../../pwa/...`
+   - `article/index.html` 等一级目录页面用 `../`；
+   - 每个 HTML `<head>` 中已有一段带注释的 PWA 区块，复制时按上述规则改前缀即可；
+   - `tools/build_articles.py` 生成的文章页面已自动带上正确的 PWA 区块，
+     无需手工处理。
 
 5. **`offline.html` 必须保持自包含**（内联样式、不引用外部 CSS/JS/字体），
    因为它是缓存中只剩它自己时仍要能完整渲染的兜底页。

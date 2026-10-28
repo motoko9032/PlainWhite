@@ -1,0 +1,12 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^ls -la /Users/ganbadiedeshouyouling/Documents/文件/PlainWhite/covers /Users/ganbadiedeshouyouling/Documents/文件/PlainWhite/sub /Users/ganbadiedeshouyouling/Documents/文件/PlainWhite/sub/WeChat /Users/ganbadiedeshouyouling/Documents/文件/PlainWhite/sub/special-sub /Users/ganbadiedeshouyouling/Documents/文件/PlainWhite/announcements/history; echo ---; python3 --version; node --version; echo ---; git -C /Users/ganbadiedeshouyouling/Documents/文件/PlainWhite status --short \\| head -20; git -C /Users/ganbadiedeshouyouling/Documents/文件/PlainWhite log --oneline -5$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^mkdir -p /Users/ganbadiedeshouyouling/Documents/文件/PlainWhite/tools /Users/ganbadiedeshouyouling/Documents/文件/PlainWhite/article/covers /Users/ganbadiedeshouyouling/Documents/文件/PlainWhite/article/posts$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
