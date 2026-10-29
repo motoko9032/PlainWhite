@@ -2,28 +2,44 @@
    纯白 — 文学刊物宣传页面样式表
    灰白背景 · 樱花色主题（无暗色模式）
    ============================================ */
-/* 字体声明由 style/fonts-local.css 或 style/fonts-google.css 提供，
-   具体使用哪一种由 script/font-loader.js 根据加载耗时决定。 */
+/* 字体声明由 style/fonts-google.css 提供（Google Fonts，唯一字体来源，
+   由 script/font-loader.js 在 <head> 中为普通网页加载）；
+   安装模式（standalone）使用平台系统字体，不加载任何编辑字体。 */
 
 /* ---- CSS 变量 ---- */
+/* 字体规则（各运行环境的字体范围，详见 pwa/README.md「平台样式与字体矩阵」）：
+   - 网站网页（桌面/移动浏览器）：界面以 Noto Sans SC 为主（--font-sans），
+     回退链覆盖 macOS（PingFang SC）/ Windows（Microsoft YaHei）等平台；
+     --font-serif（EB Garamond + Noto Serif SC）只用于普通网页的文章阅读页
+     （article/posts/*.html 的 .article-title/.article-summary/.article-body）。
+   - iOS standalone：由 html[data-ios-app] / html.ios-standalone-system-font
+     把两个变量整体替换为 Apple 系统 UI 字体（见 iOS 安装模式区块，禁止改动）。
+   - Android standalone：html[data-standalone][data-app="android"] 使用
+     system-ui + Roboto（Material 3）。
+   - 桌面 standalone：html[data-standalone][data-app="desktop"] 按 data-os
+     使用对应平台 UI 字体栈（macOS 系统字体 / Windows Segoe UI /
+     Linux 系统字体），Windows 栈不含 PingFang。 */
 :root {
     /* 声明站点支持浅色与深色两种配色（无障碍：跟随系统偏好）。
        让浏览器把表单控件、滚动条等原生 UI 也切到对应配色。 */
     color-scheme: light dark;
 
     /* 灰白背景体系 - 降低饱和度 */
-    --paper: #f9f8f6;
+    --paper: #eeeeed;
     --paper-soft: #fdfcfb;
     --ink: #3a3a3c;
     --ink-light: #626264;
-    --ink-muted: #9a9a9e;
+    --ink-muted: #6f6f78;
 
-    /* 樱花色主题 - 维持点缀色 */
-    --sakura: #e8a0b0;
-    --sakura-deep: #d48496;
+    /* 樱花色主题 - 维持点缀色；文字用途的两种粉色保证与纸色背景
+       >= 4.5:1（WCAG AA）：#ad5367 4.87:1，#9a4f62 5.39:1。 */
+    --sakura: #ad5367;
+    --sakura-deep: #9a4f62;
     --sakura-soft: #f5d0d8;
     --sakura-pale: rgba(232, 160, 176, 0.12);
     --sakura-glow: rgba(232, 160, 176, 0.28);
+    /* 樱花色按钮上的文字颜色（浅色用白，深色模式切换为深红棕） */
+    --sakura-on: #ffffff;
 
     --border: rgba(58, 58, 60, 0.06);
     --border-soft: rgba(58, 58, 60, 0.04);
@@ -37,7 +53,7 @@
 
     --max-width: 900px;
     --font-serif: "EB Garamond", Georgia, "Noto Serif SC", "Noto Serif CJK SC", "Songti SC", "SimSun", "STSong", serif;
-    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "Noto Sans CJK SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --font-sans: "Noto Sans SC", "Noto Sans CJK SC", "Source Han Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
 
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     --header-height: 3.5rem;
@@ -62,7 +78,7 @@ section {
 }
 
 body {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     color: var(--ink);
     background-color: var(--paper);
     line-height: 1.8;
@@ -152,7 +168,7 @@ a {
 }
 
 .logo {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--ink);
@@ -274,7 +290,7 @@ a {
 }
 
 .hero-title {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: clamp(2.75rem, 8vw, 4.25rem);
     font-weight: 700;
     color: var(--ink);
@@ -284,7 +300,7 @@ a {
 }
 
 .hero-subtitle {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.25rem;
     color: var(--ink-light);
     margin-bottom: 0.5rem;
@@ -319,7 +335,7 @@ a {
 }
 
 .hero-quote p {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.125rem;
     color: var(--ink-light);
     line-height: 1.85;
@@ -404,7 +420,7 @@ a {
     align-items: center;
     flex-wrap: wrap;
     gap: 0.5rem;
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.0625rem;
     font-weight: 700;
     color: var(--ink);
@@ -515,7 +531,7 @@ a {
 }
 
 .about-text {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.125rem;
     line-height: 2;
     color: var(--ink);
@@ -582,7 +598,7 @@ a {
 }
 
 .column-name {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--ink);
@@ -627,7 +643,7 @@ a {
 }
 
 .download-name {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--ink);
@@ -675,7 +691,7 @@ a {
 }
 
 .article-list-note {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1rem;
     line-height: 1.9;
     color: var(--ink-light);
@@ -716,7 +732,7 @@ a {
 }
 
 .wechat-card-title {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--sakura-deep);
@@ -725,7 +741,7 @@ a {
 }
 
 .wechat-card-desc {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1rem;
     color: var(--ink-light);
     margin-bottom: 0.75rem;
@@ -778,7 +794,7 @@ a {
 }
 
 .distribution-text {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 0.9375rem;
     color: var(--ink-light);
     line-height: 1.7;
@@ -795,7 +811,7 @@ a {
 }
 
 .support-text {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.0625rem;
     line-height: 1.9;
     color: var(--ink-light);
@@ -808,7 +824,7 @@ a {
     gap: 0.75rem;
     padding: 0.9rem 2rem;
     background: var(--sakura);
-    color: #fff;
+    color: var(--sakura-on);
     font-family: var(--font-sans);
     font-size: 0.875rem;
     font-weight: 500;
@@ -858,7 +874,7 @@ a {
 
 .thanks-text,
 .contact-text {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.0625rem;
     line-height: 1.9;
     color: var(--ink-light);
@@ -897,7 +913,7 @@ a {
 
 .contact-btn:hover {
     background: var(--sakura);
-    color: #fff;
+    color: var(--sakura-on);
     border-color: var(--sakura-deep);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px var(--sakura-glow);
@@ -919,13 +935,13 @@ a {
 /* 联系区「来看看公众号」强调按钮 */
 .contact-btn--accent {
     background: var(--sakura);
-    color: #fff;
+    color: var(--sakura-on);
     border-color: var(--sakura-deep);
 }
 
 .contact-btn--accent:hover {
     background: var(--sakura-deep);
-    color: #fff;
+    color: var(--sakura-on);
     border-color: var(--sakura-deep);
 }
 
@@ -1074,7 +1090,6 @@ a {
     font-size: 0.6875rem;
     color: var(--ink-muted);
     text-align: center;
-    opacity: 0.75;
 }
 
 .footer-watermark {
@@ -1118,7 +1133,8 @@ a {
 .sw-update-banner-btn {
     font: inherit;
     font-size: 0.8125rem;
-    color: #fff;
+    /* 深色模式下 --ink 会翻转为浅色，文字改用 --paper-soft 保持对比度 */
+    color: var(--paper-soft);
     background: var(--ink);
     border: none;
     border-radius: 999px;
@@ -1197,7 +1213,7 @@ a {
 }
 
 .modal-title {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.25rem;
     color: var(--ink);
     margin-bottom: 1rem;
@@ -1206,7 +1222,7 @@ a {
 }
 
 .modal-body p {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 0.9375rem;
     line-height: 1.8;
     color: var(--ink-light);
@@ -1384,6 +1400,8 @@ a {
         --sakura-soft: #3f2a33;
         --sakura-pale: rgba(242, 184, 198, 0.14);
         --sakura-glow: rgba(242, 184, 198, 0.24);
+        /* 深色模式下樱花色按钮改用深红棕文字（白字在浅粉底上对比不足） */
+        --sakura-on: #2b1620;
 
         --border: rgba(232, 232, 236, 0.12);
         --border-soft: rgba(232, 232, 236, 0.08);
@@ -1500,48 +1518,10 @@ html[data-standalone] body {
     line-height: 1;
 }
 
-/* ---- Android：悬浮圆角胶囊 · 莫奈色（低饱和紫罗兰紫） ---- */
-/* 说明：Material You 的动态取色（Monet）目前没有公开的 Web API
-   可供网页读取系统调色板，因此按项目约定写死低饱和紫罗兰紫。 */
-html[data-standalone][data-app="android"] .app-tabbar {
-    background: #e9e2f4;            /* 低饱和紫罗兰容器色（浅色） */
-    box-shadow:
-        0 8px 24px rgba(60, 45, 90, 0.22),
-        0 2px 6px rgba(60, 45, 90, 0.12);
-}
-
-html[data-standalone][data-app="android"] .app-tabbar-item {
-    color: #5c5270;                 /* 未选中：灰紫 */
-}
-
-html[data-standalone][data-app="android"] .app-tabbar-item[aria-current="location"] {
-    color: #3d2d63;                 /* 选中：深紫罗兰 */
-    background: #f4effb;            /* 选中项胶囊底 */
-}
-
-html[data-standalone][data-app="android"] .app-tabbar-item:hover,
-html[data-standalone][data-app="android"] .app-tabbar-item:focus-visible {
-    background: #ded3f0;
-}
-
-/* 深色下 Android 胶囊同步切换为深紫灰玻璃 */
-@media (prefers-color-scheme: dark) {
-    html[data-standalone][data-app="android"] .app-tabbar {
-        background: #2e2938;        /* 深紫灰容器 */
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    }
-    html[data-standalone][data-app="android"] .app-tabbar-item {
-        color: #b6acc9;
-    }
-    html[data-standalone][data-app="android"] .app-tabbar-item[aria-current="location"] {
-        color: #ded2f5;
-        background: #41385a;
-    }
-    html[data-standalone][data-app="android"] .app-tabbar-item:hover,
-    html[data-standalone][data-app="android"] .app-tabbar-item:focus-visible {
-        background: #3a324e;
-    }
-}
+/* ---- Android 独立 App 样式：见文件末尾「平台化适配」区块 ----
+   Material 3 Expressive 的导航栏、顶栏、卡片与主题色在那里集中声明，
+   避免与 iOS 区块互相覆盖；Android 使用 system-ui + Roboto，详见
+   pwa/android-ui-guide.md。 */
 
 /* ---- iOS：安装态的 HIG 启发式浮动标签栏 ---- */
 /* Web 无法调用 UIKit 的原生 Tab Bar / Liquid Glass；以高斯模糊和半透明
@@ -1650,8 +1630,10 @@ html[data-standalone][data-app="ios"] .app-tabbar-item:focus-visible {
    普通 Safari、桌面浏览器和 Android 不进入这些规则。
    ============================================ */
 
-/* 安装模式下不重复呈现网站汉堡菜单与网页导航。 */
-html[data-standalone] .menu-toggle {
+/* 移动平台安装模式下不重复呈现网站汉堡菜单与网页导航；
+   桌面安装窗口保留响应式汉堡菜单（窗口可缩窄，导航与网页版一致）。 */
+html[data-standalone][data-app="ios"] .menu-toggle,
+html[data-standalone][data-app="android"] .menu-toggle {
     display: none !important;
 }
 
@@ -2148,7 +2130,7 @@ a.column-card:focus-visible .column-link-arrow {
 }
 
 .article-column-title {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--ink);
@@ -2235,7 +2217,7 @@ a.column-card:focus-visible .column-link-arrow {
 }
 
 .article-index-title {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.0625rem;
     font-weight: 700;
     color: var(--ink);
@@ -2582,4 +2564,330 @@ a.column-card:focus-visible .column-link-arrow {
     .article-container {
         padding: 0 1.25rem;
     }
+}
+
+/* ============================================
+   平台化适配：网页移动端 / Android 独立 App / 桌面独立 App
+   ============================================
+   data-standalone 与 data-app（ios | android | desktop）由
+   script/script.js 的 initAppTabBar() 设置；data-os
+   （ios | android | macos | windows | linux）由
+   detectPlatformAndFontFeature() 设置。平台规则只通过
+   html[data-*] 作用域生效，普通网页与其它平台互不覆盖。
+   ============================================ */
+
+/* ---- 网页移动浏览器：触控目标与系统安全区 ---- */
+/* 仅作用于普通浏览器页面；standalone 的底部留白由各自平台区块覆盖。 */
+@media (max-width: 768px) {
+    body {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* 列表内链接扩大热区（触控目标 >= 44px） */
+    .download-list a,
+    .announcement-text a {
+        display: inline-block;
+        padding: 0.3rem 0;
+        margin: -0.3rem 0;
+    }
+}
+
+@media (max-width: 480px) {
+    /* 汉堡按钮与抽屉导航项按移动平台触控目标放大 */
+    .menu-toggle {
+        width: 2.75rem;
+        height: 2.75rem;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        min-height: 2.75rem;
+    }
+
+    .modal-close {
+        width: 2.75rem;
+        height: 2.75rem;
+    }
+}
+
+/* ---- 跳到主要内容（由 script.js 动态注入，全平台生效） ---- */
+.skip-link {
+    position: fixed;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 300;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    color: var(--sakura-deep);
+    background: var(--paper-soft);
+    border: 1px solid var(--sakura);
+    border-radius: 6px;
+    text-decoration: none;
+    transform: translateY(-300%);
+    transition: transform 0.15s ease;
+}
+
+.skip-link:focus-visible {
+    transform: translateY(0);
+}
+
+/* ============================================
+   Android 独立 App（Material 3 Expressive）
+   ============================================
+   字体：system-ui + Roboto（Material 3 字体体系），中文由系统
+   默认 CJK 字体回退；不用 Noto Serif SC、EB Garamond 或
+   Apple UI 字体。Monet 动态取色没有公开 Web API，按项目约定
+   使用低饱和紫罗兰固定色板并映射到 M3 颜色角色（见
+   pwa/android-ui-guide.md）。导航栏按 M3 全宽底栏（80dp 高 +
+   手势导航条 inset）；顶栏按 M3 top app bar（surface container，
+   64dp 高 + 状态栏 inset）。触控目标 >= 48dp。
+   ============================================ */
+html[data-standalone][data-app="android"] {
+    --m3-font: system-ui, Roboto, sans-serif;
+    --font-serif: var(--m3-font);
+    --font-sans: var(--m3-font);
+
+    /* M3 颜色角色（浅色） */
+    --m3-primary: #3d2d63;
+    --m3-on-primary: #ffffff;
+    --m3-primary-container: #e9e2f4;
+    --m3-on-primary-container: #2b1d4f;
+    --m3-secondary-container: #f4effb;
+    --m3-on-secondary-container: #3a3161;
+    --m3-surface-container: #e9e2f4;
+    --m3-on-surface-variant: #5c5270;
+    --m3-outline-variant: rgba(58, 58, 60, 0.14);
+    --m3-state-hover: rgba(61, 45, 99, 0.10);
+    --m3-state-press: rgba(61, 45, 99, 0.16);
+    --android-card-radius: 1rem;   /* M3 Expressive 卡片 16dp */
+
+    --header-height: 4rem;         /* M3 top app bar 64dp */
+}
+
+@media (prefers-color-scheme: dark) {
+    html[data-standalone][data-app="android"] {
+        --m3-primary: #ded2f5;
+        --m3-on-primary: #2b1d4f;
+        --m3-primary-container: #41385a;
+        --m3-on-primary-container: #e6dcf7;
+        --m3-secondary-container: #3a324e;
+        --m3-on-secondary-container: #e6dcf7;
+        --m3-surface-container: #2e2938;
+        --m3-on-surface-variant: #b6acc9;
+        --m3-outline-variant: rgba(232, 232, 236, 0.14);
+        --m3-state-hover: rgba(222, 210, 245, 0.10);
+        --m3-state-press: rgba(222, 210, 245, 0.18);
+    }
+}
+
+/* 顶栏：M3 top app bar（surface container 色 + 状态栏安全区） */
+html[data-standalone][data-app="android"] .header {
+    position: sticky;
+    top: 0;
+    padding-top: env(safe-area-inset-top, 0px);
+    background: var(--m3-surface-container);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-bottom: 1px solid var(--m3-outline-variant);
+    box-shadow: none;
+}
+
+html[data-standalone][data-app="android"] .header.scrolled {
+    background: var(--m3-surface-container);
+}
+
+html[data-standalone][data-app="android"] .header .nav {
+    display: none;   /* 顶层目的地由底部导航栏承担 */
+}
+
+html[data-standalone][data-app="android"] .header .logo {
+    font-family: var(--m3-font);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--ink);
+}
+
+html[data-standalone][data-app="android"] .header-inner {
+    padding-inline-start: max(1.25rem, env(safe-area-inset-left, 0px));
+    padding-inline-end: max(1.25rem, env(safe-area-inset-right, 0px));
+}
+
+/* 主内容左右避让显示切口 */
+html[data-standalone][data-app="android"] .container {
+    padding-inline-start: max(1.25rem, env(safe-area-inset-left, 0px));
+    padding-inline-end: max(1.25rem, env(safe-area-inset-right, 0px));
+}
+
+/* 底部导航栏：M3 navigation bar（全宽、surface container、
+   手势导航条 inset、次级容器胶囊指示器） */
+html[data-standalone][data-app="android"] .app-tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    transform: none;
+    align-items: stretch;
+    justify-content: space-around;
+    gap: 0;
+    min-height: calc(5rem + env(safe-area-inset-bottom, 0px));
+    padding: 0.5rem max(0.5rem, env(safe-area-inset-right, 0px))
+        calc(env(safe-area-inset-bottom, 0px) + 0.5rem)
+        max(0.5rem, env(safe-area-inset-left, 0px));
+    background: var(--m3-surface-container);
+    border-top: 1px solid var(--m3-outline-variant);
+    border-radius: 0;
+    box-shadow: 0 -2px 10px rgba(58, 58, 60, 0.06);
+}
+
+html[data-standalone][data-app="android"] .app-tabbar-item {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 10.5rem;
+    min-height: 4rem;
+    padding: 0.25rem 0.5rem;
+    gap: 0.25rem;
+    border-radius: 1.75rem;
+    color: var(--m3-on-surface-variant);
+    font-family: var(--m3-font);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html[data-standalone][data-app="android"] .app-tabbar-item svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+html[data-standalone][data-app="android"] .app-tabbar-item[aria-current="location"] {
+    color: var(--m3-on-secondary-container);
+    background: var(--m3-secondary-container);
+}
+
+html[data-standalone][data-app="android"] .app-tabbar-item:not([aria-current="location"]):hover {
+    background: var(--m3-state-hover);
+}
+
+html[data-standalone][data-app="android"] .app-tabbar-item:active {
+    background: var(--m3-state-press);
+}
+
+html[data-standalone][data-app="android"] .app-tabbar-item:focus-visible {
+    outline: 2px solid var(--m3-primary);
+    outline-offset: -2px;
+}
+
+/* 底部导航栏留白（覆盖通用 7rem 与网页移动端 env 留白） */
+html[data-standalone][data-app="android"] body {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6.5rem);
+}
+
+/* M3 Expressive：卡片统一 16dp 圆角 */
+html[data-standalone][data-app="android"] .announcement-item,
+html[data-standalone][data-app="android"] .announcement-history-link,
+html[data-standalone][data-app="android"] .column-card,
+html[data-standalone][data-app="android"] .download-card,
+html[data-standalone][data-app="android"] .wechat-card,
+html[data-standalone][data-app="android"] .contact-media-card,
+html[data-standalone][data-app="android"] .qr-frame,
+html[data-standalone][data-app="android"] .article-index-link,
+html[data-standalone][data-app="android"] .article-column-hero,
+html[data-standalone][data-app="android"] .article-empty {
+    border-radius: var(--android-card-radius);
+}
+
+/* M3 filled button：主色填充 + 状态层悬停 */
+html[data-standalone][data-app="android"] .support-btn,
+html[data-standalone][data-app="android"] .contact-btn {
+    min-height: 2.75rem;
+    background: var(--m3-primary);
+    color: var(--m3-on-primary);
+    border: none;
+    box-shadow: none;
+}
+
+html[data-standalone][data-app="android"] .support-btn:hover,
+html[data-standalone][data-app="android"] .contact-btn:hover {
+    background: var(--m3-primary);
+    background-image: linear-gradient(var(--m3-state-hover), var(--m3-state-hover));
+    transform: none;
+    box-shadow: none;
+}
+
+/* 区块标题：M3 title-large 层级 */
+html[data-standalone][data-app="android"] .section-title {
+    color: var(--m3-primary);
+    font-family: var(--m3-font);
+    font-size: 1.25rem;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.01em;
+}
+
+html[data-standalone][data-app="android"] :focus-visible {
+    outline-color: var(--m3-primary);
+}
+
+/* SW 更新横幅抬到导航栏上方 */
+html[data-standalone][data-app="android"] .sw-update-banner {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 5.75rem);
+}
+
+/* 降低透明度时去掉导航栏投影，仅靠描边分层 */
+@media (prefers-reduced-transparency: reduce) {
+    html[data-standalone][data-app="android"] .app-tabbar {
+        box-shadow: none;
+    }
+}
+
+/* ============================================
+   桌面独立 App（Windows / macOS / Linux）
+   ============================================
+   桌面安装窗口沿用网页的顶部导航与响应式汉堡菜单（无移动端
+   Tab Bar），按 data-os 使用对应平台 UI 字体栈：macOS 系统字体
+   （含 PingFang SC 中文回退）、Windows Segoe UI（中文回退
+   Microsoft YaHei，栈内不含 PingFang）、Linux 系统字体
+   （中文回退 Noto Sans CJK SC）。内容区加宽到桌面阅读宽度，
+   边距并入窗口安全区。
+   ============================================ */
+html[data-standalone][data-app="desktop"] {
+    --max-width: 64rem;
+}
+
+html[data-standalone][data-app="desktop"][data-os="macos"] {
+    --desktop-font-ui: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+        "PingFang SC", "Hiragino Sans GB", "Heiti SC", sans-serif;
+}
+
+html[data-standalone][data-app="desktop"][data-os="windows"] {
+    --desktop-font-ui: "Segoe UI Variable Text", "Segoe UI", system-ui,
+        "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+}
+
+html[data-standalone][data-app="desktop"][data-os="linux"] {
+    --desktop-font-ui: system-ui, "Cantarell", "Ubuntu",
+        "Noto Sans CJK SC", "Noto Sans SC", "WenQuanYi Micro Hei", sans-serif;
+}
+
+html[data-standalone][data-app="desktop"] {
+    --font-serif: var(--desktop-font-ui, system-ui);
+    --font-sans: var(--desktop-font-ui, system-ui);
+}
+
+html[data-standalone][data-app="desktop"] body {
+    padding-bottom: 0;
+}
+
+html[data-standalone][data-app="desktop"] .header-inner,
+html[data-standalone][data-app="desktop"] .container,
+html[data-standalone][data-app="desktop"] .footer-inner {
+    padding-inline-start: max(1.5rem, env(safe-area-inset-left, 0px));
+    padding-inline-end: max(1.5rem, env(safe-area-inset-right, 0px));
 }

@@ -113,9 +113,20 @@ The official account QR code is `files/白色封皮公众号.JPG`; the *下载�
 
 ## Fonts
 
-Local variable fonts live in [`fonts/`](./fonts/) (the Chinese fonts are large, roughly 40 MB in total) and are declared in [`style/fonts-local.css`](./style/fonts-local.css). [`script/script.js`](./script/script.js) measures the full page load time — including `document.fonts.ready` — and when it exceeds **3000 ms**, it switches to the Google Fonts `@import` stylesheet in [`style/fonts-google.css`](./style/fonts-google.css) instead of the local font files. The choice is stored in `sessionStorage` so the rest of the session uses the same font source.
+The website loads its editorial fonts exclusively from **Google Fonts**: the `@import` stylesheet [`style/fonts-google.css`](./style/fonts-google.css) (EB Garamond, Noto Sans SC, Noto Serif SC) is loaded early in `<head>` by [`script/font-loader.js`](./script/font-loader.js) with `preconnect` hints and non-blocking `media="print"` loading. The local variable fonts in [`fonts/`](./fonts/) are kept as the project's font vault but are **not referenced by any page** — this avoids shipping ~40 MB of Chinese font files over the site. If Google Fonts is unreachable or takes longer than 10 seconds, the stylesheet is removed and the page renders with the system fallback fonts declared in the CSS variables.
 
-[`script/font-loader.js`](./script/font-loader.js) runs in each page's `<head>` and loads only the chosen font stylesheet, so once Google Fonts mode is active, the large local font files are no longer requested. If the remote stylesheet cannot be loaded within 10 seconds, the loader falls back to the local fonts.
+In **any installed (standalone) mode** — iOS, Android, or desktop — the loader skips the editorial fonts entirely and the platform's own UI typefaces are used instead.
+
+### Font scope per runtime (平台字体范围)
+
+| Runtime | Fonts | Where defined |
+| ------- | ----- | ------------- |
+| Web (desktop & mobile browsers) | UI: `Noto Sans SC` first, with platform fallbacks (`PingFang SC`, `Microsoft YaHei`, …). Article reading pages (`article/posts/*.html`): body text in `EB Garamond` + `Noto Serif SC` — this serif pairing applies **only** to normal web article pages | `:root` `--font-sans` / `--font-serif` in [`style/style.css`](./style/style.css) |
+| iOS standalone PWA | Apple system UI fonts only (`-apple-system` …); site fonts are never requested | `html[data-ios-app]` / `html.ios-standalone-system-font` block in [`style/style.css`](./style/style.css) (do not modify) |
+| Android standalone PWA | `system-ui` + `Roboto` (Material 3); Chinese renders through the system CJK fallback | `html[data-standalone][data-app="android"]` in [`style/style.css`](./style/style.css) |
+| Desktop standalone PWA | Per-OS UI stack: macOS system font + `PingFang SC`; Windows `Segoe UI` + `Microsoft YaHei` (no PingFang); Linux `system-ui` + `Noto Sans CJK SC` | `html[data-standalone][data-app="desktop"]` + `data-os` in [`style/style.css`](./style/style.css) |
+
+The runtime is tagged on `<html>` by [`script/script.js`](./script/script.js) as `data-standalone`, `data-app` (`ios` / `android` / `desktop`) and `data-os` (`ios` / `android` / `macos` / `windows` / `linux`). All platform-specific font, layout and safe-area rules are scoped to these attributes, so no platform's rules leak into another.
 
 ## Site Structure
 
@@ -127,10 +138,9 @@ Local variable fonts live in [`fonts/`](./fonts/) (the Chinese fonts are large, 
 | `offline.html` | Offline fallback page rendered when a navigation request fails with no cache |
 | `apple-touch-icon.png` | iOS add-to-home-screen icon (site-root fallback location required by iOS; no alpha channel) |
 | `style/style.css` | All styles for the site |
-| `style/fonts-local.css` | Local `@font-face` declarations (default font source) |
-| `style/fonts-google.css` | Google Fonts `@import` fallback, loaded when page load is slow |
-| `script/font-loader.js` | Loads the chosen font stylesheet early in `<head>` |
-| `script/script.js` | Interactions, announcement rendering, font-loading strategy, and service worker registration |
+| `style/fonts-google.css` | Google Fonts `@import` — the only editorial-font source for web pages |
+| `script/font-loader.js` | Loads the Google Fonts stylesheet early in `<head>`; skips fonts entirely in standalone modes |
+| `script/script.js` | Interactions, announcement rendering, platform detection, and service worker registration |
 | `script/wechat-articles.js` | Dynamic rendering of per-issue WeChat article lists |
 | `script/lofter-articles.js` | Dynamic rendering of per-issue LOFTER article lists |
 | `script/special-articles.js` | Dynamic rendering of the White Cover special articles list |
@@ -143,7 +153,7 @@ Local variable fonts live in [`fonts/`](./fonts/) (the Chinese fonts are large, 
 | `sub/README.md` | Shared maintenance instructions for all sub-directories |
 | `article/` | First-published articles: `article-NN.md` sources, `covers/` PNG covers, generated `index.html` list and `posts/` reading pages — see `article/README.md` |
 | `tools/build_articles.py` | Static-site generator for `article/` (pure Python 3 stdlib); `tools/test_articles.py` are its self-tests |
-| `fonts/` | Local webfonts |
+| `fonts/` | Font vault (local TTF variable fonts; kept for archival/print use, not loaded by the site) |
 | `pwa/` | PWA icons, icon source/generator, and the PWA handover document (`pwa/README.md`) |
 | `Common Manual/` | Common editorial manual (LaTeX source) |
 
@@ -151,7 +161,7 @@ Local variable fonts live in [`fonts/`](./fonts/) (the Chinese fonts are large, 
 
 The site ships with a complete PWA foundation: a web app manifest, a service worker with app-shell precaching and offline fallback, installable icons, and offline support. All 11 HTML pages include the PWA `<head>` block, and the service worker is registered by [`script/script.js`](./script/script.js) on every page.
 
-The official icon (the handwritten 「纯白」 wordmark in [`pwa/icon.svg`](./pwa/icon.svg)) is now wired in as the manifest SVG icon, the SVG favicon on every page, the homepage footer watermark, and the vector source for all rasterized PNG icons (generated by [`pwa/generate-icons.py`](./pwa/generate-icons.py)). A service-worker update banner («发现新版本 → 立即刷新») is also in place, along with an install-only floating bottom Tab Bar (frosted-glass on iOS, low-saturation Material-You-style capsule on Android) and a system-following dark mode. iOS standalone mode has been tuned toward the platform conventions (translucent status bar, top safe-area inset, hidden hamburger menu); the Android adaptation plan is handed off in [`pwa/android-ui-guide.md`](./pwa/android-ui-guide.md). Remaining optional work — push notifications, offline PDF reading, Workbox migration — continues from the handover document. See [`pwa/README.md`](./pwa/README.md) for the full handover notes.
+The official icon (the handwritten 「纯白」 wordmark in [`pwa/icon.svg`](./pwa/icon.svg)) is now wired in as the manifest SVG icon, the SVG favicon on every page, the homepage footer watermark, and the vector source for all rasterized PNG icons (generated by [`pwa/generate-icons.py`](./pwa/generate-icons.py)). A service-worker update banner («发现新版本 → 立即刷新») is also in place, along with a system-following dark mode and install-only platform navigation: iOS standalone uses an HIG-inspired app routing with a floating glass tab bar; Android standalone uses a Material 3 Expressive top app bar plus a full-width navigation bar; desktop standalone keeps the website top navigation. iOS standalone has been tuned toward the platform conventions (translucent status bar, top safe-area inset, hidden hamburger menu, Apple system typefaces only); the Android implementation is documented in [`pwa/android-ui-guide.md`](./pwa/android-ui-guide.md). Remaining optional work — push notifications, offline PDF reading, Workbox migration — continues from the handover document. See [`pwa/README.md`](./pwa/README.md) for the full handover notes.
 
 Key operational rule: after every deployment of changed static assets, bump `CACHE_VERSION` at the top of [`sw.js`](./sw.js), or users will keep seeing stale content. Cache cleanup is scoped to the `plainwhite-` namespace so this PWA does not delete unrelated apps' CacheStorage entries on the same origin.
 

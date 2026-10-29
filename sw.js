@@ -18,20 +18,21 @@
 /* CacheStorage 按 origin 共享，因此所有本站缓存统一使用专属前缀，
    activate 阶段只清理此前缀下的旧版本，不能清除同源其他应用的缓存。 */
 const CACHE_PREFIX = 'plainwhite-';
-const CACHE_VERSION = 'v16';
+const CACHE_VERSION = 'v21';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 
 /* 预缓存清单：SW 安装时一次性写入的应用外壳（App Shell）。
    路径相对于 sw.js 所在目录，即站点根目录。
-   仅收录首页必需、体积小的核心资源；大文件（fonts/*.ttf、
-   files/*.pdf、files/*.epub）严禁加入预缓存，它们会在用户
-   实际访问时按需缓存或保持不缓存。 */
+   仅收录首页必需、体积小的核心资源。字体只预缓存本站的
+   style/fonts-google.css（内含 Google Fonts @import）；Google Fonts
+   的字体文件是跨域资源，不经本站 SW 缓存，离线时按系统回退字体渲染。
+   files/*.pdf、files/*.epub 等大文件严禁加入预缓存。 */
 const PRECACHE_URLS = [
     './',
     './index.html',
     './offline.html',
     './style/style.css',
-    './style/fonts-local.css',
+    './style/fonts-google.css',
     './pwa/icon.svg',
     './script/script.js',
     './script/font-loader.js',
@@ -180,7 +181,7 @@ self.addEventListener('fetch', function (event) {
         return;
     }
 
-    /* 同源静态资源（CSS/JS/字体/图标等）：缓存优先 + 后台更新
+    /* 同源静态资源（CSS/JS/图标/页面数据等）：缓存优先 + 后台更新
        （stale-while-revalidate）。命中缓存立即返回，同时后台
        发起网络请求刷新缓存；未命中缓存则等待网络，失败时静默。 */
     event.respondWith(

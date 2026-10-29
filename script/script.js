@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    // 供字体加载方式切换定位 style/ 目录（各页面引用本脚本的相对路径不同）
+    // 供 Service Worker 注册定位站点根目录（各页面引用本脚本的相对路径不同）
     const scriptElement = document.currentScript;
 
     const menuToggle = document.getElementById('menuToggle');
@@ -17,9 +17,12 @@
     const navLinks = document.querySelectorAll('.nav-link');
 
     // ---- 平台与字体特性检测 ----
-    // 为 font-feature-settings 的跨平台适配在 <html> 上设置 data-os / data-hw：
-    //   macOS / Windows / Linux / Android 使用 halt（半角替代），iOS 单独使用 hwid；
-    //   当 halt 在所用字体中不可用时，自动回退为 hwid。
+    // 为 font-feature-settings 的跨平台适配在 <html> 上设置 data-os：
+    //   ios | android | macos | windows | linux（样式文件据此选择
+    //   平台 UI 字体栈，见 style/style.css「平台化适配」区块）。
+    //   data-hw 记录半角字形特性：macOS / Windows / Linux / Android 使用
+    //   halt（半角替代），iOS 单独使用 hwid；当 halt 在所用字体中不可用
+    //   时自动回退为 hwid。
     function detectPlatformAndFontFeature() {
         const root = document.documentElement;
         const ua = navigator.userAgent || '';
@@ -28,7 +31,18 @@
             (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1);
         const isAndroid = /Android/i.test(ua);
 
-        root.setAttribute('data-os', isIOS ? 'ios' : (isAndroid ? 'android' : 'desktop'));
+        let osName = 'macos';
+        if (isIOS) {
+            osName = 'ios';
+        } else if (isAndroid) {
+            osName = 'android';
+        } else if (/Windows/i.test(ua)) {
+            osName = 'windows';
+        } else if (/Linux|X11/i.test(ua)) {
+            osName = 'linux';
+        }
+
+        root.setAttribute('data-os', osName);
 
         if (isIOS) {
             // iOS 单独使用 hwid，无需检测回退
@@ -39,7 +53,7 @@
         // 检测字体是否真正应用半角特性：比较 CJK 文本宽度是否明显收窄
         function featureHalvesWidth(feature) {
             const text = '中文测试';
-            const font = '"EB Garamond", Georgia, "Noto Serif SC", "Noto Serif CJK SC", "Songti SC", "SimSun", serif';
+            const font = 'var(--font-sans)';
 
             function measure(withFeature) {
                 const span = document.createElement('span');
@@ -76,152 +90,6 @@
     } else {
         document.addEventListener('DOMContentLoaded', detectPlatformAndFontFeature);
     }
-
-    // ---- 字体加载方式自适应 ----
-    // fonts/ 下的中文字体体积较大（合计约 40MB），慢速网络下会显著拖慢完全加载时间。
-    // 页面完全加载（含字体）耗时超过阈值时，改用 Google Fonts 的 @import 远程字体，
-    // 并把选择写入 sessionStorage，让本次会话内的后续页面直接使用远程字体。
-    const FONT_MODE_KEY = 'plainwhite:font-mode';
-    const FONT_FALLBACK_KEY = 'plainwhite:font-fallback';
-    const FONT_MODE_GOOGLE = 'google';
-    const SLOW_LOAD_THRESHOLD_MS = 3000;
-    const FONT_CHECK_TIMEOUT_MS = 15000;
-
-    function getStoredFontMode() {
-        try {
-            return window.sessionStorage.getItem(FONT_MODE_KEY);
-        } catch (e) {
-            return null;
-        }
-    }
-
-    function getStoredFontFallback() {
-        try {
-            return window.sessionStorage.getItem(FONT_FALLBACK_KEY);
-        } catch (e) {
-            return null;
-        }
-    }
-
-    function storeFontMode(mode) {
-        try {
-            window.sessionStorage.setItem(FONT_MODE_KEY, mode);
-        } catch (e) {
-            // 隐私模式等禁用 sessionStorage 时忽略，仅当前页面生效
-        }
-    }
-
-    function storeFontFallback() {
-        try {
-            window.sessionStorage.setItem(FONT_FALLBACK_KEY, '1');
-        } catch (e) {
-            // 同上
-        }
-    }
-
-    function resolveSiteAsset(path) {
-        if (scriptElement && scriptElement.src) {
-            return new URL(path, scriptElement.src).href;
-        }
-        return path;
-    }
-
-    function enableGoogleFonts() {
-        if (document.getElementById('googleFontsStylesheet')) return;
-
-        document.documentElement.classList.add('font-mode-google');
-
-        [
-            ['googleFontsPreconnectApi', 'https://fonts.googleapis.com'],
-            ['googleFontsPreconnectStatic', 'https://fonts.gstatic.com']
-        ].forEach(function (item) {
-            if (document.getElementById(item[0])) return;
-            const preconnect = document.createElement('link');
-            preconnect.id = item[0];
-            preconnect.rel = 'preconnect';
-            preconnect.href = item[1];
-            preconnect.crossOrigin = 'anonymous';
-            document.head.appendChild(preconnect);
-        });
-
-        const stylesheet = document.createElement('link');
-        stylesheet.id = 'googleFontsStylesheet';
-        stylesheet.rel = 'stylesheet';
-        // 先用非阻塞的 print 媒体加载，避免 Google Fonts 不可达时拖住页面加载
-        stylesheet.media = 'print';
-        stylesheet.href = resolveSiteAsset('../style/fonts-google.css');
-
-        let loadTimer = 0;
-
-        function giveUpOnGoogleFonts() {
-            window.clearTimeout(loadTimer);
-            // 远程样式不可用时保留本地字体，避免白屏或无字体回退
-            document.documentElement.classList.remove('font-mode-google');
-            stylesheet.remove();
-            storeFontMode('local');
-            storeFontFallback();
-        }
-
-        stylesheet.addEventListener('load', function () {
-            window.clearTimeout(loadTimer);
-            stylesheet.media = 'all';
-        });
-        stylesheet.addEventListener('error', giveUpOnGoogleFonts);
-
-        document.head.appendChild(stylesheet);
-
-        loadTimer = window.setTimeout(function () {
-            if (stylesheet.media !== 'all') {
-                giveUpOnGoogleFonts();
-            }
-        }, 10000);
-    }
-
-    // 等待 load 事件与网页字体全部就绪，再统计从导航开始到完全加载的耗时
-    function whenPageFullyLoaded() {
-        return new Promise(function (resolve) {
-            function afterLoad() {
-                const fontsReady = (document.fonts && document.fonts.ready)
-                    ? document.fonts.ready
-                    : Promise.resolve();
-                const timeout = new Promise(function (done) {
-                    window.setTimeout(done, FONT_CHECK_TIMEOUT_MS);
-                });
-
-                Promise.race([fontsReady, timeout]).then(function () {
-                    window.setTimeout(function () {
-                        resolve(performance.now());
-                    }, 0);
-                });
-            }
-
-            if (document.readyState === 'complete') {
-                afterLoad();
-            } else {
-                window.addEventListener('load', afterLoad, { once: true });
-            }
-        });
-    }
-
-    function detectFontLoadingStrategy() {
-        if (getStoredFontMode() === FONT_MODE_GOOGLE) {
-            if (getStoredFontFallback() === '1') return;
-            enableGoogleFonts();
-            return;
-        }
-
-        if (navigator.onLine === false) return;
-        if (getStoredFontFallback() === '1') return;
-
-        whenPageFullyLoaded().then(function (duration) {
-            if (duration > SLOW_LOAD_THRESHOLD_MS) {
-                storeFontMode(FONT_MODE_GOOGLE);
-                enableGoogleFonts();
-            }
-        });
-    }
-
-    detectFontLoadingStrategy();
 
     // ---- 汉堡菜单切换 ----
     function toggleMenu() {
@@ -350,7 +218,9 @@
 
     // ---- PWA：仅安装态注入平台导航 ----
     // 普通浏览器不设置 data-standalone，不创建底栏，也不改动页面结构。
-    // iOS standalone 使用独立页面路由；Android 保留原来的锚点导航。
+    // iOS standalone 使用独立页面路由；Android standalone 使用 Material 3
+    // 锚点导航（顶栏 + 底部导航栏）；桌面安装窗口保留网页导航结构，
+    // 只按 data-app="desktop" 应用平台字体与安全区样式。
     function initAppTabBar() {
         const standalone = (window.matchMedia &&
             window.matchMedia('(display-mode: standalone)').matches) ||
@@ -359,14 +229,22 @@
             return;
         }
 
-        // 平台判定：与 detectPlatformAndFontFeature 相同的 iOS 判定逻辑；
-        // 其余环境（Android / 桌面安装窗口）统一按 Android 莫奈色处理。
+        // 平台判定：与 detectPlatformAndFontFeature 相同的 iOS / Android
+        // 判定逻辑；其余（Windows / macOS / Linux 安装窗口）视为桌面。
         const ua = navigator.userAgent || '';
         const isIOS = /iPad|iPhone|iPod/.test(ua) ||
             (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1);
+        const isAndroid = /Android/i.test(ua);
+        const appKind = isIOS ? 'ios' : (isAndroid ? 'android' : 'desktop');
         const root = document.documentElement;
         root.setAttribute('data-standalone', '');
-        root.setAttribute('data-app', isIOS ? 'ios' : 'android');
+        root.setAttribute('data-app', appKind);
+
+        // 桌面安装窗口：无底部 Tab Bar，平台字体 / 安全区 / 内容宽度由
+        // style/style.css 的 html[data-standalone][data-app="desktop"] 处理。
+        if (appKind === 'desktop') {
+            return;
+        }
 
         // 脚本始终位于站点根目录下的 script/；由脚本 URL 计算站点根，
         // 因此 GitHub Pages 的 /PlainWhite/ 子路径和二级页面都能正确工作。
@@ -403,6 +281,11 @@
         tabbar.className = 'app-tabbar';
         tabbar.setAttribute('aria-label', '应用底部导航');
         const sections = {};
+        // 触觉反馈：Material 3 导航项按压触感。系统触觉设置没有公开
+        // Web API 可读，故以 prefers-reduced-motion 作为保守代理；
+        // navigator.vibrate 不可用时静默跳过。
+        const hapticsEnabled = 'vibrate' in navigator &&
+            !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
         androidItems.forEach(function (item) {
             const a = document.createElement('a');
             a.className = 'app-tabbar-item';
@@ -414,6 +297,15 @@
                 'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ' +
                 'aria-hidden="true">' + item.icon + '</svg>' +
                 '<span class="app-tabbar-item-label">' + item.label + '</span>';
+            if (hapticsEnabled) {
+                a.addEventListener('click', function () {
+                    try {
+                        navigator.vibrate(8);
+                    } catch (e) {
+                        // 某些实现可能抛出异常，忽略即可
+                    }
+                });
+            }
             tabbar.appendChild(a);
 
             if (isHome) {
@@ -465,6 +357,8 @@
                     currentSection = path.indexOf('contact') !== -1
                         ? '#about'
                         : '#columns';
+                } else if (path.indexOf('/article/') !== -1) {
+                    currentSection = '#columns';
                 }
             }
             if (currentSection) {
@@ -814,6 +708,28 @@
             });
         }
     }
+
+    // ---- 键盘可访问性：跳到主要内容链接 ----
+    // 全平台（网页与安装模式）注入 skip link，键盘用户可跳过页眉导航；
+    // 样式见 style/style.css 的 .skip-link。
+    function initSkipLink() {
+        const main = document.querySelector('main');
+        if (!main || document.querySelector('.skip-link')) {
+            return;
+        }
+        if (!main.id) {
+            main.id = 'main';
+            // 让焦点可以落到 main 上（非交互元素需要 tabindex）
+            main.tabIndex = -1;
+        }
+        const skip = document.createElement('a');
+        skip.className = 'skip-link';
+        skip.href = '#main';
+        skip.textContent = '跳到主要内容';
+        document.body.insertBefore(skip, document.body.firstChild);
+    }
+
+    initSkipLink();
 
     initAppTabBar();
 

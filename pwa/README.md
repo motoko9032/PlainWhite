@@ -21,13 +21,13 @@
 | `pwa/icon-maskable-512.png` | manifest 图标（purpose: maskable） | ✅ 由正式字标栅格化生成 |
 | `pwa/apple-touch-icon.png`（180×180，RGB 无 alpha）、根目录 `apple-touch-icon.png`、根目录 `apple-touch-icon-180x180.png` | iOS 添加到主屏图标（`<link rel="apple-touch-icon">` 与站点根兜底） | ✅ 由正式字标栅格化生成 |
 | `pwa/apple-touch-icon.base64.txt` | 图标 base64 数据（仅作内联备用，不能用于 iOS touch icon） | ✅ 随生成脚本产出 |
-| `pwa/android-ui-guide.md` | Android 移动版 UI 适配开发文档（待办移交） | ✅ 已就绪 |
+| `pwa/android-ui-guide.md` | Android 移动版 UI 适配（Material 3 Expressive 实现说明与验证方法） | ✅ 已实现并同步文档 |
 | `pwa/favicon-32.png` | 浏览器标签页图标 | ✅ 由正式字标栅格化生成 |
 | `pwa/icon.svg` | 正式字标矢量源（手写「纯白」，仅描边） | ✅ 已替换占位设计 |
 | `pwa/generate-icons.py` | 纯 Python（标准库 + numpy）SVG 栅格化脚本 | ✅ 可复现 |
 | 全部 11 个 HTML 页面 | 已在 `<head>` 加入 PWA 区块（manifest、SVG/PNG favicon、iOS 元数据、viewport-fit、双 theme-color） | ✅ 已就绪 |
-| `script/script.js` | SW 注册 + 新版本横幅 + 底部 Tab Bar（仅安装模式显示） | ✅ 已就绪 |
-| `style/style.css` | 深色模式变量 + 底部 Tab Bar 样式（Android 莫奈胶囊 / iOS 玻璃态） | ✅ 已就绪 |
+| `script/script.js` | SW 注册 + 新版本横幅 + 平台检测（data-os / data-app）+ 安装模式导航（iOS 路由 / Android M3 导航栏 / 桌面无底栏） | ✅ 已就绪 |
+| `style/style.css` | 网页版 Noto Sans SC 主字体 + 深色模式 + 各平台样式（iOS HIG / Android M3 / 桌面 per-OS 字体栈与安全区） | ✅ 已就绪 |
 
 图标体系说明：正式图标是手写「纯白」字标（`pwa/icon.svg`，仅描边）。它同时被用于
 四处：① `manifest.webmanifest` 的 SVG 图标条目（`sizes: "any"`，现代浏览器安装时
@@ -63,9 +63,11 @@
 5. **`offline.html` 必须保持自包含**（内联样式、不引用外部 CSS/JS/字体），
    因为它是缓存中只剩它自己时仍要能完整渲染的兜底页。
 
-6. **预缓存清单只放首页必需的小型核心资源**。`fonts/*.ttf`（体积数 MB）与
-   `files/*` 大文件禁止加入 `PRECACHE_URLS`；字体等会在用户实际访问时
-   按需缓存（缓存优先 + 后台更新）。
+6. **预缓存清单只放首页必需的小型核心资源**。`files/*` 大文件（PDF/EPUB）
+   禁止加入 `PRECACHE_URLS`。字体只预缓存本站的 `style/fonts-google.css`
+   （内含 Google Fonts `@import`）；Google Fonts 的字体文件是跨域资源，
+   不经过本站 SW 缓存，离线时页面按 CSS 变量里的系统回退字体渲染。
+   本地 `fonts/*.ttf` 不参与任何页面加载，因此不缓存也不预缓存。
 
 7. **CacheStorage 与 Service Worker 作用域无关，而是按 origin 共享**。
    清理缓存时必须检查 `plainwhite-` 前缀；查找/回放请求也只使用当前版本缓存，
@@ -96,12 +98,15 @@
     `prefers-color-scheme` 拆成浅色/深色两条（带 `media` 属性），复制 PWA 区块时
     两条都要带上，浏览器状态栏颜色才能跟随深色模式。
 
-11. **导航按运行平台隔离**。底部 Tab Bar 只在「添加到主屏」的安装模式
+11. **导航按运行平台隔离**。底部应用导航只在「添加到主屏」的安装模式
     （standalone）显示，检测入口为 `script/script.js` 的 `initAppTabBar()`：
     `matchMedia('(display-mode: standalone)')` 或 iOS 的 `navigator.standalone`。
-    浏览器访问不会设置 standalone 属性，也不会创建 Tab Bar。iOS 安装态会隐藏汉堡
-    菜单并启用应用式页面路由；Android standalone 仍使用原有锚点导航；普通浏览器
-    与 Android 的既有页面结构、滚动行为不可被 iOS 路由改动影响。
+    浏览器访问不会设置 standalone 属性，也不会创建应用导航。检测后按平台
+    写入 `data-app`：`ios`（HIG 启发式页面路由 + 玻璃态浮动 Tab Bar）、
+    `android`（Material 3 顶栏 + 全宽底部导航栏 + 锚点导航）、
+    `desktop`（保留网页顶部导航，无底栏）。iOS 安装态会隐藏汉堡菜单并启用
+    应用式页面路由；Android standalone 仍使用原有锚点导航；普通浏览器与
+    Android 的既有页面结构、滚动行为不可被 iOS 路由改动影响。
 
 12. **iOS standalone 的页面与路由**。其顶层 Tab 为：首页（`#hero`）、公告
     （`#announcements`）、阅读（`#columns`）、下载（`#downloads`）、更多（动态生成
@@ -132,8 +137,10 @@
     与 [Configuring Web Applications](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html)。
 
 14. **iOS standalone 的排版只使用 iOS 系统 UI 字体**。`script/font-loader.js`
-    在字体样式表加载前识别 iOS standalone，并跳过本地/Google 编辑字体；普通 Safari
-    与非 iOS 安装模式继续使用原有字体逻辑。`style/style.css` 以
+    在字体样式表加载前识别 iOS standalone，并跳过 Google Fonts 编辑字体；
+    普通 Safari 与非 iOS 安装模式继续使用各自字体逻辑（普通网页为 Google
+    Fonts；Android standalone 为 system-ui + Roboto；桌面 standalone 为
+    平台 UI 字体）。`style/style.css` 以
     `-apple-system-body`、`-apple-system-headline` 和 `-apple-system-footnote` 等
     WebKit 系统文本样式为基础，并按 Apple HIG 的 17 pt 默认、11 pt 最小字号组织层级；
     标题尺寸相对正文缩放，避免固定像素字号破坏 Dynamic Type。新增文字样式应继续使用
@@ -149,6 +156,33 @@
     底部留白须保证最后内容滚动时不会被栏遮挡。参考：
     [Apple HIG — Layout: Guides and safe areas](https://developer.apple.com/design/human-interface-guidelines/layout#Guides-and-safe-areas)。
 
+16. **Android standalone 使用 Material 3 Expressive 专属样式**，全部作用域为
+    `html[data-standalone][data-app="android"]`（style.css 末尾「平台化适配」区块）：
+    字体固定为 `system-ui, Roboto`（中文由系统 CJK 回退，不得使用 Noto Serif SC /
+    EB Garamond / Apple UI 字体）；顶栏为 M3 top app bar（surface container、
+    64dp 高、`env(safe-area-inset-top)` 避让状态栏）；底部为全宽 M3 navigation bar
+    （80dp 高 + `env(safe-area-inset-bottom)`，secondary-container 指示器，
+    状态层按压/悬停，>=48dp 触控目标）；卡片 16dp 圆角；按钮为 M3 filled button；
+    颜色为低饱和紫罗兰固定色板映射的 M3 颜色角色（Monet 动态取色无公开 Web API）。
+    导航项点击触觉反馈以 `prefers-reduced-motion` 为保守门控。实现与验证详见
+    `pwa/android-ui-guide.md`；修改 Android 样式时不要套用 iOS 玻璃态或网页
+    Noto 字体规则。
+
+17. **桌面 standalone（Windows / macOS / Linux）不显示底部 Tab Bar**，
+    保留网页顶部导航与响应式汉堡菜单（窗口可缩窄）。字体按 `data-os`
+    使用平台 UI 字体栈：macOS `-apple-system … PingFang SC`；
+    Windows `"Segoe UI Variable Text", "Segoe UI", system-ui, "Microsoft YaHei"`，
+    **栈内不得优先查找 PingFang**；Linux `system-ui … "Noto Sans CJK SC"`。
+    内容区 `--max-width` 加宽至 64rem，边距并入 `env(safe-area-inset-*)`。
+    作用域 `html[data-standalone][data-app="desktop"]`。
+
+18. **网页版字体范围**：界面以 `--font-sans`（Noto Sans SC 开头）为主；
+    `--font-serif`（EB Garamond + Noto Serif SC）只用于普通网页的文章阅读页
+    （`article/posts/*.html` 的 `.article-title` / `.article-summary` /
+    `.article-body`）。standalone 平台字体通过覆盖 CSS 变量生效，与网页
+    字体规则互不覆盖；iOS 安装态的字体 CSS（`html[data-ios-app]` /
+    `html.ios-standalone-system-font` 区块）禁止改动。
+
 ## 三、未来待办（完整部署 PWA 还需做的事，按优先级排序）
 
 - [x] **① 替换正式图标**：已用正式设计（手写「纯白」字标）替换占位几何设计，
@@ -159,23 +193,33 @@
       `motoko9032/PlainWhite`，站点根路径 `/PlainWhite/`，HTTPS 天然满足）。
       上线后用 Chrome DevTools → Application → Manifest 检查无报错，用
       Lighthouse 的 PWA 审计跑一遍。
-- [ ] **③ 上线前递增一次 `CACHE_VERSION`**：若部署时新增了公告/资源，
-      确认版本号已递增。
-- [ ] **④ 增强（可选，按需）**：
-  - 离线阅读 PDF/EPUB 全文（当前有意不缓存，需要时改用
-    `CacheStorage` 之外的手段，如 OPFS + Range 适配，或干脆保持在线）；
+- [x] **③ 本轮已递增 `CACHE_VERSION`**：样式/脚本变更后已递增至 `v21`。
+- [x] **④ 平台 UI 适配（本轮完成）**：
+  - 底部应用导航 ✅：仅安装模式（standalone）显示。iOS 采用 HIG 启发的
+    应用式多页面路由、等宽导航与安全区布局；Android 为 Material 3 Expressive
+    顶栏 + 全宽底部导航栏（surface container、指示器胶囊、状态层、触觉反馈），
+    详见 `pwa/android-ui-guide.md`；桌面 standalone 保留网页导航、无底栏。
+    iOS CSS 材质只是 Web 近似，不代表原生 Liquid Glass 或完整 HIG 认证。
+  - Android 待办已销项 ✅：M3 顶栏（surface container + 状态栏安全区）、
+    全宽导航栏（手势导航条安全区）、莫奈固定色板映射 M3 颜色角色、
+    状态层按压/悬停、`navigator.vibrate` 触觉反馈、平板 Navigation rail
+    留作可选增强。
+  - 字体范围 ✅：网页版界面以 Noto Sans SC 为主（`--font-sans`），
+    EB Garamond + Noto Serif SC 仅用于网页文章阅读页；iOS standalone
+    只用 Apple 系统字体；Android standalone 用 system-ui + Roboto；
+    桌面 standalone 按 data-os 使用平台 UI 字体栈（Windows 为 Segoe UI +
+    Microsoft YaHei，不含 PingFang 优先）。字体大文件仍不进预缓存。
+  - 深色模式 ✅ 已完成：`style/style.css` 用 `@media (prefers-color-scheme: dark)`
+    覆盖 CSS 变量，遵循 WCAG 对比度（浅色 sakura-deep/ink-muted 已加深至
+    >= 4.5:1）；`<head>` 的 `theme-color` 拆分浅/深两条，
+    `offline.html` 与 `color-scheme` 同步适配，浏览器与安装模式均跟随系统；
   - SW 更新提示 UI ✅ 已完成：sw.js 不再静默 `skipWaiting`，改由页面横幅
     「发现新版本 → 立即刷新」驱动（script.js 检测等待中的新 SW，用户点击后
     发 `SKIP_WAITING`，接管后自动刷新；样式见 style.css 的 `.sw-update-banner`）；
+  - 离线阅读 PDF/EPUB 全文（当前有意不缓存，需要时改用
+    `CacheStorage` 之外的手段，如 OPFS + Range 适配，或干脆保持在线）；
   - 推送通知（刊物更新通知）——需要后端推送服务，超出静态站范围；
-  - 迁移 Workbox（当前手写 ES5 SW，无构建依赖，功能已够用，无强制理由）；
-  - 深色模式 ✅ 已完成：`style/style.css` 用 `@media (prefers-color-scheme: dark)`
-    覆盖 CSS 变量，遵循 WCAG 对比度；`<head>` 的 `theme-color` 拆分浅/深两条，
-    `offline.html` 与 `color-scheme` 同步适配，浏览器与安装模式均跟随系统；
-  - 底部 Tab Bar ✅ 已实现：仅安装模式（standalone）显示，iOS 采用 HIG 启发的
-    应用式多页面路由、等宽导航与安全区布局，Android 为低饱和紫罗兰紫胶囊；
-    浏览器与 Android 的既有导航行为保持不变。iOS CSS 材质只是 Web 近似，不代表
-    原生 Liquid Glass 或完整 HIG 认证。
+  - 迁移 Workbox（当前手写 ES5 SW，无构建依赖，功能已够用，无强制理由）。
 - [ ] **⑤ 测试清单**：
   - Chrome/Edge 桌面：安装图标出现、离线刷新仍可浏览已访问页面；
   - Android Chrome：添加到主屏幕 → 独立窗口（standalone）打开；
@@ -192,6 +236,20 @@ python3 -m http.server 8000
 #   - Service Workers 面板显示 sw.js 已激活；
 #   - 勾选 Offline 后刷新，页面仍可用；访问未缓存页面应见 offline.html。
 ```
+
+平台样式验证（无真机时用 Playwright 模拟）：
+
+- 网页桌面/移动：不设 `data-standalone`，body 计算字体以 "Noto Sans SC" 开头；
+  `article/posts/*.html` 的 `.article-body` 为 EB Garamond + Noto Serif SC；
+- Android standalone：补丁 `matchMedia('(display-mode: standalone)').matches=true`
+  并把 UA 换成 Android Chrome；确认 `data-app="android"`、body 为
+  `system-ui, Roboto`、顶栏 sticky + safe-top、导航栏全宽贴底 + safe-bottom、
+  无 `fonts/` / Google Fonts 请求；
+- iOS standalone：UA 换成 iPad + `navigator.standalone=true` + `platform=MacIntel`
+  + `maxTouchPoints>1`；确认 `data-app="ios"`、系统字体、`#app/…` 路由、
+  无编辑字体请求；
+- 桌面 standalone：仅 `display-mode: standalone`（桌面 UA）；`data-app="desktop"`、
+  无底栏、macOS/Windows/Linux 对应平台字体栈（Windows 栈不含 PingFang）。
 
 图标重新生成与校验：
 
@@ -242,3 +300,19 @@ python3 pwa/generate-icons.py   # 依赖：Python 3 + numpy（无其他第三方
   将五个 tab 目标设为等宽并保证至少 44 CSS px 高，改善选中状态对比度与键盘焦点，
   并响应降低透明度偏好。Tab Bar 材质仅为 CSS 近似；仍需 iOS 真机验证安全区、
   VoiceOver、文字放大及图标部署结果。Service Worker 缓存递增至 `v9`。
+- 2026-10：跨平台设计重构——① 网页版界面主字体改为 Noto Sans SC（`--font-sans`
+  提到栈首，回退链覆盖 macOS/Windows 平台），EB Garamond + Noto Serif SC 只保留在
+  网页文章阅读页；浅色 `--sakura-deep`/`--ink-muted` 加深至 WCAG AA 对比度；
+  ② Android standalone 完成 Material 3 Expressive 适配（顶栏 + 全宽导航栏 +
+  M3 颜色角色 + system-ui/Roboto + 状态栏/手势导航条安全区 + 状态层与触觉反馈）；
+  ③ 桌面 standalone 新增 `data-app="desktop"`：按 `data-os`（macos/windows/linux）
+  使用平台 UI 字体栈（Windows 为 Segoe UI + Microsoft YaHei，不含 PingFang 优先）、
+  无底栏、内容区 64rem；④ `data-os` 扩展为 ios/android/macos/windows/linux，
+  font-loader 对所有 standalone 跳过编辑字体；⑤ 注入键盘 skip link、
+  移动端 44px 触控目标与浏览器安全区留白；缓存版本递增至 `v17`。
+- 字体加载优化：普通网页仅通过 `style/fonts-google.css` 请求 Google Fonts，
+  移除本地字体加载与加载耗时切换流程；`fonts/*.ttf` 保留在仓库归档但不被页面请求，
+  standalone 仍跳过编辑字体并使用平台 UI 字体。自包含离线页保留系统字体回退、不
+  请求远程或本地字体，Windows 栈不优先查找 PingFang；半角字形探测使用界面字体栈，
+  不再触发文章衬线字体下载。预缓存只包含 Google Fonts 的本站 CSS 包装文件、不包含
+  字体二进制；缓存版本递增至 `v21`。

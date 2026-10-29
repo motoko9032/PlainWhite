@@ -15,8 +15,8 @@
             --paper: #f9f8f6;
             --ink: #3a3a3c;
             --ink-light: #626264;
-            --sakura: #e8a0b0;
-            --sakura-deep: #d48496;
+            --sakura: #ad5367;
+            --sakura-deep: #9a4f62;
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -36,8 +36,8 @@
             justify-content: center;
             background: var(--paper);
             color: var(--ink);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                         "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         "Microsoft YaHei", "Microsoft YaHei UI", Roboto, sans-serif;
             text-align: center;
             padding: 2rem;
         }
@@ -71,7 +71,7 @@
             padding: 0.7rem 1.6rem;
             border-radius: 999px;
             background: var(--ink);
-            color: #fff;
+            color: var(--paper);
         }
         a.btn--ghost { background: transparent; color: var(--sakura-deep); border: 1px solid var(--sakura); }
         button:hover, a.btn:hover { opacity: 0.85; }

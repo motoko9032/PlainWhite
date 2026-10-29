@@ -1,34 +1,44 @@
 /* ============================================
-   纯白 — 字体加载方式选择器
-   在 <head> 中同步执行：默认加载本地字体；
-   若此前检测到页面完全加载过慢，则改用 Google Fonts 的 @import 远程字体。
+   纯白 — 字体加载器（仅 Google Fonts）
+   在 <head> 中同步执行：为非安装模式的普通网页加载
+   style/fonts-google.css（Google Fonts @import）。
+   本地 fonts/*.ttf 不再参与任何页面加载，避免大体积
+   中文字体拖慢页面。
    ============================================ */
 
 (function () {
     'use strict';
 
     const scriptElement = document.currentScript;
-    const FONT_MODE_KEY = 'plainwhite:font-mode';
-    const FONT_FALLBACK_KEY = 'plainwhite:font-fallback';
     const GOOGLE_FONT_TIMEOUT_MS = 10000;
 
-    function isIOSStandalone() {
+    function isIOSUA() {
         const nav = window.navigator || {};
-        const standalone = nav.standalone === true ||
-            (window.matchMedia &&
-             window.matchMedia('(display-mode: standalone)').matches);
         const userAgent = nav.userAgent || '';
-        const isIOS = /iPad|iPhone|iPod/.test(userAgent) ||
+        return /iPad|iPhone|iPod/.test(userAgent) ||
             (nav.platform === 'MacIntel' && (nav.maxTouchPoints || 0) > 1);
-
-        return standalone && isIOS;
     }
 
-    // iOS standalone uses the platform's UI font and must not load the site's
-    // editorial font files. Safari and every non-iOS installation keep the
-    // existing local/Google font selection below.
-    if (isIOSStandalone()) {
-        document.documentElement.classList.add('ios-standalone-system-font');
+    function isAppStandalone() {
+        const nav = window.navigator || {};
+        return nav.standalone === true ||
+            (window.matchMedia &&
+             window.matchMedia('(display-mode: standalone)').matches);
+    }
+
+    // 任何安装模式（iOS / Android / 桌面 standalone）都使用对应平台的
+    // UI 字体，不加载 Google Fonts 编辑字体。字体栈分别由 style/style.css
+    // 中的 html[data-ios-app]（Apple 系统字体）、
+    // html[data-standalone][data-app="android"]（system-ui + Roboto）与
+    // html[data-standalone][data-app="desktop"]（按 data-os 的桌面 UI 字体）
+    // 提供；普通浏览器统一使用 Google Fonts。
+    if (isAppStandalone()) {
+        if (isIOSUA()) {
+            // iOS standalone 沿用既有类名，CSS 契约不变
+            document.documentElement.classList.add('ios-standalone-system-font');
+        } else {
+            document.documentElement.classList.add('standalone-platform-font');
+        }
         return;
     }
 
@@ -39,94 +49,54 @@
         return path;
     }
 
-    function readSession(key) {
-        try {
-            return window.sessionStorage.getItem(key);
-        } catch (e) {
-            return null;
-        }
-    }
-
-    function writeSession(key, value) {
-        try {
-            window.sessionStorage.setItem(key, value);
-        } catch (e) {
-            // 隐私模式等禁用 sessionStorage 时忽略
-        }
-    }
-
-    function addGooglePreconnect() {
-        [
-            ['googleFontsPreconnectApi', 'https://fonts.googleapis.com'],
-            ['googleFontsPreconnectStatic', 'https://fonts.gstatic.com']
-        ].forEach(function (item) {
-            if (document.getElementById(item[0])) return;
-            const preconnect = document.createElement('link');
-            preconnect.id = item[0];
-            preconnect.rel = 'preconnect';
-            preconnect.href = item[1];
-            preconnect.crossOrigin = 'anonymous';
-            document.head.appendChild(preconnect);
-        });
-    }
-
-    function loadLocalFonts() {
-        if (document.getElementById('localFontsStylesheet')) return;
-        const stylesheet = document.createElement('link');
-        stylesheet.id = 'localFontsStylesheet';
-        stylesheet.rel = 'stylesheet';
-        stylesheet.href = resolveSiteAsset('../style/fonts-local.css');
-        document.head.appendChild(stylesheet);
-    }
-
-    function fallbackToLocalFonts() {
-        document.documentElement.classList.remove('font-mode-google');
-        writeSession(FONT_MODE_KEY, 'local');
-        writeSession(FONT_FALLBACK_KEY, '1');
-
-        const googleStylesheet = document.getElementById('googleFontsStylesheet');
-        if (googleStylesheet) {
-            googleStylesheet.remove();
-        }
-        loadLocalFonts();
-    }
+    // 预连接 Google Fonts 的 API 与静态域，缩短字体请求握手时间
+    [
+        ['googleFontsPreconnectApi', 'https://fonts.googleapis.com'],
+        ['googleFontsPreconnectStatic', 'https://fonts.gstatic.com']
+    ].forEach(function (item) {
+        if (document.getElementById(item[0])) return;
+        const preconnect = document.createElement('link');
+        preconnect.id = item[0];
+        preconnect.rel = 'preconnect';
+        preconnect.href = item[1];
+        preconnect.crossOrigin = 'anonymous';
+        document.head.appendChild(preconnect);
+    });
 
     function loadGoogleFonts() {
         if (document.getElementById('googleFontsStylesheet')) return;
 
-        document.documentElement.classList.add('font-mode-google');
-        addGooglePreconnect();
-
         const stylesheet = document.createElement('link');
         stylesheet.id = 'googleFontsStylesheet';
         stylesheet.rel = 'stylesheet';
-        // 非阻塞加载：Google Fonts 不可达时，页面先使用系统字体
+        // 非阻塞加载：先用 print 媒体拉取，成功后切到 all；
+        // Google Fonts 不可达时页面直接使用系统回退字体。
         stylesheet.media = 'print';
         stylesheet.href = resolveSiteAsset('../style/fonts-google.css');
 
         let loadTimer = 0;
 
+        function giveUpOnGoogleFonts() {
+            window.clearTimeout(loadTimer);
+            // 远程样式不可用时移除链接，页面按 --font-sans / --font-serif
+            // 的系统回退字体渲染，不阻塞首屏。
+            stylesheet.remove();
+        }
+
         stylesheet.addEventListener('load', function () {
             window.clearTimeout(loadTimer);
             stylesheet.media = 'all';
         });
-        stylesheet.addEventListener('error', function () {
-            window.clearTimeout(loadTimer);
-            fallbackToLocalFonts();
-        });
+        stylesheet.addEventListener('error', giveUpOnGoogleFonts);
 
         document.head.appendChild(stylesheet);
 
         loadTimer = window.setTimeout(function () {
             if (stylesheet.media !== 'all') {
-                fallbackToLocalFonts();
+                giveUpOnGoogleFonts();
             }
         }, GOOGLE_FONT_TIMEOUT_MS);
     }
 
-    if (readSession(FONT_MODE_KEY) === 'google' && readSession(FONT_FALLBACK_KEY) !== '1') {
-        loadGoogleFonts();
-    } else {
-        loadLocalFonts();
-    }
+    loadGoogleFonts();
 })();
