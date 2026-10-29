@@ -4,7 +4,7 @@ date: 2026-10-28
 column: fiction
 slug: article-01
 summary: 秋风，V作品
-cover: covers/cover-4th.png
+cover: covers/Qiufeng-cover.png
 ---
 # 秋风
 
@@ -28,8 +28,6 @@ cover: covers/cover-4th.png
 
 ## 二
 
-  
-
 反正就是那样的关系。
 
 从N第一次踩着荧光绿的跑鞋来到图书馆时我就轻微的预料到了一切，因为我开始留意每一只浮在地平面上荧光绿的东西。
@@ -37,7 +35,6 @@ cover: covers/cover-4th.png
 视线向下，注意到，视线上移——大部分时候是失望，偶尔也有惊喜。
 
 从外乡来上海读高中；虽然在优生班但是同学们几乎都是只会做题的白痴；午休在图书馆被年长一级的学姐一见钟情什么的，太像 gal game剧情了吧。他一定是这么想的。
-
 
 「把号码写给我，周末我拿到手机加你。」
 
