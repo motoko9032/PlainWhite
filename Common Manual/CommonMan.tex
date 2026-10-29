@@ -3,7 +3,7 @@
 
 \title{\bfseries 纯白通用工作手册}
 \author{\kaishu 素子-白色封皮纯白运营小组}
-\date{2026年10月29日 第十一版}
+\date{2026年10月30日 第十二版}
 
 \begin{document}
 
@@ -156,8 +156,8 @@ Git 仓库根目录即网站静态文件的根目录。目录在代码提交后�
 	\item{covers – 刊物各期封面图片；首发文章使用的封面与正文插图归入 article/covers/}
 	\item{article – 首发文章的 Markdown 源文件、PNG 图片和静态 HTML 生成产物}
 	\item{tools – 文章静态页面生成器及其测试脚本}
-	\item{style – 样式表文件夹（存储css样式表）}
-	\item{script - JavaScript脚本文件夹（存储JavaScript脚本）}
+	\item{style – 网站与各平台 PWA 样式；普通网页编辑字体样式表为 \verb|fonts-google.css|}
+	\item{script - JavaScript脚本文件夹（存储交互、平台检测、字体加载与内容渲染脚本）}
 	\item{announcements – 首页公告的Markdown源文件与回退数据，由页面脚本动态渲染}
 	\item{sub – 公众号原文与LOFTER原文列表页文件夹（存储各期列表页、文章Markdown文件与回退数据，按\verb|WeChat|、\verb|LOFTER|、\verb|special-sub|三个子目录存放）}
 	\item{fonts – 字体归档目录（保留本地 TTF 供归档/印刷使用；网站页面只从 Google Fonts 加载字体）}
@@ -175,22 +175,35 @@ Git 仓库根目录即网站静态文件的根目录。目录在代码提交后�
 
 本网站已内置渐进式 Web 应用（PWA）基础能力：可安装到设备主屏幕，并在离线状态下继续浏览已缓存的页面。基础设施包括根目录的 \verb|manifest.webmanifest|（应用清单）、\verb|sw.js|（Service Worker 离线缓存）与 \verb|offline.html|（离线兜底页），应用图标与生成脚本位于 \verb|pwa/| 目录，完整的交接文档见 \verb|pwa/README.md|。
 
+\subsection{运行平台、字体与导航}
+
+普通浏览器页面与安装后的 standalone PWA 是不同运行环境，字体、导航和布局必须按平台隔离。各平台的维护位置与验证说明见 \verb|pwa/README.md|。
+
+\begin{itemize}
+	\item{普通桌面与移动浏览器继续使用网站导航和网页样式。界面字体由 Google Fonts 提供的 Noto Sans SC 为主；普通网页的首发文章阅读页才使用 EB Garamond 与 Noto Serif SC 衬线排版。字体加载非阻塞，Google Fonts 不可用或超时后由 CSS 系统字体栈回退。仓库 \verb|fonts/| 中的本地 TTF 仅作归档，不得加入页面加载流程。}
+	\item{只有检测到 standalone 安装模式，页面才设置安装态与平台标记；\verb|data-app| 区分 iOS、Android 和桌面，\verb|data-os| 标记具体操作系统。普通浏览器不得创建安装态导航或套用安装态字体。}
+	\item{iOS standalone 只使用 Apple 系统 UI 字体。字体加载器必须在插入 Google Fonts 样式表之前跳过字体请求；不得通过全局规则、Noto、衬线字体或桌面字体栈覆盖 iOS 字体。普通 Safari 网页不属于此限制，仍使用网页字体规则。}
+	\item{iOS standalone 使用应用式多页面路由：顶层目的地为首页、公告、阅读、下载和更多；更多目录包含关于、特别文章、分发方式、支持、致谢、联系与投稿等子页。路由使用 \verb|#app/<route>|，路由变化时应同步当前页面、标题、\verb|aria-current|、应用内返回及浏览器历史状态。iPhone 使用底部应用导航，宽屏触控设备可使用顶部导航；不得将 Android 或桌面导航行为套用到 iOS。}
+	\item{iOS 样式是受 Apple HIG 启发的 Web 实现，不是 UIKit 原生控件或官方合规认证。使用 \verb|viewport-fit=cover| 与 CSS \verb|env()| 安全区 inset 避让系统区域；顶部 inset 只计入一次，底部导航与正文留白不得遮挡内容。触控目标至少 44 CSS px，并尊重降低透明度、深色模式、文字放大、键盘焦点和 VoiceOver。}
+	\item{Android standalone 使用独立的平台样式作用域，界面字体为 \verb|system-ui, Roboto|，中文使用系统 CJK 回退；不得使用 Noto Serif SC、EB Garamond 或 Apple UI 字体。导航采用 Material 3 Expressive 启发的 64 CSS px 顶部应用栏与 80 CSS px 全宽底部导航栏；底部目的地仍以首页、公告、阅读、下载、关于等站内锚点工作，并随页面滚动更新当前项，不得改成 iOS 的 \verb|#app/| 路由。}
+	\item{Android standalone 必须通过 CSS 安全区 inset 避让状态栏、手势导航栏和显示切口；正文需留出底部导航栏高度，横向内容也要避让安全区。触控目标至少 48 CSS px；M3 颜色角色、状态层、深色模式与降低动态效果偏好应保持一致。固定低饱和主题色是 Web 端方案，不能宣称等同 Android Monet 动态取色。详细实现与检查项见 \verb|pwa/android-ui-guide.md|。}
+	\item{桌面 standalone（macOS、Windows、Linux）不显示移动端底部导航，保留桌面顶部导航和可缩窄窗口使用的汉堡菜单；内容区最大宽度为 64rem，并按窗口安全区留出边距。字体按 \verb|data-os| 选择：macOS 使用本机系统 UI 字体及 PingFang SC 中文回退；Windows 使用 Segoe UI / Segoe UI Variable 与 Microsoft YaHei 回退，字体栈不得优先查找 PingFang；Linux 使用系统 UI 字体并提供 Noto Sans CJK SC 等中文回退。}
+	\item{桌面和移动网页、三类 standalone 的 CSS 规则必须以平台属性明确限定，不能通过全局字体或组件规则覆盖其他平台。所有环境都应保留语义化结构、可见键盘焦点、足够对比度、文字缩放和 \verb|prefers-reduced-motion| 支持。CSS 材质和动效只能作为 Web 近似；修改平台导航或安全区后须按对应设备重新验证，不得将浏览器模拟结果表述为真机或官方合规认证。}
+\end{itemize}
+
+\subsection{维护与发布规则}
+
 {\heiti 维护人员必须遵守以下规则：}
 
 \begin{itemize}
 	\item{\verb|sw.js| 必须始终位于站点根目录，其作用域覆盖整个站点，不得移动；}
 	\item{每次发布静态资源变更（HTML、CSS、JavaScript、公告或文章数据、生成的HTML等）后，必须递增 \verb|sw.js| 顶部的 \verb|CACHE_VERSION| 版本号，否则用户会持续看到旧内容；}
-	\item{\verb|files/| 目录中的大文件（PDF、EPUB）不缓存：体积大，且 PDF 阅读器按 Range 分段读取，缓存整份响应会导致读取错乱；}
-	\item{首发文章页面采用导航网络优先，其他同源静态资源按需缓存；文章封面与其他大图片不得加入 \verb|PRECACHE_URLS|，避免安装时预缓存大量非首屏资源；}
-	\item{新增 HTML 页面时，必须照抄现有同级页面 \verb|<head>| 中的 PWA 区块（manifest、图标、主题色等标签），并按页面所在目录层级调整相对路径前缀（根目录页面用 \verb|./|，二级目录页面用 \verb|../../|）；}
+	\item{\verb|PRECACHE_URLS| 只放首页必需的小型核心资源。普通网页的 Google Fonts 样式包装文件 \verb|style/fonts-google.css| 可加入预缓存；其中跨域字体文件不由本站 Service Worker 缓存，本地 \verb|fonts/*.ttf| 不得被页面请求或加入缓存。离线时使用 CSS 系统回退字体；\verb|offline.html| 必须保持自包含，不引用外部 CSS、JavaScript 或字体。}
+	\item{\verb|files/| 目录中的大文件（PDF、EPUB）不缓存：体积大，且 PDF 阅读器按 Range 分段读取，缓存整份响应会导致读取错乱；首发文章页面采用导航网络优先，文章封面与其他大图片不得加入 \verb|PRECACHE_URLS|。}
+	\item{新增 HTML 页面时，必须照抄现有同级页面 \verb|<head>| 中的 PWA 区块（manifest、图标、主题色等标签），并按页面所在目录层级调整相对路径前缀（根目录页面用 \verb|./|，一级子目录页面用 \verb|../|，二级子目录页面用 \verb|../../|）；}
+	\item{每个页面的 \verb|viewport| meta 必须含 \verb|viewport-fit=cover|；新增页面时，必须复制浅色与深色两条带 \verb|media| 属性的 \verb|theme-color| 声明。}
 	\item{更换品牌图标时，只修改 \verb|pwa/icon.svg|，并运行 \verb|python3 pwa/generate-icons.py| 重新生成全部 PNG 图标——脚本会解析 SVG 矢量并按要求加粗描边，无需手工编辑任何 PNG。当前正式图标为手写「纯白」字标（仅描边）。}
-	\item{iOS 添加到主屏的图标必须是无透明通道（无 alpha）的 PNG，\verb|apple-touch-icon.png| 与 \verb|apple-touch-icon-180x180.png| 由生成脚本输出为 RGB，并同步写一份到站点根目录（iOS 的整站 Web Clip 兜底位置）；iOS 的 \verb|<link rel="apple-touch-icon">| 不支持 \verb|data:| URI（base64 硬编码不可行），\verb|pwa/apple-touch-icon.base64.txt| 仅作内联备用，不要放进 link 的 href；\verb|sw.js| 对路径含 \verb|apple-touch-icon| 的请求一律直接放行，避免 Service Worker 的缓存策略干扰 iOS 添加主屏时的图标抓取。}
-	\item{每个页面的 \verb|viewport| meta 必须含 \verb|viewport-fit=cover|，保证设备安全区适配；新增页面时，必须复制浅色与深色两条 \verb|theme-color| 声明。}
-	\item{导航按运行平台隔离：Tab Bar 仅在安装模式（standalone）显示；普通浏览器访问不显示。iOS standalone 隐藏汉堡菜单，并使用应用式多页面导航；Android standalone 保持原有锚点导航；普通浏览器和 Android 不得受 iOS 页面隐藏或路由逻辑影响。检测与注入逻辑在 \verb|script/script.js|，样式在 \verb|style/style.css|。}
-	\item{iOS standalone 顶层栏目为首页、公告、阅读、下载、更多，分别对应首页、公告、栏目、下载与动态「更多」目录；更多目录含关于、特别文章、分发方式、支持、致谢、联系与投稿六个子页。应用路由格式为 \verb|#app/<route>|，子页仍选中「更多」，支持应用内返回与浏览器历史返回。当前页仅显示对应内容，主标题和 \verb|aria-current| 必须随路由更新。路由与页面映射维护在 \verb|script/script.js| 的 \verb|initIOSAppNavigation()|。}
-	\item{iOS 样式为 HIG 启发的 Web 适配，不是原生 UIKit 控件或 HIG 认证：iPhone 使用底部悬浮玻璃 Tab Bar，宽屏触控设备使用顶部 Tab Bar；触控目标至少 44 CSS px 高，安全区、降低透明度偏好和深色模式均须适配。卡片圆角由 \verb|clamp()| 与 \verb|vmin| 按视口短边响应计算；\verb|backdrop-filter| 仅近似系统材质。每次导航或页面结构变更后，必须在真机验收安全区、放大文字、VoiceOver、横竖屏与深浅色。}
-	\item{深色模式跟随系统偏好，并遵循对比度与无障碍要求；新增颜色必须使用样式表中定义的语义 CSS 变量，不得写入无说明的固定颜色。}
-	\item{iOS 安装模式采用 HIG 启发的 Web 适配：header 在文档流中粘性定位并让出顶部安全区，避免覆盖首屏；底部 Tab Bar 单项至少 44 CSS px 高，适配底部及横向安全区，并支持降低透明度偏好。CSS 材质不能等同 UIKit / Liquid Glass，也不构成完整 HIG 认证；发布前须在真机检查安全区、文字放大、VoiceOver、横竖屏与深浅色。参考 \verb|developer.apple.com/design/human-interface-guidelines/tab-bars|；Android 端其余适配待办登记在 \verb|pwa/android-ui-guide.md|。}
+	\item{iOS 添加到主屏的图标必须是无透明通道（无 alpha）的 PNG，\verb|apple-touch-icon.png| 与 \verb|apple-touch-icon-180x180.png| 由生成脚本输出为 RGB，并同步写一份到站点根目录（iOS 的整站 Web Clip 兜底位置）；iOS 的 \verb|<link rel="apple-touch-icon">| 不支持 \verb|data:| URI，\verb|pwa/apple-touch-icon.base64.txt| 仅作内联备用，不得放进 link 的 \verb|href|；\verb|sw.js| 对路径含 \verb|apple-touch-icon| 的请求一律直接放行，避免 Service Worker 干扰 iOS 抓取图标。}
 \end{itemize}
 
 \section{首发文章与静态页面生成}
@@ -254,6 +267,7 @@ Git 仓库根目录即网站静态文件的根目录。目录在代码提交后�
 	      44 CSS px 高，并改善选中对比度、键盘焦点和降低透明度偏好。CSS 材质仅为
 	      Web 近似，仍需 iOS 真机验证安全区、VoiceOver、文字放大及图标部署结果。}
 	\item{本次 iOS PWA 导航重构：standalone 新增首页、公告、阅读、下载、更多五个顶层页面及六个「更多」子页，使用 \verb|#app/| 路由、页面标题与辅助技术状态同步、应用内返回和滚动位置恢复；浏览器与 Android standalone 保持原导航。玻璃材质通透度提高，卡片圆角按视口尺寸响应计算。}
+	\item{2026-10-30：更新跨平台网页与 PWA 规则，明确普通网页仅从 Google Fonts 加载编辑字体、standalone 按 iOS、Android、桌面平台隔离字体与导航、各平台安全区和无障碍要求；补充字体缓存边界及真机验证限制。}
 \end{itemize}
 
 \end{document}
